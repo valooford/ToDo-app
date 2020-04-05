@@ -33,7 +33,15 @@ if (isDev) {
   config.module.rules = config.module.rules.concat([
     {
       test: /\.css$/,
-      use: ['style-loader', 'css-loader'],
+      use: [
+        'style-loader',
+        {
+          loader: 'css-loader',
+          options: {
+            sourceMap: true,
+          },
+        },
+      ],
     },
   ]);
   config.devtool = 'source-map';
