@@ -9,7 +9,6 @@ const isDev = process.env.NODE_ENV === 'development';
 const config = {
   entry: {
     main: './src/index.js',
-    side: './src/other.js',
   },
   output: {
     filename: '[name]-[contenthash].js', // имя бандла
@@ -29,20 +28,48 @@ const config = {
 
 if (isDev) {
   // DEVELOPMENT
+  // + devServer
+  // + source maps
   config.output.filename = '[name].js'; // в development при hot-reload не допускается chunkhash и contenthash
   config.module.rules = config.module.rules.concat([
     {
+      // CSS Правило
       test: /\.css$/,
-      use: ['style-loader', 'css-loader'],
+      use: [
+        'style-loader',
+        {
+          loader: 'css-loader',
+          options: {
+            sourceMap: true, // включает CSS source maps
+          },
+        },
+      ],
+    },
+    {
+      // Sass Правило
+      test: /\.s[ac]ss$/i,
+      use: [
+        'style-loader',
+        {
+          loader: 'css-loader',
+          options: {
+            sourceMap: true, // включает CSS source maps
+          },
+        },
+        'sass-loader', // в этом загрузчике значение sourceMap зависит от config.devtool
+      ],
     },
   ]);
   config.devtool = 'source-map';
   config.devServer = {
     port: 3000,
     hot: true,
+    clientLogLevel: 'silent', // отключает сообщения о горчей перезагрузке в консоли
   };
 } else {
   // PRODUCTION
+  // + Babel & ESLint
+  // + MiniCssExtractPlugin & OptimizeCssAssetsPlugin
   config.module.rules = config.module.rules.concat([
     {
       test: /\.js$/,
@@ -77,6 +104,11 @@ if (isDev) {
       // CSS Правило
       test: /\.css$/,
       use: [MiniCssExtractPlugin.loader, 'css-loader'],
+    },
+    {
+      // Sass Правило
+      test: /\.s[ac]ss$/i,
+      use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
     },
   ]);
   config.plugins = config.plugins.concat([
