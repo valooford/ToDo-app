@@ -49,12 +49,13 @@ if (isDev) {
   config.devtool = 'source-map';
   config.devServer = {
     port: 3000,
+    // trick for html Live-Reload to work with Hot reload
     before(app, server) {
       // eslint-disable-next-line no-underscore-dangle
-      server._watch('./src/index.html');
+      server._watch('src/index.html'); // путь к отслеживаемому html-файлу(шаблону)
     },
-    hot: true,
-    clientLogLevel: 'silent', // отключает сообщения о горчей перезагрузке в консоли
+    hot: true, // включение горячей перезагрузки (HMR)
+    clientLogLevel: 'silent', // отключает сообщения о горячей перезагрузке в консоли
   };
 } else {
   // PRODUCTION
@@ -94,11 +95,6 @@ if (isDev) {
       // CSS Правило
       test: /\.css$/,
       use: [MiniCssExtractPlugin.loader, 'css-loader'],
-    },
-    {
-      // Sass Правило
-      test: /\.s[ac]ss$/i,
-      use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
     },
   ]);
   config.plugins = config.plugins.concat([
