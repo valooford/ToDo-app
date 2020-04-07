@@ -40,29 +40,19 @@ if (isDev) {
         {
           loader: 'css-loader',
           options: {
-            sourceMap: true, // включает CSS source maps
+            sourceMap: true,
           },
         },
-      ],
-    },
-    {
-      // Sass Правило
-      test: /\.s[ac]ss$/i,
-      use: [
-        'style-loader',
-        {
-          loader: 'css-loader',
-          options: {
-            sourceMap: true, // включает CSS source maps
-          },
-        },
-        'sass-loader', // в этом загрузчике значение sourceMap зависит от config.devtool
       ],
     },
   ]);
   config.devtool = 'source-map';
   config.devServer = {
     port: 3000,
+    before(app, server) {
+      // eslint-disable-next-line no-underscore-dangle
+      server._watch('./src/index.html');
+    },
     hot: true,
     clientLogLevel: 'silent', // отключает сообщения о горчей перезагрузке в консоли
   };
