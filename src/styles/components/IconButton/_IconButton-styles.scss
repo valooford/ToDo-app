@@ -1,0 +1,60 @@
+.icon-button {
+  display: inline-block;
+  width: 3 * $ib-base-unit;
+  height: 3 * $ib-base-unit;
+  vertical-align: top;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  border-radius: 2 * $ib-base-unit;
+  color: #888;
+  font-family: $ib-icon-font-name;
+  font-size: $ib-base-unit;
+  cursor: pointer;
+
+  &:hover {
+    color: #000;
+    background-color: rgba(221, 221, 221, 0.5);
+
+    .icon-button__title {
+      display: block;
+      z-index: 10;
+    }
+  }
+  &:focus {
+    color: #000;
+    border: 1px solid #bbb;
+
+    .icon-button__title {
+      display: block;
+    }
+  }
+
+  &__icon {
+    vertical-align: middle;
+    line-height: 3 * $ib-base-unit;
+  }
+
+  &__title {
+    display: none;
+    position: relative;
+    top: 0;
+    width: $ib-title-width;
+    right: $ib-title-width / 2;
+    z-index: 0;
+
+    > * {
+      display: inline-block;
+      margin-right: -100% * (100% / $ib-title-width);
+
+      padding: 0 7px;
+      color: #fff;
+      font-family: $ib-font-family;
+      font-size: 12px;
+      line-height: 1.8 * $ib-base-unit;
+      white-space: nowrap;
+      background-color: #555;
+      border-radius: 3px;
+    }
+  }
+}

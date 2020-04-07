@@ -1,0 +1,52 @@
+// Configuration:
+$icon-button-config: () !default;
+$icon-button-config: map-merge(
+  (
+    'base-unit': 15px,
+    'font-family': sans-serif,
+    'title-width': 5000%,
+  ),
+  $icon-button-config
+);
+
+// getting environment variables values
+$ib-base-unit: null !default;
+$ib-icon-font-name: null !default;
+$ib-font-family: null !default;
+$ib-title-width: null !default;
+// saving context
+$icon-button-config: map-merge(
+  $icon-button-config,
+  (
+    'context': (
+      'base-unit': $ib-base-unit,
+      'icon-font-name': $ib-icon-font-name,
+      'font-family': $ib-font-family,
+      'title-width': $ib-title-width,
+    ),
+  )
+);
+
+// using variables
+$ib-base-unit: map-get($icon-button-config, 'base-unit');
+$ib-icon-font-name: map-get($icon-button-config, 'icon-font-name');
+$ib-font-family: map-get($icon-button-config, 'font-family');
+$ib-title-width: map-get($icon-button-config, 'title-width');
+
+// importing stylesheet
+@import 'IconButton-styles';
+
+// restoring context
+$ib-base-unit: map-get(map-get($icon-button-config, 'context'), 'base-unit');
+$ib-icon-font-name: map-get(
+  map-get($icon-button-config, 'context'),
+  'icon-font-name'
+);
+$ib-font-family: map-get(
+  map-get($icon-button-config, 'context'),
+  'font-family'
+);
+$ib-title-width: map-get(
+  map-get($icon-button-config, 'context'),
+  'title-width'
+);

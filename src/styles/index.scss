@@ -1,0 +1,63 @@
+@import '~reset-css';
+
+$font-name: MyFont;
+$font-regular-url: '/src/assets/fonts/Roboto/Roboto-Regular.ttf';
+$font-bold-url: '/src/assets/fonts/Roboto/Roboto-Medium.ttf';
+$font-family: $font-name, serif;
+$icon-font-name: IconFont;
+$icon-font-url: '/src/assets/fonts/fontello-icon-font/font/fontello.ttf';
+
+$base-unit: 15px;
+
+@mixin font-face($name, $url, $weight: normal) {
+  @font-face {
+    font-family: $name;
+    src: url($url);
+    font-weight: $weight;
+  }
+}
+@include font-face($font-name, $font-regular-url);
+@include font-face($font-name, $font-bold-url, bold);
+@include font-face($icon-font-name, $icon-font-url);
+
+body {
+  overflow-x: hidden;
+}
+
+.container {
+  width: 600px;
+  margin: 0 auto;
+  font-family: $font-family;
+
+  > * {
+    margin-top: 2 * $base-unit;
+    padding: 0 $base-unit;
+    line-height: 3 * $base-unit;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: (0 1px 5px #ddd, inset 0 -1px 2px #bbb);
+  }
+}
+
+.addNote {
+  color: #888;
+  font-weight: bold;
+  cursor: text;
+
+  &__buttons {
+    float: right;
+    box-sizing: border-box;
+
+    > * {
+      margin-left: 5px;
+    }
+  }
+}
+
+$icon-button-config: (
+  'base-unit': $base-unit,
+  'icon-font-name': $icon-font-name,
+  'font-family': $font-family,
+  'title-width': 5000%,
+);
+@import 'components/IconButton/IconButton';
