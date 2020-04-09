@@ -1,52 +1,123 @@
-// Configuration:
-$icon-button-config: () !default;
-$icon-button-config: map-merge(
-  (
-    'base-unit': 15px,
-    'font-family': sans-serif,
-    'title-width': 5000%,
-  ),
-  $icon-button-config
-);
+@mixin iconButtonStylesheet(
+  $class-name: 'icon-button',
+  $base-unit: 15px,
+  $icon-font-name: null,
+  $font-family: sans-serif,
+  $icon-size: $base-unit,
+  $font-size: 0.8 * $base-unit,
+  $title-width: 5000%
+) {
+  .#{$class-name} {
+    display: inline-block;
+    padding: 0;
+    width: 3 * $base-unit;
+    height: 3 * $base-unit;
+    vertical-align: middle;
+    background-color: transparent;
+    border: none;
+    outline: none;
+    border-radius: 2 * $base-unit;
+    color: #888;
+    font-family: $icon-font-name;
+    font-size: $icon-size;
+    cursor: pointer;
 
-// getting environment variables values
-$ib-base-unit: null !default;
-$ib-icon-font-name: null !default;
-$ib-font-family: null !default;
-$ib-title-width: null !default;
-// saving context
-$icon-button-config: map-merge(
-  $icon-button-config,
-  (
-    'context': (
-      'base-unit': $ib-base-unit,
-      'icon-font-name': $ib-icon-font-name,
-      'font-family': $ib-font-family,
-      'title-width': $ib-title-width,
-    ),
-  )
-);
+    &:hover {
+      color: #000;
+      background-color: rgba(221, 221, 221, 0.5);
 
-// using variables
-$ib-base-unit: map-get($icon-button-config, 'base-unit');
-$ib-icon-font-name: map-get($icon-button-config, 'icon-font-name');
-$ib-font-family: map-get($icon-button-config, 'font-family');
-$ib-title-width: map-get($icon-button-config, 'title-width');
+      .#{$class-name}__title {
+        display: block;
+        z-index: 10;
+      }
+    }
+    &:focus {
+      color: #000;
+      border: 1px solid #bbb;
 
-// importing stylesheet
-@import 'IconButton-styles';
+      .#{$class-name}__title {
+        display: block;
+      }
+    }
 
-// restoring context
-$ib-base-unit: map-get(map-get($icon-button-config, 'context'), 'base-unit');
-$ib-icon-font-name: map-get(
-  map-get($icon-button-config, 'context'),
-  'icon-font-name'
-);
-$ib-font-family: map-get(
-  map-get($icon-button-config, 'context'),
-  'font-family'
-);
-$ib-title-width: map-get(
-  map-get($icon-button-config, 'context'),
-  'title-width'
-);
+    &__icon {
+      vertical-align: top;
+      line-height: 3 * $base-unit;
+    }
+
+    &__title {
+      display: none;
+      position: relative;
+      top: 0;
+      width: $title-width;
+      right: $title-width / 2;
+      z-index: 0;
+
+      > * {
+        display: inline-block;
+        margin-right: -100% * (100% / $title-width);
+
+        padding: 0 7px;
+        color: #fff;
+        font-family: $font-family;
+        font-size: $font-size;
+        line-height: 1.8 * $base-unit;
+        white-space: nowrap;
+        background-color: #555;
+        border-radius: 3px;
+      }
+    }
+    @content;
+  }
+}
+
+@mixin extendIconButtonStylesheet(
+  $class-name: 'icon-button',
+  $modificator-name: 'modificator',
+  $base-unit: null,
+  $icon-font-name: null,
+  $font-family: null,
+  $icon-size: $base-unit,
+  $font-size: $base-unit,
+  $title-width: null
+) {
+  @if $base-unit and $font-size == $base-unit {
+    $font-size: 0.8 * $base-unit;
+  }
+
+  .#{$class-name}_#{$modificator-name} {
+    @if $base-unit {
+      width: 3 * $base-unit;
+      height: 3 * $base-unit;
+      border-radius: 2 * $base-unit;
+    }
+    font-family: $icon-font-name;
+    font-size: $icon-size;
+
+    .#{$class-name}__icon {
+      @if $base-unit {
+        line-height: 3 * $base-unit;
+      }
+    }
+
+    .#{$class-name}__title {
+      width: $title-width;
+      @if $title-width {
+        right: $title-width / 2;
+      }
+
+      > * {
+        @if $title-width {
+          margin-right: -100% * (100% / $title-width);
+        }
+
+        font-family: $font-family;
+        font-size: $font-size;
+        @if $base-unit {
+          line-height: 2.25 * $font-size;
+        }
+      }
+    }
+    @content;
+  }
+}

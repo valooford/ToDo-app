@@ -1,11 +1,12 @@
 @import '~reset-css';
+@import 'components/IconButton/IconButton';
 
 $font-name: MyFont;
 $font-regular-url: '/src/assets/fonts/Roboto/Roboto-Regular.ttf';
 $font-bold-url: '/src/assets/fonts/Roboto/Roboto-Medium.ttf';
 $font-family: $font-name, serif;
 $icon-font-name: IconFont;
-$icon-font-url: '/src/assets/fonts/fontello-icon-font/font/fontello.ttf';
+$icon-font-url: '/src/assets/fonts/todo-icon-font/font/todo-icon-font.ttf';
 
 $base-unit: 15px;
 
@@ -29,35 +30,94 @@ body {
   margin: 0 auto;
   font-family: $font-family;
 
-  > * {
+  &__item {
     margin-top: 2 * $base-unit;
     padding: 0 $base-unit;
-    line-height: 3 * $base-unit;
     border: 1px solid #ddd;
     border-radius: 10px;
+  }
+  &__item_focused {
     box-shadow: (0 1px 5px #ddd, inset 0 -1px 2px #bbb);
   }
 }
 
 .addNote {
   color: #888;
+  font-size: 16px;
   font-weight: bold;
   cursor: text;
 
-  &__buttons {
-    float: right;
-    box-sizing: border-box;
+  &__outer {
+    line-height: 3 * $base-unit;
+    .addNote__buttons {
+      float: right;
 
+      > * {
+        margin-left: 5px;
+      }
+    }
+  }
+  &__inner {
+    display: none;
+    padding-top: $base-unit;
+
+    .addNote__buttons {
+      margin-bottom: 0.5 * $base-unit;
+      margin-left: -$base-unit / 2;
+    }
     > * {
-      margin-left: 5px;
+      margin-bottom: 1.5 * $base-unit;
+    }
+  }
+
+  &__header,
+  &__noteField {
+    width: 100%;
+    border: none;
+    font-family: inherit;
+    font-weight: bold;
+    &:focus {
+      outline: none;
+    }
+  }
+  &__header {
+    font-size: 16px;
+  }
+  &__noteField {
+    resize: none;
+    overflow-y: hidden;
+    font-size: 14px;
+    line-height: 20px;
+    padding: 0;
+    max-height: 300px;
+
+    ::-webkit-scrollbar-button {
+      width: 0;
+      height: 0;
     }
   }
 }
 
-$icon-button-config: (
-  'base-unit': $base-unit,
-  'icon-font-name': $icon-font-name,
-  'font-family': $font-family,
-  'title-width': 5000%,
+.container__item_focused .addNote {
+  &__outer {
+    display: none;
+  }
+  &__inner {
+    display: block;
+  }
+}
+
+@include iconButtonStylesheet(
+  $class-name: 'icon-button',
+  $base-unit: $base-unit,
+  $icon-font-name: $icon-font-name,
+  $font-family: $font-family
 );
-@import 'components/IconButton/IconButton';
+
+@include extendIconButtonStylesheet(
+  $class-name: 'icon-button',
+  $modificator-name: 'smaller',
+  $base-unit: 11px,
+  $icon-size: 13px,
+  $font-size: 12px
+);
