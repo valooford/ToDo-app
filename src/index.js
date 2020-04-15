@@ -45,3 +45,23 @@ function handleNoteFieldInput(e) {
 }
 
 containerElement.addEventListener('input', handleNoteFieldInput, false);
+
+// TEMPLATES / ШАБЛОНЫ
+
+const templateIconButton = document.getElementById('template-icon-button')
+  .firstElementChild;
+
+function setupIconButton(iconSymbol, titleText, modificator) {
+  const newIconButton = templateIconButton.cloneNode(true);
+  if (modificator) {
+    newIconButton.classList.add(modificator);
+  }
+  const icon = newIconButton.firstElementChild;
+  icon.textContent = iconSymbol;
+  const title = newIconButton.lastElementChild.firstElementChild;
+  title.textContent = titleText;
+
+  return newIconButton;
+}
+
+setupIconButton('a', 'b');

@@ -14,7 +14,6 @@ const config = {
     filename: '[name]-[contenthash].js', // имя бандла
     path: path.resolve(__dirname, 'dist'), // папка вывода
   },
-  resolve: { alias: { '@fonts': path.resolve(__dirname, 'src/assets/fonts') } }, // прямой адрес до папки со шрифтами
   module: {
     rules: [
       {
@@ -22,7 +21,7 @@ const config = {
         use: [
           {
             loader: 'file-loader',
-            options: { name: '[name].[ext]' /* outputPath: 'assets/fonts' */ },
+            options: { name: '[name].[ext]', outputPath: 'assets/fonts' },
           },
         ],
       },
@@ -30,7 +29,7 @@ const config = {
   },
   plugins: [
     new HTMLWebpackPlugin({
-      template: './src/index.html',
+      template: 'src/index.html',
       chunks: ['main'], // chunks, включаемые в html
     }),
     new CleanWebpackPlugin(), // очищение папки output.path

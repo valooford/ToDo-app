@@ -2,11 +2,11 @@
 @import 'components/IconButton/IconButton';
 
 $font-name: MyFont;
-$font-regular-url: '/src/assets/fonts/Roboto/Roboto-Regular.ttf';
-$font-bold-url: '/src/assets/fonts/Roboto/Roboto-Medium.ttf';
+$font-regular-url: '../assets/fonts/Roboto/Roboto-Regular.ttf';
+$font-bold-url: '../assets/fonts/Roboto/Roboto-Medium.ttf';
 $font-family: $font-name, serif;
 $icon-font-name: IconFont;
-$icon-font-url: '/src/assets/fonts/todo-icon-font/font/todo-icon-font.ttf';
+$icon-font-url: '../assets/fonts/todo-icon-font/font/todo-icon-font.ttf';
 
 $base-unit: 15px;
 
@@ -23,6 +23,10 @@ $base-unit: 15px;
 
 body {
   overflow-x: hidden;
+}
+
+.template {
+  display: none;
 }
 
 .container {
