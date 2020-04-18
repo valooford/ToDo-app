@@ -64,4 +64,13 @@ function setupIconButton(iconSymbol, titleText, modificator) {
   return newIconButton;
 }
 
+const templateDatas = document.querySelectorAll('.templateData');
+
+templateDatas.forEach((tdata) => {
+  const data = tdata.dataset;
+  tdata.replaceWith(
+    setupIconButton(data.iconSymbol, data.titleText, data.modificator)
+  );
+});
+
 setupIconButton('a', 'b');

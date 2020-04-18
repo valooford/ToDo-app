@@ -52,6 +52,12 @@
                   <span>Сохранить напоминание</span>
                 </span>
               </button>
+              <div
+                class="templateData"
+                data-icon-symbol="&#xf0f3;"
+                data-title-text="my template"
+                data-modificator="icon-button_smaller"
+              ></div>
             </div>
           </div>
         </form>
@@ -67,9 +73,27 @@
       </button>
     </div>
 
-    <script
+    <!-- polyfill.io default + dataset(data-* attr) -->
+    <!-- FOR PROD -->
+    <!-- <script
       crossorigin="anonymous"
-      src="https://polyfill.io/v3/polyfill.min.js?features=default"
-    ></script>
+      src="https://polyfill.io/v3/polyfill.min.js?features=default%2CElement.prototype.dataset"
+    ></script> -->
+
+    <!-- FOR DEV -->
+    <!--[if IE]>
+      <script>
+        document.write(
+          '<' +
+            'script src="https://polyfill.io/v3/polyfill.min.js?features=default%2CElement.prototype.dataset&ua=ie/' +
+            document.documentMode +
+            '"></' +
+            'script>'
+        );
+      </script>
+    <![endif]-->
+    <!--[if !IE]>-->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default%2CElement.prototype.dataset"></script>
+    <!--<![endif]-->
   </body>
 </html>
