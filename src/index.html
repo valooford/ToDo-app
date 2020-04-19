@@ -8,26 +8,26 @@
   <body>
     <div class="container" id="container">
       <div class="container__item">
-        <form class="addNote" onsubmit="return false;">
-          <div class="addNote__outer">
-            Заметка...
-            <div class="addNote__buttons"></div>
-          </div>
-          <div class="addNote__inner">
-            <div class="addNote__cornerButtons"></div>
-            <input
-              class="addNote__header"
-              type="text"
-              placeholder="Введите заголовок"
-            />
-            <textarea
-              class="addNote__noteField"
-              placeholder="Заметка..."
-              rows="1"
-            ></textarea>
-            <div class="addNote__buttons">
-              <button class="addNote__button">Закрыть</button>
-            </div>
+        <div class="addNote">
+          Заметка...
+          <div class="addNote__buttons"></div>
+        </div>
+      </div>
+      <div class="container__item">
+        <form class="note" onsubmit="return false;">
+          <div class="note__cornerButtons"></div>
+          <input
+            class="note__header"
+            type="text"
+            placeholder="Введите заголовок"
+          />
+          <textarea
+            class="note__text"
+            placeholder="Заметка..."
+            rows="1"
+          ></textarea>
+          <div class="note__buttons">
+            <button class="note__button">Закрыть</button>
           </div>
         </form>
       </div>

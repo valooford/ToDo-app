@@ -26,7 +26,7 @@ containerElement.addEventListener('click', handleContainerFocus);
 document.addEventListener('click', unfocusContainerItem);
 
 function handleNoteFieldInput(e) {
-  if (!e.target.classList.contains('addNote__noteField')) {
+  if (!e.target.classList.contains('note__text')) {
     return;
   }
   if (e.target.value === '') {
@@ -68,33 +68,33 @@ function setupIconButton(iconSymbol, titleText, modificator, disabled) {
   return newIconButton;
 }
 
-const outerAddNoteButtonsBlock = document.querySelector(
-  '.addNote__outer .addNote__buttons'
+const addNoteButtonsBlock = document.querySelector(
+  '.addNote .addNote__buttons'
 );
 
-const outerAddNoteButtons = [
+const addNoteButtons = [
   ['&#xe800;', 'Создать список'],
   ['&#xf1fc;', 'Создать заметку с рисунком'],
   ['&#xe802;', 'Создать фотозаметку'],
 ];
 
-outerAddNoteButtons.forEach((data) => {
-  outerAddNoteButtonsBlock.append(setupIconButton(...data));
+addNoteButtons.forEach((data) => {
+  addNoteButtonsBlock.append(setupIconButton(...data));
 });
 
-const innerAddNoteCornerButtonsBlock = document.querySelector(
-  '.addNote__inner .addNote__cornerButtons'
+const noteCornerButtonsBlock = document.querySelector(
+  '.note .note__cornerButtons'
 );
 
-const innerAddNoteCornerButtons = [
+const noteCornerButtons = [
   ['&#xe812;', 'Закрепить заметку', 'icon-button_smaller'],
 ];
 
-innerAddNoteCornerButtons.forEach((data) => {
-  innerAddNoteCornerButtonsBlock.append(setupIconButton(...data));
+noteCornerButtons.forEach((data) => {
+  noteCornerButtonsBlock.append(setupIconButton(...data));
 });
 
-const innerAddNoteButtons = [
+const noteButtons = [
   ['&#xf0f3;', 'Сохранить напоминание', 'icon-button_smaller'],
   ['&#xe803;', 'Соавторы', 'icon-button_smaller'],
   ['&#xe804;', 'Изменить цвет', 'icon-button_smaller'],
@@ -105,12 +105,10 @@ const innerAddNoteButtons = [
   ['&#xe808;', 'Повторить', 'icon-button_smaller', true],
 ];
 
-const innerAddNoteButtonsBlock = document.querySelector(
-  '.addNote__inner .addNote__buttons'
-);
+const noteButtonsBlock = document.querySelector('.note .note__buttons');
 
-innerAddNoteButtons.forEach((data) => {
-  innerAddNoteButtonsBlock.append(setupIconButton(...data));
+noteButtons.forEach((data) => {
+  noteButtonsBlock.append(setupIconButton(...data));
 });
 
 setupIconButton('a', 'b');
