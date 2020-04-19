@@ -11,53 +11,22 @@
         <form class="addNote" onsubmit="return false;">
           <div class="addNote__outer">
             Заметка...
-            <div class="addNote__buttons">
-              <button class="icon-button">
-                <span class="icon-button__icon">&#xe800;</span><br />
-                <span class="icon-button__title">
-                  <span>Создать список</span>
-                </span>
-              </button>
-              <button class="icon-button">
-                <span class="icon-button__icon">&#xf1fc;</span><br />
-                <span class="icon-button__title">
-                  <span>Создать заметку с рисунком</span>
-                </span>
-              </button>
-              <button class="icon-button">
-                <span class="icon-button__icon">&#xe802;</span><br />
-                <span class="icon-button__title">
-                  <span>Создать фотозаметку</span>
-                </span>
-              </button>
-            </div>
+            <div class="addNote__buttons"></div>
           </div>
           <div class="addNote__inner">
-            <div>
-              <input
-                class="addNote__header"
-                type="text"
-                placeholder="Введите заголовок"
-              />
-            </div>
+            <div class="addNote__cornerButtons"></div>
+            <input
+              class="addNote__header"
+              type="text"
+              placeholder="Введите заголовок"
+            />
             <textarea
               class="addNote__noteField"
               placeholder="Заметка..."
               rows="1"
             ></textarea>
             <div class="addNote__buttons">
-              <button class="icon-button icon-button_smaller">
-                <span class="icon-button__icon">&#xf0f3;</span><br />
-                <span class="icon-button__title">
-                  <span>Сохранить напоминание</span>
-                </span>
-              </button>
-              <div
-                class="templateData"
-                data-icon-symbol="&#xf0f3;"
-                data-title-text="my template"
-                data-modificator="icon-button_smaller"
-              ></div>
+              <button class="addNote__button">Закрыть</button>
             </div>
           </div>
         </form>

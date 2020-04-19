@@ -51,26 +51,66 @@ containerElement.addEventListener('input', handleNoteFieldInput, false);
 const templateIconButton = document.getElementById('template-icon-button')
   .firstElementChild;
 
-function setupIconButton(iconSymbol, titleText, modificator) {
+function setupIconButton(iconSymbol, titleText, modificator, disabled) {
   const newIconButton = templateIconButton.cloneNode(true);
   if (modificator) {
     newIconButton.classList.add(modificator);
   }
+  if (disabled) {
+    newIconButton.disabled = true;
+    newIconButton.tabIndex = -1;
+  }
   const icon = newIconButton.firstElementChild;
-  icon.textContent = iconSymbol;
+  icon.innerHTML = iconSymbol;
   const title = newIconButton.lastElementChild.firstElementChild;
   title.textContent = titleText;
 
   return newIconButton;
 }
 
-const templateDatas = document.querySelectorAll('.templateData');
+const outerAddNoteButtonsBlock = document.querySelector(
+  '.addNote__outer .addNote__buttons'
+);
 
-templateDatas.forEach((tdata) => {
-  const data = tdata.dataset;
-  tdata.replaceWith(
-    setupIconButton(data.iconSymbol, data.titleText, data.modificator)
-  );
+const outerAddNoteButtons = [
+  ['&#xe800;', 'Создать список'],
+  ['&#xf1fc;', 'Создать заметку с рисунком'],
+  ['&#xe802;', 'Создать фотозаметку'],
+];
+
+outerAddNoteButtons.forEach((data) => {
+  outerAddNoteButtonsBlock.append(setupIconButton(...data));
+});
+
+const innerAddNoteCornerButtonsBlock = document.querySelector(
+  '.addNote__inner .addNote__cornerButtons'
+);
+
+const innerAddNoteCornerButtons = [
+  ['&#xe812;', 'Закрепить заметку', 'icon-button_smaller'],
+];
+
+innerAddNoteCornerButtons.forEach((data) => {
+  innerAddNoteCornerButtonsBlock.append(setupIconButton(...data));
+});
+
+const innerAddNoteButtons = [
+  ['&#xf0f3;', 'Сохранить напоминание', 'icon-button_smaller'],
+  ['&#xe803;', 'Соавторы', 'icon-button_smaller'],
+  ['&#xe804;', 'Изменить цвет', 'icon-button_smaller'],
+  ['&#xe802;', 'Добавить картинку', 'icon-button_smaller'],
+  ['&#xe805;', 'Архивировать', 'icon-button_smaller'],
+  ['&#xe81f;', 'Ещё', 'icon-button_smaller'],
+  ['&#xe807;', 'Отменить', 'icon-button_smaller', true],
+  ['&#xe808;', 'Повторить', 'icon-button_smaller', true],
+];
+
+const innerAddNoteButtonsBlock = document.querySelector(
+  '.addNote__inner .addNote__buttons'
+);
+
+innerAddNoteButtons.forEach((data) => {
+  innerAddNoteButtonsBlock.append(setupIconButton(...data));
 });
 
 setupIconButton('a', 'b');

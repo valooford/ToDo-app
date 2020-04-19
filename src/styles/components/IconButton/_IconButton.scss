@@ -17,7 +17,7 @@
     border: none;
     outline: none;
     border-radius: 2 * $base-unit;
-    color: #888;
+    color: #777;
     font-family: $icon-font-name;
     font-size: $icon-size;
     overflow: visible; // IE
@@ -38,6 +38,14 @@
 
       .#{$class-name}__title {
         display: block;
+      }
+    }
+    &:disabled {
+      color: #ccc;
+      cursor: not-allowed;
+
+      &:hover {
+        background-color: #fff;
       }
     }
 

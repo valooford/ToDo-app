@@ -209,6 +209,12 @@
       "css": "right-open",
       "code": 59398,
       "src": "fontawesome"
+    },
+    {
+      "uid": "d10920db2e79c997c5e783279291970c",
+      "css": "more",
+      "code": 59423,
+      "src": "entypo"
     }
   ]
 }
