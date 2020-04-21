@@ -6,17 +6,37 @@
     <title>ToDo</title>
   </head>
   <body>
-    <div class="container" id="container">
-      <div class="container__item">
-        <div class="addNote">
-          Заметка...
-          <div class="addNote__buttons"></div>
+    <header class="header">
+      <span class="header__logo"><i>&#xe80d;</i>ToDo</span>
+      <span class="header__search">
+        <span class="search">
+          <i class="search__icon"></i>
+          <input type="text" placeholder="Поиск" />
+          <i class="search__clean"></i>
+        </span>
+      </span>
+      <span class="header__buttons"></span>
+    </header>
+    <aside class="aside">
+      <ul class="aside__menu"></ul>
+    </aside>
+    <main>
+      <div class="container" id="container">
+        <div class="container__item">
+          <div class="addNote">
+            Заметка...
+            <div class="addNote__buttons"></div>
+          </div>
         </div>
+        <div class="container__item"></div>
       </div>
-      <div class="container__item"></div>
-    </div>
+    </main>
 
     <!-- TEMPLATES -->
+    <div id="template-iconed-menu-item" class="template">
+      <li class="iconed-menu-item"><i class="iconed-menu-item__icon"></i></li>
+    </div>
+
     <div id="template-icon-button" class="template">
       <button class="icon-button">
         <span class="icon-button__icon"></span><br />

@@ -11,6 +11,7 @@ $icon-font-url: '../assets/fonts/todo-icon-font/font/todo-icon-font.ttf';
 $base-unit: 15px;
 $smaller-base-unit: 11px;
 $tiny-base-unit: 9px;
+$bigger-base-unit: 16px;
 $no-padding-icon-size: 22px;
 $notification-base-unit: 7px;
 
@@ -27,6 +28,115 @@ $notification-base-unit: 7px;
 
 body {
   overflow-x: hidden;
+  font-family: $font-family;
+}
+
+.header {
+  padding: 0.5 * $base-unit 0.7 * $base-unit;
+  line-height: 3 * $bigger-base-unit;
+  vertical-align: middle;
+  border-bottom: 1px solid #ddd;
+  &__logo {
+    margin-right: 5 * $bigger-base-unit;
+    line-height: inherit;
+    color: #555;
+    font-size: 1.5 * $bigger-base-unit;
+    i {
+      display: inline-block;
+      width: 2 * $bigger-base-unit;
+      height: 2 * $bigger-base-unit;
+      margin-right: 0.8 * $bigger-base-unit;
+      line-height: 2 * $bigger-base-unit;
+      color: #fff;
+      text-align: center;
+      font-family: $icon-font-name;
+      font-size: 1.2 * $bigger-base-unit;
+      background-color: rgb(121, 228, 255);
+      border-radius: 3px;
+      border-bottom-right-radius: 12px;
+    }
+  }
+  &__buttons {
+    float: right;
+    & *:nth-of-type(3) {
+      margin-right: 2 * $bigger-base-unit;
+    }
+  }
+}
+
+.search {
+  position: relative;
+  line-height: 3 * $bigger-base-unit;
+  vertical-align: middle;
+  input {
+    padding: $bigger-base-unit 4 * $bigger-base-unit;
+    width: 50%;
+    max-width: 600px;
+    background-color: rgba(231, 231, 231, 0.5);
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    font-size: 16px;
+    &:focus {
+      background-color: #fff;
+      box-shadow: (0 1px 5px #ddd, inset 0 -1px 2px #bbb);
+    }
+  }
+  &__icon,
+  &__clean {
+    position: absolute;
+  }
+  &__icon {
+    left: 0.8 * $bigger-base-unit;
+  }
+  &__clean {
+    display: none;
+    right: 0.8 * $bigger-base-unit;
+  }
+  input:focus + &__clean {
+    display: inline;
+  }
+}
+
+.aside {
+  float: left;
+  width: 280px;
+  padding: 0.5 * $base-unit 0.7 * $base-unit;
+}
+
+.iconed-menu-item {
+  margin-left: -0.7 * $base-unit;
+  line-height: 3 * $bigger-base-unit;
+  color: #555;
+  font-size: 14px;
+  font-weight: bold;
+  border-top-right-radius: 1.5 * $bigger-base-unit;
+  border-bottom-right-radius: 1.5 * $bigger-base-unit;
+  cursor: pointer;
+  &:hover {
+    background-color: rgba(231, 231, 231, 0.5);
+  }
+  &_selected {
+    background-color: rgb(190, 242, 255);
+    &:hover {
+      background-color: rgb(190, 242, 255);
+    }
+  }
+  &_selected &__icon {
+    color: #000;
+  }
+
+  &__icon {
+    display: inline-block;
+    margin-left: 0.7 * $base-unit;
+    margin-right: $bigger-base-unit;
+    width: 3 * $bigger-base-unit;
+    height: 3 * $bigger-base-unit;
+    text-align: center;
+    font-family: $icon-font-name;
+    font-size: 20px;
+    font-weight: normal;
+  }
 }
 
 .template {
@@ -36,7 +146,6 @@ body {
 .container {
   width: 600px;
   margin: 0 auto;
-  font-family: $font-family;
 
   &__item {
     margin-top: 2 * $base-unit;
@@ -218,6 +327,14 @@ body {
   $modificator-name: 'tiny',
   $base-unit: $tiny-base-unit,
   $icon-size: 14px,
+  $font-size: 12px
+);
+
+@include extendIconButtonStylesheet(
+  $class-name: 'icon-button',
+  $modificator-name: 'bigger',
+  $base-unit: $bigger-base-unit,
+  $icon-size: 21px,
   $font-size: 12px
 );
 
