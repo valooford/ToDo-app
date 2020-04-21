@@ -13,33 +13,65 @@
           <div class="addNote__buttons"></div>
         </div>
       </div>
-      <div class="container__item">
-        <form class="note" onsubmit="return false;">
-          <div class="note__cornerButtons"></div>
-          <input
-            class="note__header"
-            type="text"
-            placeholder="Введите заголовок"
-          />
-          <textarea
-            class="note__text"
-            placeholder="Заметка..."
-            rows="1"
-          ></textarea>
-          <div class="note__buttons">
-            <button class="note__button">Закрыть</button>
-          </div>
-        </form>
-      </div>
+      <div class="container__item"></div>
     </div>
 
+    <!-- TEMPLATES -->
     <div id="template-icon-button" class="template">
       <button class="icon-button">
         <span class="icon-button__icon"></span><br />
         <span class="icon-button__title">
-          <span></span>
+          <div class="title">
+            <span></span>
+          </div>
         </span>
       </button>
+    </div>
+
+    <div id="template-list-item" class="template">
+      <li class="listItem">
+        <span class="listItem__drag">&#xe811;</span>
+        <span class="listItem__add">&#xe810;</span>
+        <span class="listItem__checkbox">&#xe800;</span>
+        <textarea class="textarea listItem__text" rows="1"></textarea>
+        <span class="listItem__remove"></span>
+      </li>
+    </div>
+
+    <div id="template-note" class="template">
+      <form class="note" onsubmit="return false;">
+        <div class="note__check"></div>
+        <div class="note__cornerButtons"></div>
+        <input
+          class="note__header"
+          type="text"
+          placeholder="Введите заголовок"
+        />
+        <textarea class="textarea" placeholder="Заметка..." rows="1"></textarea>
+        <div class="note__listWrapper">
+          <ul class="note__list"></ul>
+          <div class="note__markedList">
+            <i>&#xe81a;</i> 1 отмеченный пункт
+            <ul class="note__list"></ul>
+          </div>
+        </div>
+        <div class="note__info">
+          <span class="note__creationTime"
+            >Изменено: вчера, 20:30<br />
+            <div class="title">
+              <span>Создано 8 апр.</span>
+            </div>
+          </span>
+          <span class="notification">
+            <span class="notification__icon">&#xe809;</span>
+            23 апр., 08:00
+            <span class="notification__close">...</span>
+          </span>
+        </div>
+        <div class="note__buttons">
+          <button class="note__button">Закрыть</button>
+        </div>
+      </form>
     </div>
 
     <!-- polyfill.io default + dataset(data-* attr) -->

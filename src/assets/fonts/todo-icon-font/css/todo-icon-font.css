@@ -1,11 +1,11 @@
 @font-face {
   font-family: 'todo-icon-font';
-  src: url('../font/todo-icon-font.eot?11563552');
-  src: url('../font/todo-icon-font.eot?11563552#iefix') format('embedded-opentype'),
-       url('../font/todo-icon-font.woff2?11563552') format('woff2'),
-       url('../font/todo-icon-font.woff?11563552') format('woff'),
-       url('../font/todo-icon-font.ttf?11563552') format('truetype'),
-       url('../font/todo-icon-font.svg?11563552#todo-icon-font') format('svg');
+  src: url('../font/todo-icon-font.eot?64765658');
+  src: url('../font/todo-icon-font.eot?64765658#iefix') format('embedded-opentype'),
+       url('../font/todo-icon-font.woff2?64765658') format('woff2'),
+       url('../font/todo-icon-font.woff?64765658') format('woff'),
+       url('../font/todo-icon-font.ttf?64765658') format('truetype'),
+       url('../font/todo-icon-font.svg?64765658#todo-icon-font') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -15,7 +15,7 @@
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'todo-icon-font';
-    src: url('../font/todo-icon-font.svg?11563552#todo-icon-font') format('svg');
+    src: url('../font/todo-icon-font.svg?64765658#todo-icon-font') format('svg');
   }
 }
 */
@@ -87,6 +87,7 @@
 .icon-tag:before { content: '\e81d'; } /* '' */
 .icon-help:before { content: '\e81e'; } /* '' */
 .icon-more:before { content: '\e81f'; } /* '' */
+.icon-repeat:before { content: '\e820'; } /* '' */
 .icon-menu:before { content: '\f0c9'; } /* '' */
 .icon-bell:before { content: '\f0f3'; } /* '' */
 .icon-brush:before { content: '\f1fc'; } /* '' */
