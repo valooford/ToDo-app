@@ -6,46 +6,66 @@
     <title>ToDo</title>
   </head>
   <body>
-    <header class="header">
-      <span class="header__logo"><i>&#xe80d;</i>ToDo</span>
-      <span class="header__search">
-        <span class="search">
-          <i class="search__icon"></i>
-          <input type="text" placeholder="Поиск" />
-          <i class="search__clean"></i>
-        </span>
-      </span>
-      <span class="header__buttons"></span>
-    </header>
-    <aside class="aside">
-      <ul class="aside__menu"></ul>
-    </aside>
-    <main>
-      <div class="container" id="container">
-        <div class="container__item">
-          <div class="addNote">
-            Заметка...
-            <div class="addNote__buttons"></div>
-          </div>
-        </div>
-        <div class="container__item"></div>
-      </div>
-    </main>
+    <header></header>
+    <aside></aside>
+    <main></main>
 
     <!-- TEMPLATES -->
+    <div id="template-header" class="template">
+      <div class="header">
+        <span class="header__logo"><i>&#xe80d;</i>ToDo</span>
+        <span class="header__search"></span>
+        <span class="header__buttons"></span>
+      </div>
+    </div>
+
+    <div id="template-search" class="template">
+      <span class="search">
+        <i class="search__icon"></i>
+        <input type="text" placeholder="Поиск" />
+        <i class="search__clean"></i>
+      </span>
+    </div>
+
+    <div id="template-aside" class="template">
+      <div class="aside">
+        <ul class="aside__menu"></ul>
+      </div>
+    </div>
+
     <div id="template-iconed-menu-item" class="template">
       <li class="iconed-menu-item"><i class="iconed-menu-item__icon"></i></li>
+    </div>
+
+    <div id="template-add-note" class="template">
+      <div class="addNote">
+        Заметка...
+        <div class="addNote__buttons"></div>
+      </div>
+    </div>
+
+    <div id="template-container" class="template">
+      <div class="container" id="container">
+        <div class="container__item"></div>
+        <div class="container__item"></div>
+      </div>
+    </div>
+
+    <div id="template-title" class="template">
+      <div class="title">
+        <span class="title__text"></span>
+      </div>
     </div>
 
     <div id="template-icon-button" class="template">
       <button class="icon-button">
         <span class="icon-button__icon"></span><br />
-        <span class="icon-button__title">
-          <div class="title">
-            <span></span>
-          </div>
-        </span>
+        <span class="icon-button__title"> </span>
       </button>
+    </div>
+
+    <div id="template-textarea" class="template">
+      <textarea class="textarea" rows="1"></textarea>
     </div>
 
     <div id="template-list-item" class="template">
@@ -53,9 +73,17 @@
         <span class="listItem__drag">&#xe811;</span>
         <span class="listItem__add">&#xe810;</span>
         <span class="listItem__checkbox">&#xe800;</span>
-        <textarea class="textarea listItem__text" rows="1"></textarea>
+        <span class="listItem__text"></span>
         <span class="listItem__remove"></span>
       </li>
+    </div>
+
+    <div id="template-notification" class="template">
+      <span class="notification">
+        <span class="notification__icon">&#xe809;</span>
+        23 апр., 08:00
+        <span class="notification__close">...</span>
+      </span>
     </div>
 
     <div id="template-note" class="template">
@@ -67,7 +95,7 @@
           type="text"
           placeholder="Введите заголовок"
         />
-        <textarea class="textarea" placeholder="Заметка..." rows="1"></textarea>
+        <span class="note__text"></span>
         <div class="note__listWrapper">
           <ul class="note__list"></ul>
           <div class="note__markedList">
@@ -76,17 +104,7 @@
           </div>
         </div>
         <div class="note__info">
-          <span class="note__creationTime"
-            >Изменено: вчера, 20:30<br />
-            <div class="title">
-              <span>Создано 8 апр.</span>
-            </div>
-          </span>
-          <span class="notification">
-            <span class="notification__icon">&#xe809;</span>
-            23 апр., 08:00
-            <span class="notification__close">...</span>
-          </span>
+          <span class="note__creationTime">Изменено: вчера, 20:30<br /> </span>
         </div>
         <div class="note__buttons">
           <button class="note__button">Закрыть</button>

@@ -21,6 +21,44 @@ export function setupIconedMenuItem(iconSymbol, text, isSelected) {
 }
 
 // *
+// ШАБЛОН МЕНЮ / ASIDE
+// *
+const templateAside = document.getElementById('template-aside')
+  .firstElementChild;
+export function setupAside() {
+  const newAside = templateAside.cloneNode(true);
+
+  const asideMenu = newAside.querySelector('.aside__menu');
+  const asideMenuButtons = [
+    ['&#xe80d;', 'Заметки', true],
+    ['&#xf0f3;', 'Напоминания'],
+    ['&#xe81d;', '123'],
+    ['&#xe80e;', 'Изменение ярлыков'],
+    ['&#xe805;', 'Архив'],
+    ['&#xe80f;', 'Корзина'],
+  ];
+  asideMenuButtons.forEach((data) => {
+    asideMenu.append(setupIconedMenuItem(...data));
+  });
+
+  return newAside;
+}
+
+// *
+// ШАБЛОН ОКНА С ПОДСКАЗКОЙ / TITLE
+// *
+const templateTitle = document.getElementById('template-title')
+  .firstElementChild;
+export function setupTitle(text) {
+  const newTitle = templateTitle.cloneNode(true);
+
+  const textBlock = newTitle.querySelector('.title__text');
+  textBlock.textContent = text;
+
+  return newTitle;
+}
+
+// *
 // ШАБЛОН КНОПКИ С ИКОНКОЙ / ICON-BUTTON
 // *
 const templateIconButton = document.getElementById('template-icon-button')
@@ -28,6 +66,7 @@ const templateIconButton = document.getElementById('template-icon-button')
 
 export function setupIconButton(iconSymbol, titleText, modificator, disabled) {
   const newIconButton = templateIconButton.cloneNode(true);
+
   if (modificator) {
     newIconButton.classList.add(modificator);
   }
@@ -35,12 +74,72 @@ export function setupIconButton(iconSymbol, titleText, modificator, disabled) {
     newIconButton.disabled = true;
     newIconButton.tabIndex = -1;
   }
-  const icon = newIconButton.firstElementChild;
+  const icon = newIconButton.querySelector('.icon-button__icon');
   icon.innerHTML = iconSymbol;
-  const title = newIconButton.querySelector('.title').firstElementChild;
-  title.textContent = titleText;
+  const title = newIconButton.querySelector('.icon-button__title');
+  title.append(setupTitle(titleText));
 
   return newIconButton;
+}
+
+// *
+// ШАБЛОН ПОЛЯ ДЛЯ ПОИСКА / SEARCH
+// *
+const templateSearch = document.getElementById('template-search')
+  .firstElementChild;
+export function setupSearch() {
+  const newSearch = templateSearch.cloneNode(true);
+
+  const searchIconBlock = newSearch.querySelector('.search__icon');
+  const searchCleanBlock = newSearch.querySelector('.search__clean');
+  searchIconBlock.append(setupIconButton('&#xe814;', 'Поиск'));
+  searchCleanBlock.append(
+    setupIconButton('&#xe80c;', 'Удалить поисковый запрос')
+  );
+
+  return newSearch;
+}
+
+// *
+// ШАБЛОН ХЕДЕРА (ШАПКИ) / HEADER
+// *
+const templateHeader = document.getElementById('template-header')
+  .firstElementChild;
+export function setupHeader() {
+  const newHeader = templateHeader.cloneNode(true);
+
+  const menuButton = ['&#xf0c9;', 'Главное меню', 'icon-button_bigger'];
+  newHeader.prepend(setupIconButton(...menuButton));
+
+  const search = newHeader.querySelector('.header__search');
+  search.append(setupSearch());
+
+  const headerButtonsBlock = newHeader.querySelector('.header__buttons');
+  const headerButtons = [
+    ['&#xe815;', 'Обновить', 'icon-button_bigger'],
+    ['&#xe819;', 'Сетка', 'icon-button_bigger'],
+    ['&#xe818;', 'Настройки', 'icon-button_bigger'],
+    ['&#xe816;', 'Приложения Google'],
+    ['V', 'Аккаунт Google'],
+  ];
+  headerButtons.forEach((data) => {
+    headerButtonsBlock.append(setupIconButton(...data));
+  });
+
+  return newHeader;
+}
+
+// *
+// ШАБЛОН ТЕКСТОВОГО ПОЛЯ / TEXTAREA
+// *
+const templateTextarea = document.getElementById('template-textarea')
+  .firstElementChild;
+export function setupTextarea(placeholder = '') {
+  const newTextarea = templateTextarea.cloneNode(true);
+
+  newTextarea.placeholder = placeholder;
+
+  return newTextarea;
 }
 
 // *
@@ -64,15 +163,27 @@ export function setupListItem({ type } = {}) {
       drag.remove();
       checkbox.remove();
       remove.remove();
-      text.placeholder = 'Новый пункт';
+      text.append(setupTextarea('Новый пункт'));
       break;
     default:
       add.remove();
+      text.append(setupTextarea());
       remove.append(setupIconButton(...closeButton));
       break;
   }
 
   return newListItem;
+}
+
+// *
+// ШАБЛОН УВЕДОМЛЕНИЯ / NOTIFICATION
+// *
+const templateNotification = document.getElementById('template-notification')
+  .firstElementChild;
+export function setupNotification() {
+  const newNotification = templateNotification.cloneNode(true);
+
+  return newNotification;
 }
 
 // *
@@ -96,6 +207,15 @@ export function setupNote({ type } = {}) {
   noteCornerButtons.forEach((data) => {
     noteCornerButtonsBlock.append(setupIconButton(...data));
   });
+
+  const noteText = newNote.querySelector('.note__text');
+  noteText.append(setupTextarea('Заметка...'));
+
+  const noteInfo = newNote.querySelector('.note__info');
+  noteInfo.append(setupNotification());
+
+  const noteCreationTime = noteInfo.querySelector('.note__creationTime');
+  noteCreationTime.append(setupTitle('Создано 8 апр.'));
 
   const noteButtonsBlock = newNote.querySelector('.note__buttons');
   const noteButtons = [
@@ -145,4 +265,52 @@ export function setupNote({ type } = {}) {
   }
 
   return newNote;
+}
+
+// *
+// ШАБЛОН БЛОКА ДОБАВЛЕНИЯ ЗАМЕТКИ / ADD-NOTE
+// *
+const templateAddNote = document.getElementById('template-add-note')
+  .firstElementChild;
+export function setupAddNote() {
+  const newAddNote = templateAddNote.cloneNode(true);
+
+  const addNoteButtonsBlock = newAddNote.querySelector('.addNote__buttons');
+  const addNoteButtons = [
+    ['&#xe800;', 'Создать список'],
+    ['&#xf1fc;', 'Создать заметку с рисунком'],
+    ['&#xe802;', 'Создать фотозаметку'],
+  ];
+  addNoteButtons.forEach((data) => {
+    addNoteButtonsBlock.append(setupIconButton(...data));
+  });
+
+  return newAddNote;
+}
+
+// *
+// ШАБЛОН КОНТЕЙНЕРА / CONTAINER
+// *
+const templateContainer = document.getElementById('template-container')
+  .firstElementChild;
+export function setupContainer() {
+  const newContainer = templateContainer.cloneNode(true);
+
+  const firstContainerItem = newContainer.querySelector(
+    '.container__item:first-of-type'
+  );
+  firstContainerItem.append(setupAddNote());
+
+  let lastContainerItem = newContainer.querySelector(
+    '.container__item:last-of-type'
+  );
+  lastContainerItem.append(setupNote());
+
+  lastContainerItem.after(lastContainerItem.cloneNode());
+  lastContainerItem = newContainer.querySelector(
+    '.container__item:last-of-type'
+  );
+  lastContainerItem.append(setupNote({ type: 'list' }));
+
+  return newContainer;
 }

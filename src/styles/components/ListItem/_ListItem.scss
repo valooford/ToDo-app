@@ -1,0 +1,58 @@
+.listItem {
+  position: relative;
+
+  &__drag,
+  &__add,
+  &__checkbox {
+    position: absolute;
+    top: 8px;
+    font-family: $icon-font-name;
+    font-weight: normal;
+  }
+  &:hover &__drag {
+    display: inline;
+  }
+  &__drag {
+    display: none;
+    left: 0.5 * $base-unit;
+    cursor: all-scroll;
+  }
+  &__add {
+    left: 1.8 * $base-unit + 1px;
+    font-size: 14px;
+  }
+  &__checkbox {
+    box-sizing: border-box;
+    left: 1.8 * $base-unit;
+    width: 14px;
+    height: 14px;
+    color: #888;
+    font-size: 10px;
+    border: 2px solid #888;
+    border-radius: 3px;
+    cursor: pointer;
+    &:hover {
+      color: #555;
+      border-color: #555;
+    }
+  }
+  &:hover &__remove,
+  &__text:focus ~ &__remove {
+    display: inline;
+  }
+  &__remove {
+    display: none;
+    position: absolute;
+    top: $tiny-base-unit / 3;
+    right: $base-unit;
+    color: #888;
+  }
+  &__text * {
+    min-height: 34px;
+    padding: 6px 3.5 * $base-unit;
+    &:focus {
+      border-top: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
+    }
+  }
+}

@@ -1,47 +1,18 @@
 import './styles/index.scss';
-import { setupIconedMenuItem, setupIconButton, setupNote } from './templates';
+import { setupHeader, setupAside, setupContainer } from './templates';
 
 // HEADER
-const header = document.querySelector('.header');
-const menuButton = ['&#xf0c9;', 'Главное меню', 'icon-button_bigger'];
-header.prepend(setupIconButton(...menuButton));
-
-const search = header.querySelector('.header__search *');
-const searchIconBlock = search.querySelector('.search__icon');
-const searchCleanBlock = search.querySelector('.search__clean');
-searchIconBlock.append(setupIconButton('&#xe814;', 'Поиск'));
-searchCleanBlock.append(
-  setupIconButton('&#xe80c;', 'Удалить поисковый запрос')
-);
-
-const headerButtonsBlock = header.querySelector('.header__buttons');
-const headerButtons = [
-  ['&#xe815;', 'Обновить', 'icon-button_bigger'],
-  ['&#xe819;', 'Сетка', 'icon-button_bigger'],
-  ['&#xe818;', 'Настройки', 'icon-button_bigger'],
-  ['&#xe816;', 'Приложения Google'],
-  ['V', 'Аккаунт Google'],
-];
-headerButtons.forEach((data) => {
-  headerButtonsBlock.append(setupIconButton(...data));
-});
+const header = document.querySelector('header');
+header.append(setupHeader());
 
 // ASIDE
-const aside = document.querySelector('.aside');
-const asideMenu = aside.querySelector('.aside__menu');
-const asideMenuButtons = [
-  ['&#xe80d;', 'Заметки', true],
-  ['&#xf0f3;', 'Напоминания'],
-  ['&#xe81d;', '123'],
-  ['&#xe80e;', 'Изменение ярлыков'],
-  ['&#xe805;', 'Архив'],
-  ['&#xe80f;', 'Корзина'],
-];
-asideMenuButtons.forEach((data) => {
-  asideMenu.append(setupIconedMenuItem(...data));
-});
+const aside = document.querySelector('aside');
+aside.append(setupAside());
 
 // MAIN
+const main = document.querySelector('main');
+main.append(setupContainer());
+
 const containerElement = document.getElementById('container');
 
 let focusedContainerItem;
@@ -87,26 +58,3 @@ function handleNoteFieldInput(e) {
 }
 
 containerElement.addEventListener('input', handleNoteFieldInput, false);
-
-// ВСТАВКА ШАБЛОНОВ
-
-const addNoteButtonsBlock = document.querySelector(
-  '.addNote .addNote__buttons'
-);
-const addNoteButtons = [
-  ['&#xe800;', 'Создать список'],
-  ['&#xf1fc;', 'Создать заметку с рисунком'],
-  ['&#xe802;', 'Создать фотозаметку'],
-];
-addNoteButtons.forEach((data) => {
-  addNoteButtonsBlock.append(setupIconButton(...data));
-});
-
-let lastContainerItem = document.querySelector('.container__item:last-of-type');
-
-lastContainerItem.append(setupNote());
-
-lastContainerItem.after(lastContainerItem.cloneNode());
-lastContainerItem = document.querySelector('.container__item:last-of-type');
-
-lastContainerItem.append(setupNote({ type: 'list' }));

@@ -1,0 +1,11 @@
+.addNote {
+  line-height: 3 * $base-unit;
+  cursor: text;
+  &__buttons {
+    float: right;
+
+    > * {
+      margin-left: 5px;
+    }
+  }
+}

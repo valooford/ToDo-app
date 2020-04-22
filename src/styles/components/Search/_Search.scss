@@ -1,0 +1,33 @@
+.search {
+  position: relative;
+  line-height: 3 * $bigger-base-unit;
+  vertical-align: middle;
+  input {
+    padding: $bigger-base-unit 4 * $bigger-base-unit;
+    width: 50%;
+    max-width: 600px;
+    background-color: rgba(231, 231, 231, 0.5);
+    border: none;
+    outline: none;
+    border-radius: 10px;
+    font-size: 16px;
+    &:focus {
+      background-color: #fff;
+      box-shadow: (0 1px 5px #ddd, inset 0 -1px 2px #bbb);
+    }
+  }
+  &__icon,
+  &__clean {
+    position: absolute;
+  }
+  &__icon {
+    left: 0.8 * $bigger-base-unit;
+  }
+  &__clean {
+    display: none;
+    right: 0.8 * $bigger-base-unit;
+  }
+  input:focus + &__clean {
+    display: inline;
+  }
+}
