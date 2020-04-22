@@ -22,7 +22,6 @@ const config = {
       template: './src/index.html',
       chunks: ['main'], // chunks, включаемые в html
     }),
-    new CleanWebpackPlugin(), // очищение папки output.path
   ],
 };
 
@@ -104,6 +103,7 @@ if (isDev) {
     }),
     new OptimizeCssAssetsPlugin(), // минификация css
     // создание html со сборками в тегах <script />
+    new CleanWebpackPlugin(), // очищение папки output.path
   ]);
 }
 
