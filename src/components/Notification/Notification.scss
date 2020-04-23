@@ -1,0 +1,33 @@
+@mixin notificationStylesheet(
+  $class-name: 'notification',
+  $notification-base-unit: 7px,
+  $icon-font-name: IconFont
+) {
+  .#{$class-name} {
+    position: relative;
+    display: inline-block;
+    padding: 2px 1.3 * $notification-base-unit;
+    color: #444;
+    font-size: 11px;
+    background-color: rgb(235, 235, 235);
+    border-radius: 21px;
+    cursor: pointer;
+    &__icon {
+      margin-right: 7px;
+      font-family: $icon-font-name;
+      font-size: 2 * $notification-base-unit;
+      font-weight: normal;
+    }
+    &__close {
+      display: none;
+      position: absolute;
+      right: 2px;
+      background-color: rgb(235, 235, 235);
+      border-top-right-radius: 21px;
+      border-bottom-right-radius: 21px;
+    }
+    &:hover &__close {
+      display: inline;
+    }
+  }
+}

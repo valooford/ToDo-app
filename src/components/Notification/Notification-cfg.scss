@@ -1,0 +1,8 @@
+@import 'Notification';
+@import '@styles/variables';
+
+@include notificationStylesheet(
+  $class-name: $notificationClassName,
+  $notification-base-unit: $notification-base-unit,
+  $icon-font-name: $icon-font-name
+);

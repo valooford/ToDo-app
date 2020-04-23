@@ -1,0 +1,52 @@
+@import 'IconButton';
+@import '@styles/variables';
+
+@include iconButtonStylesheet(
+  $class-name: $iconButtonClassName,
+  $base-unit: $base-unit,
+  $icon-font-name: $icon-font-name,
+  $font-family: $font-family
+);
+
+@include extendIconButtonStylesheet(
+  $class-name: $iconButtonClassName,
+  $modificator-name: 'smaller',
+  $base-unit: $smaller-base-unit,
+  $icon-size: 14px,
+  $font-size: 12px
+);
+
+@include extendIconButtonStylesheet(
+  $class-name: $iconButtonClassName,
+  $modificator-name: 'tiny',
+  $base-unit: $tiny-base-unit,
+  $icon-size: 14px,
+  $font-size: 12px
+);
+
+@include extendIconButtonStylesheet(
+  $class-name: $iconButtonClassName,
+  $modificator-name: 'bigger',
+  $base-unit: $bigger-base-unit,
+  $icon-size: 21px,
+  $font-size: 12px
+);
+
+@include extendIconButtonStylesheet(
+  $class-name: $iconButtonClassName,
+  $modificator-name: 'no-padding',
+  $base-unit: $smaller-base-unit,
+  $icon-size: $no-padding-icon-size,
+  $font-size: 12px,
+  $no-padding: true,
+  $hover-color: rgba(200, 200, 200, 0.5)
+);
+
+@include extendIconButtonStylesheet(
+  $class-name: $iconButtonClassName,
+  $modificator-name: 'notification',
+  $base-unit: $notification-base-unit,
+  $icon-size: 14px,
+  $font-size: 12px,
+  $hover-color: rgba(210, 210, 210, 0.5)
+);

@@ -1,0 +1,7 @@
+@import 'Search';
+@import '@styles/variables';
+
+@include searchStylesheet(
+  $class-name: $searchClassName,
+  $bigger-base-unit: $bigger-base-unit
+);

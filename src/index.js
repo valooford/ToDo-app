@@ -1,5 +1,9 @@
 import './styles/index.scss';
-import { setupHeader, setupAside, setupContainer } from './templates';
+/* eslint-disable import/no-unresolved */
+import setupHeader from '@components/Header/Header';
+import setupAside from '@components/Aside/Aside';
+import setupContainer from '@components/Container/Container';
+/* eslint-enable import/no-unresolved */
 
 // HEADER
 const header = document.querySelector('header');

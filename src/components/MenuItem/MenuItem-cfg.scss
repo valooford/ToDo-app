@@ -1,0 +1,9 @@
+@import 'MenuItem';
+@import '@styles/variables';
+
+@include iconedMenuItemStylesheet(
+  $class-name: $iconedMenuItemClassName,
+  $base-unit: $base-unit,
+  $bigger-base-unit: $bigger-base-unit,
+  $icon-font-name: $icon-font-name
+);

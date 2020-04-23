@@ -1,0 +1,21 @@
+@mixin textareaStylesheet($class-name: 'textarea') {
+  .#{$class-name} {
+    resize: none;
+    overflow-y: hidden;
+    font-size: 14px;
+    line-height: 20px;
+    padding: 0;
+    max-height: 300px;
+  }
+  .note__header,
+  .#{$class-name} {
+    box-sizing: border-box;
+    width: 100%;
+    border: none;
+    font-family: inherit;
+    font-weight: bold;
+    &:focus {
+      outline: none;
+    }
+  }
+}

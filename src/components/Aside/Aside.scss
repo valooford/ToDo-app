@@ -1,0 +1,5 @@
+@mixin asideStylesheet($class-name: 'aside', $base-unit: 15px) {
+  .#{$class-name} {
+    padding: 0.5 * $base-unit 0.7 * $base-unit;
+  }
+}

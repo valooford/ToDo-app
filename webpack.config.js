@@ -10,6 +10,13 @@ const config = {
   entry: {
     main: './src/index.js',
   },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+      '@components': '@/components',
+      '@styles': '@/styles',
+    },
+  },
   output: {
     filename: '[name]-[contenthash].js', // имя бандла
     path: path.resolve(__dirname, 'dist'), // папка вывода

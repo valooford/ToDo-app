@@ -1,0 +1,27 @@
+$font-name: MyFont;
+$font-regular-url: '../assets/fonts/Roboto/Roboto-Regular.ttf';
+$font-bold-url: '../assets/fonts/Roboto/Roboto-Medium.ttf';
+$font-family: $font-name, serif;
+$icon-font-name: IconFont;
+$icon-font-url: '../assets/fonts/todo-icon-font/font/todo-icon-font.ttf';
+
+$base-unit: 15px;
+$smaller-base-unit: 11px;
+$tiny-base-unit: 9px;
+$bigger-base-unit: 16px;
+$no-padding-icon-size: 22px;
+$notification-base-unit: 7px;
+$title-width: 5000%;
+
+$addNoteClassName: 'addNote';
+$asideClassName: 'aside';
+$containerClassName: 'container';
+$headerClassName: 'header';
+$iconButtonClassName: 'icon-button';
+$listItemClassName: 'listItem';
+$iconedMenuItemClassName: 'iconed-menu-item';
+$noteClassName: 'note';
+$notificationClassName: 'notification';
+$searchClassName: 'search';
+$textareaClassName: 'textarea';
+$titleClassName: 'title';

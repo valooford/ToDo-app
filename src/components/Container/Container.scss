@@ -1,0 +1,26 @@
+@mixin containerStylesheet($class-name: 'container', $base-unit: 15px) {
+  .#{$class-name} {
+    width: 600px;
+    margin: 0 auto;
+
+    &__item {
+      margin-top: 2 * $base-unit;
+      padding: 0 $base-unit;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+
+      &:nth-child(n + 3) {
+        margin-top: 0.5 * $base-unit;
+      }
+      > * {
+        position: relative;
+        color: #888;
+        font-size: 16px;
+        font-weight: bold;
+      }
+    }
+    &__item_focused {
+      box-shadow: (0 1px 5px #ddd, inset 0 -1px 2px #bbb);
+    }
+  }
+}

@@ -1,18 +1,5 @@
 @import '~reset-css';
-
-$font-name: MyFont;
-$font-regular-url: '../assets/fonts/Roboto/Roboto-Regular.ttf';
-$font-bold-url: '../assets/fonts/Roboto/Roboto-Medium.ttf';
-$font-family: $font-name, serif;
-$icon-font-name: IconFont;
-$icon-font-url: '../assets/fonts/todo-icon-font/font/todo-icon-font.ttf';
-
-$base-unit: 15px;
-$smaller-base-unit: 11px;
-$tiny-base-unit: 9px;
-$bigger-base-unit: 16px;
-$no-padding-icon-size: 22px;
-$notification-base-unit: 7px;
+@import 'variables';
 
 @mixin font-face($name, $url, $weight: normal) {
   @font-face {
@@ -30,15 +17,10 @@ body {
   font-family: $font-family;
 }
 
-@import 'components/Header/Header';
-@import 'components/Search/Search';
-
 aside {
   float: left;
   width: 280px;
 }
-@import 'components/Aside/Aside';
-@import 'components/MenuItem/MenuItem';
 
 main {
   margin-left: 280px;
@@ -47,12 +29,3 @@ main {
 .template {
   display: none;
 }
-
-@import 'components/Container/Container';
-@import 'components/AddNote/AddNote';
-@import 'components/Note/Note';
-@import 'components/Textarea/Textarea';
-@import 'iconButtonsConfiguration.scss';
-@import 'components/Title/Title';
-@import 'components/Notification/Notification';
-@import 'components/ListItem/ListItem';

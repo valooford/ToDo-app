@@ -1,0 +1,9 @@
+@import 'Header';
+@import '@styles/variables';
+
+@include headerStylesheet(
+  $class-name: $headerClassName,
+  $base-unit: $base-unit,
+  $bigger-base-unit: $bigger-base-unit,
+  $icon-font-name: $icon-font-name
+);

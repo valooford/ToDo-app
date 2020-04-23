@@ -1,0 +1,11 @@
+@import 'Note';
+@import '@styles/variables';
+
+@include noteStylesheet(
+  $class-name: $noteClassName,
+  $base-unit: $base-unit,
+  $no-padding-icon-size: $no-padding-icon-size,
+  $smaller-base-unit: $smaller-base-unit,
+  $icon-font-name: $icon-font-name,
+  $notification-base-unit: $notification-base-unit
+);
