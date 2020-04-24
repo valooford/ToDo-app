@@ -1,0 +1,16 @@
+@mixin creationTimeStylesheet($class-name: 'creation-time') {
+  .#{$class-name} {
+    font-size: 13px;
+    font-weight: normal;
+
+    &__title {
+      display: none;
+    }
+    &:hover &__title {
+      display: block;
+      &:hover {
+        display: none;
+      }
+    }
+  }
+}

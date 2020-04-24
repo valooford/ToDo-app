@@ -4,7 +4,7 @@ import setupBuilder from '@components/templates';
 import setupIconButton from '@components/IconButton/IconButton';
 import setupTextarea from '@components/Textarea/Textarea';
 import setupNotification from '@components/Notification/Notification';
-import setupTitle from '@components/Title/Title';
+import setupCreationTime from '@components/CreationTime/CreationTime';
 import setupListItem from '@components/ListItem/ListItem';
 /* eslint-enable import/no-unresolved */
 
@@ -29,8 +29,8 @@ export default function setupNote({ type = 'default' } = {}) {
         setup: setupNotification,
       },
       '.note__creationTime': {
-        setup: setupTitle,
-        set: [['Создано 8 апр.']],
+        setup: setupCreationTime,
+        set: [['Изменено: вчера, 20:30', 'Создано 8 апр.']],
       },
       '.note__buttons': {
         setup: setupIconButton,

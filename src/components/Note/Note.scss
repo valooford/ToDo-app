@@ -23,11 +23,16 @@
       margin-bottom: 0;
     }
     &__header {
-      font-size: 16px;
+      box-sizing: border-box;
       padding-right: 3 * $smaller-base-unit;
-    }
-    &__text {
-      display: inline-block;
+      width: 100%;
+      border: none;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: bold;
+      &:focus {
+        outline: none;
+      }
     }
     &__list {
       margin: 0 #{-$base-unit};
@@ -63,21 +68,6 @@
     &__creationTime {
       position: absolute;
       right: 0;
-
-      font-size: 13px;
-      font-weight: normal;
-
-      // ???
-      .title {
-        display: none;
-      }
-      // ???
-      &:hover .title {
-        display: block;
-        &:hover {
-          display: none;
-        }
-      }
     }
     &__buttons {
       margin-bottom: 0;

@@ -96,7 +96,7 @@
           type="text"
           placeholder="Введите заголовок"
         />
-        <span class="note__text"></span>
+        <div class="note__text"></div>
         <div class="note__listWrapper">
           <ul class="note__list"></ul>
           <div class="note__markedList">
@@ -105,12 +105,18 @@
           </div>
         </div>
         <div class="note__info">
-          <span class="note__creationTime">Изменено: вчера, 20:30<br /> </span>
+          <span class="note__creationTime"></span>
         </div>
         <div class="note__buttons">
           <button class="note__button">Закрыть</button>
         </div>
       </form>
+    </div>
+    <div id="template-creation-time" class="template">
+      <span class="creation-time">
+        <br />
+        <span class="creation-time__title"></span>
+      </span>
     </div>
 
     <!-- polyfill.io default + dataset(data-* attr) -->
