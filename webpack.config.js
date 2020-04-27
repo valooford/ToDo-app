@@ -15,6 +15,7 @@ const config = {
       '@': path.resolve(__dirname, 'src'),
       '@components': '@/components',
       '@styles': '@/styles',
+      '@store': '@/store',
     },
   },
   output: {

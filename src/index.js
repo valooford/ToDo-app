@@ -1,21 +1,13 @@
 import './styles/index.scss';
 /* eslint-disable import/no-unresolved */
-import setupHeader from '@components/Header/Header';
-import setupAside from '@components/Aside/Aside';
-import setupContainer from '@components/Container/Container';
+import initializeApp from './App';
 /* eslint-enable import/no-unresolved */
 
-// HEADER
-const header = document.querySelector('header');
-header.append(setupHeader());
-
-// ASIDE
-const aside = document.querySelector('aside');
-aside.append(setupAside());
-
-// MAIN
-const main = document.querySelector('main');
-main.append(setupContainer());
+const root = document.getElementById('todo-app');
+if (!root) {
+  console.error('Unable to find root element (#todo-app)');
+}
+initializeApp(root);
 
 const containerElement = document.getElementById('container');
 

@@ -7,26 +7,20 @@ import setupNote from '@components/Note/Note';
 
 // ШАБЛОН КОНТЕЙНЕРА / CONTAINER
 // *
-export default function setupContainer() {
+export default function setupContainer(state) {
+  const notes = state.notes.map((note) => ({
+    setup: setupNote,
+    set: [[{ type: note.type, header: note.header }]],
+  }));
   return setupBuilder('template-container')({
+    clone: {
+      '.container__item': notes.length,
+    },
     insert: {
-      '.container__item:first-of-type': {
-        setup: setupAddNote,
-        set: [
-          [
-            () => {
-              alert('hey');
-            },
-          ],
-        ],
-      },
-      '.container__item:nth-of-type(2)': {
-        setup: setupNote,
-      },
-      '.container__item:last-of-type': {
-        setup: setupNote,
-        set: [[{ type: 'list' }]],
-      },
+      '.container__item': [
+        state.isAddPostFocused ? { setup: setupNote } : { setup: setupAddNote },
+        ...notes,
+      ],
     },
   });
 }

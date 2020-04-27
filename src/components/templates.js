@@ -17,18 +17,27 @@ export default function setupBuilder(templateName) {
   }
   // функция для вставки элементов или содержимого (текст/html)
   function insertFunc(elements, block) {
-    Object.keys(elements).forEach((prop) => {
-      const el = block.querySelector(prop);
-      if (!usingSetup(elements[prop], el, 'append')) {
-        if (elements[prop].html) {
-          el.innerHTML = elements[prop].html;
-        } else {
-          el.textContent = elements[prop];
-        }
+    Object.keys(elements).forEach((selector) => {
+      const els = block.querySelectorAll(selector);
+      if (!elements[selector].forEach) {
+        // eslint-disable-next-line no-param-reassign
+        elements[selector] = [elements[selector]];
       }
+      els.forEach((el, index) => {
+        if (!usingSetup(elements[selector][index], el, 'append')) {
+          /* eslint-disable no-param-reassign */
+          if (elements[selector][index].html) {
+            el.innerHTML = elements[selector][index].html;
+          } else {
+            el.textContent = elements[selector][index];
+          }
+          /* eslint-enable no-param-reassign */
+        }
+      });
     });
   }
   return function setup({
+    clone = {}, // elements to duplicate
     insert = {}, // insertions to elements
     append = [], // insertions to the start of main block
     prepend = [], // insertions to the end of main block
@@ -40,6 +49,13 @@ export default function setupBuilder(templateName) {
   } = {}) {
     const newElement = template.cloneNode(true);
 
+    Object.keys(clone).forEach((selector) => {
+      const el = newElement.querySelector(selector);
+      for (let i = 0; i < clone[selector]; i += 1) {
+        const copy = el.cloneNode(true);
+        el.after(copy);
+      }
+    });
     insertFunc(insert, newElement);
     append.forEach((el) => {
       if (!usingSetup(el, newElement, 'append')) {

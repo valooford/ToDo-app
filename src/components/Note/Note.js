@@ -57,14 +57,17 @@ export default function setupNote({ type = 'default' } = {}) {
     },
     add: {
       list: {
-        '.note__list': {
-          setup: setupListItem,
-          set: [[], [{ type: 'add' }]],
-        },
-        '.note__markedList .note__list': {
-          setup: setupListItem,
-        },
+        '.note__list': [
+          {
+            setup: setupListItem,
+            set: [[], [{ type: 'add' }]],
+          },
+          {
+            setup: setupListItem,
+          },
+        ],
       },
     },
+    props: {},
   });
 }
