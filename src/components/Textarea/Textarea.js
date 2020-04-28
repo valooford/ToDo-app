@@ -5,10 +5,15 @@ import setupBuilder from '@components/templates';
 
 // ШАБЛОН ТЕКСТОВОГО ПОЛЯ / TEXTAREA
 // *
-export default function setupTextarea(placeholder = '') {
-  return setupBuilder('template-textarea')({
-    props: {
-      placeholder,
-    },
+export default function setupTextarea({
+  placeholder = '',
+  value = '',
+  refs = { textarea: {} },
+} = {}) {
+  const Textarea = setupBuilder('template-textarea')({
+    props: { placeholder, value },
   });
+  // eslint-disable-next-line no-param-reassign
+  refs.textarea.ref = Textarea;
+  return Textarea;
 }

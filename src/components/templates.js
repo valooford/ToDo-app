@@ -16,11 +16,11 @@ export default function setupBuilder(templateName) {
     return false; // insertion failure
   }
   // функция для вставки элементов или содержимого (текст/html)
-  function insertFunc(elements, block) {
+  function insertFunc(elems, block) {
+    const elements = { ...elems };
     Object.keys(elements).forEach((selector) => {
       const els = block.querySelectorAll(selector);
       if (!elements[selector].forEach) {
-        // eslint-disable-next-line no-param-reassign
         elements[selector] = [elements[selector]];
       }
       els.forEach((el, index) => {
@@ -44,8 +44,11 @@ export default function setupBuilder(templateName) {
     modificators = [], // list of modificators
     cut = {}, // elements to cut when modificator set
     add = {}, // element insertions when modificator set
-    props = {}, // properties to add to elements
+    props = {}, // properties to add to main block
+    elementsProps = {}, // properties to add to elements
     eventHandlers = {},
+    elementsEventHandlers = {},
+    refs = {},
   } = {}) {
     const newElement = template.cloneNode(true);
 
@@ -84,8 +87,34 @@ export default function setupBuilder(templateName) {
     Object.keys(props).forEach((prop) => {
       newElement[prop] = props[prop];
     });
+    Object.keys(elementsProps).forEach((selector) => {
+      const els = newElement.querySelectorAll(selector);
+      els.forEach((el) => {
+        const element = el;
+        Object.keys(elementsProps[selector]).forEach((prop) => {
+          element[prop] = elementsProps[selector][prop];
+        });
+      });
+    });
     Object.keys(eventHandlers).forEach((eventName) => {
       newElement.addEventListener(eventName, eventHandlers[eventName]);
+    });
+    Object.keys(elementsEventHandlers).forEach((selector) => {
+      const els = newElement.querySelectorAll(selector);
+      els.forEach((el) => {
+        const element = el;
+        Object.keys(elementsEventHandlers[selector]).forEach((eventName) => {
+          element.addEventListener(
+            eventName,
+            elementsEventHandlers[selector][eventName]
+          );
+        });
+      });
+    });
+    Object.keys(refs).forEach((selector) => {
+      const el = newElement.querySelector(selector);
+      // eslint-disable-next-line no-param-reassign
+      refs[selector].ref = el; // mutation
     });
 
     return newElement;

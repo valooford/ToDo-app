@@ -7,15 +7,18 @@ const store = {
     main: {
       addPost: {},
       isAddPostFocused: false,
-      notes: [{ type: 'default', header: 'Мой заголовок' }, { type: 'list' }],
+      notes: [
+        { type: 'default', headerText: 'Мой заголовок', text: 'Привет' },
+        { type: 'list' },
+      ],
       // notes: [],
     },
   },
   getState() {
     return this._state;
   },
+  // placeholder function
   _renderApp() {
-    // placeholder function
     console.log("renderApp(..) function hasn't been set");
   },
   setStateCallback(callback) {

@@ -10,8 +10,16 @@ import setupListItem from '@components/ListItem/ListItem';
 
 // ШАБЛОН ЗАМЕТКИ / NOTE
 // *
-export default function setupNote({ type = 'default' } = {}) {
-  return setupBuilder('template-note')({
+export default function setupNote({
+  type = 'default',
+  headerText = '',
+  text = '',
+  onConfirm,
+  refs = { header: {}, textField: {} },
+} = {}) {
+  const { header, textField } = refs;
+
+  const Note = setupBuilder('template-note')({
     insert: {
       '.note__check': {
         setup: setupIconButton,
@@ -23,7 +31,15 @@ export default function setupNote({ type = 'default' } = {}) {
       },
       '.note__text': {
         setup: setupTextarea,
-        set: [['Заметка...']],
+        set: [
+          [
+            {
+              placeholder: 'Заметка...',
+              value: text,
+              refs: { textarea: textField },
+            },
+          ],
+        ],
       },
       '.note__info': {
         setup: setupNotification,
@@ -68,6 +84,17 @@ export default function setupNote({ type = 'default' } = {}) {
         ],
       },
     },
-    props: {},
+    elementsProps: {
+      '.note__header': { value: headerText },
+    },
+    refs: {
+      '.note__header': header,
+    },
   });
+
+  if (onConfirm) {
+    onConfirm('text', header.ref.value);
+  }
+
+  return Note;
 }

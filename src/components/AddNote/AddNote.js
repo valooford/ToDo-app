@@ -2,12 +2,7 @@ import './AddNote-cfg.scss';
 /* eslint-disable import/no-unresolved */
 import setupBuilder from '@components/templates';
 import setupIconButton from '@components/IconButton/IconButton';
-
-import store from '@store/store';
-import { focusAddPost, blurAddPost } from '@store/mainReducer';
 /* eslint-enable import/no-unresolved */
-
-const { dispatch } = store;
 
 const addNoteButtons = [
   ['&#xe800;', 'Создать список'],
@@ -17,13 +12,7 @@ const addNoteButtons = [
 
 // ШАБЛОН БЛОКА ДОБАВЛЕНИЯ ЗАМЕТКИ / ADD-NOTE
 // *
-export default function setupAddNote() {
-  function blurNoteHandler(e) {
-    if (!e.target.closest('.container__item:first-of-type .note')) {
-      dispatch(blurAddPost());
-      document.removeEventListener('click', blurNoteHandler);
-    }
-  }
+export default function setupAddNote({ onClick } = {}) {
   return setupBuilder('template-add-note')({
     insert: {
       '.addNote__buttons': {
@@ -32,13 +21,7 @@ export default function setupAddNote() {
       },
     },
     eventHandlers: {
-      click: () => {
-        dispatch(focusAddPost());
-        // во избежание перехвата во время всплытия текущего события
-        setTimeout(() => {
-          document.addEventListener('click', blurNoteHandler);
-        }, 0);
-      },
+      click: onClick,
     },
   });
 }
