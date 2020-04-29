@@ -20,11 +20,9 @@ const textField = {};
 function confirmNote() {
   function blurNoteHandler(e) {
     if (!e.target.closest('.container__item:first-of-type .note')) {
-      dispatch(blurAddPost());
-      /* eslint-disable operator-linebreak */
       const noteText = textField.ref.value;
-      /* eslint-enable operator-linebreak */
       const headerText = header.ref.value;
+      dispatch(blurAddPost());
       if (noteText) {
         dispatch(addNewNote(noteText, headerText));
       }
