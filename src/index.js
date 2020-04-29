@@ -11,29 +11,6 @@ initializeApp(root);
 
 const containerElement = document.getElementById('container');
 
-let focusedContainerItem;
-function handleContainerFocus(e) {
-  const newFocusedContainerItem = e.target.closest('.container__item');
-  if (newFocusedContainerItem) {
-    e.stopPropagation();
-    if (newFocusedContainerItem === focusedContainerItem) return;
-    if (focusedContainerItem) {
-      focusedContainerItem.classList.remove('container__item_focused');
-    }
-    newFocusedContainerItem.classList.add('container__item_focused');
-    focusedContainerItem = newFocusedContainerItem;
-  }
-}
-function unfocusContainerItem() {
-  if (focusedContainerItem) {
-    focusedContainerItem.classList.remove('container__item_focused');
-    focusedContainerItem = null;
-  }
-}
-
-containerElement.addEventListener('click', handleContainerFocus);
-document.addEventListener('click', unfocusContainerItem);
-
 function handleNoteFieldInput(e) {
   if (!e.target.classList.contains('textarea')) {
     return;

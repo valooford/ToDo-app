@@ -27,7 +27,15 @@ export default function setupListItem({ type = 'default' } = {}) {
         },
         '.listItem__remove': {
           setup: setupIconButton,
-          set: [['&#xe80c;', 'Удалить', 'icon-button_tiny']],
+          set: [
+            [
+              {
+                iconSymbol: '&#xe80c;',
+                titleText: 'Удалить',
+                modificator: 'icon-button_tiny',
+              },
+            ],
+          ],
         },
       },
     },

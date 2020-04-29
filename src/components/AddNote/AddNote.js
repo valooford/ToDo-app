@@ -5,9 +5,9 @@ import setupIconButton from '@components/IconButton/IconButton';
 /* eslint-enable import/no-unresolved */
 
 const addNoteButtons = [
-  ['&#xe800;', 'Создать список'],
-  ['&#xf1fc;', 'Создать заметку с рисунком'],
-  ['&#xe802;', 'Создать фотозаметку'],
+  [{ iconSymbol: '&#xe800;', titleText: 'Создать список' }],
+  [{ iconSymbol: '&#xf1fc;', titleText: 'Создать заметку с рисунком' }],
+  [{ iconSymbol: '&#xe802;', titleText: 'Создать фотозаметку' }],
 ];
 
 // ШАБЛОН БЛОКА ДОБАВЛЕНИЯ ЗАМЕТКИ / ADD-NOTE

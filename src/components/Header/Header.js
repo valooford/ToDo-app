@@ -5,6 +5,32 @@ import setupIconButton from '@components/IconButton/IconButton';
 import setupSearch from '@components/Search/Search';
 /* eslint-enable import/no-unresolved */
 
+const headerButtons = [
+  [
+    {
+      iconSymbol: '&#xe815;',
+      titleText: 'Обновить',
+      modificator: 'icon-button_bigger',
+    },
+  ],
+  [
+    {
+      iconSymbol: '&#xe819;',
+      titleText: 'Сетка',
+      modificator: 'icon-button_bigger',
+    },
+  ],
+  [
+    {
+      iconSymbol: '&#xe818;',
+      titleText: 'Настройки',
+      modificator: 'icon-button_bigger',
+    },
+  ],
+  [{ iconSymbol: '&#xe816;', titleText: 'Приложения Google' }],
+  [{ iconSymbol: 'V', titleText: 'Аккаунт Google' }],
+];
+
 // ШАБЛОН ХЕДЕРА (ШАПКИ) / HEADER
 // *
 export default function setupHeader() {
@@ -12,7 +38,15 @@ export default function setupHeader() {
     prepend: [
       {
         setup: setupIconButton,
-        set: [['&#xf0c9;', 'Главное меню', 'icon-button_bigger']],
+        set: [
+          [
+            {
+              iconSymbol: '&#xf0c9;',
+              titleText: 'Главное меню',
+              modificator: 'icon-button_bigger',
+            },
+          ],
+        ],
       },
     ],
     insert: {
@@ -21,13 +55,7 @@ export default function setupHeader() {
       },
       '.header__buttons': {
         setup: setupIconButton,
-        set: [
-          ['&#xe815;', 'Обновить', 'icon-button_bigger'],
-          ['&#xe819;', 'Сетка', 'icon-button_bigger'],
-          ['&#xe818;', 'Настройки', 'icon-button_bigger'],
-          ['&#xe816;', 'Приложения Google'],
-          ['V', 'Аккаунт Google'],
-        ],
+        set: headerButtons,
       },
     },
   });

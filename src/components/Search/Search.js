@@ -11,11 +11,13 @@ export default function setupSearch() {
     insert: {
       '.search__icon': {
         setup: setupIconButton,
-        set: [['&#xe814;', 'Поиск']],
+        set: [[{ iconSymbol: '&#xe814;', titleText: 'Поиск' }]],
       },
       '.search__clean': {
         setup: setupIconButton,
-        set: [['&#xe80c;', 'Удалить поисковый запрос']],
+        set: [
+          [{ iconSymbol: '&#xe80c;', titleText: 'Удалить поисковый запрос' }],
+        ],
       },
     },
   });

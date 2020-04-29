@@ -1,0 +1,9 @@
+@import 'PopupMenu';
+@import '@styles/variables';
+
+@include popupMenuStylesheet(
+  $class-name: $popupMenuClassName,
+  $base-unit: $base-unit,
+  $smaller-base-unit: $smaller-base-unit,
+  $font-family: $font-family
+);

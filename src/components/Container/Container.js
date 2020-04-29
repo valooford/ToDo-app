@@ -5,13 +5,36 @@ import setupAddNote from '@components/AddNote/AddNote';
 import setupNote from '@components/Note/Note';
 
 import store from '@store/store';
-import { focusAddPost, blurAddPost, addNewNote } from '@store/mainReducer';
+import { focusAddNote, blurAddNote, addNewNote } from '@store/mainReducer';
 /* eslint-enable import/no-unresolved */
 
 const { dispatch } = store;
 
+let focusedContainerItem;
+function handleContainerFocus(e) {
+  function unfocusContainerItem() {
+    if (focusedContainerItem) {
+      focusedContainerItem.classList.remove('container__item_focused');
+      focusedContainerItem = null;
+    }
+    document.removeEventListener('click', unfocusContainerItem);
+  }
+  const newFocusedContainerItem = e.target.closest('.container__item');
+  if (newFocusedContainerItem) {
+    if (newFocusedContainerItem === focusedContainerItem) return;
+    if (focusedContainerItem) {
+      focusedContainerItem.classList.remove('container__item_focused');
+    }
+    newFocusedContainerItem.classList.add('container__item_focused');
+    focusedContainerItem = newFocusedContainerItem;
+    setTimeout(() => {
+      document.addEventListener('click', unfocusContainerItem);
+    }, 0);
+  }
+}
+
 function focusNoteHandler() {
-  dispatch(focusAddPost());
+  dispatch(focusAddNote());
 }
 
 const header = {};
@@ -20,10 +43,10 @@ const textField = {};
 function confirmNote() {
   function blurNoteHandler(e) {
     if (!e.target.closest('.container__item:first-of-type .note')) {
-      const noteText = textField.ref.value;
+      const noteText = textField.ref.value; // сначала получаем value
       const headerText = header.ref.value;
-      dispatch(blurAddPost());
-      if (noteText) {
+      dispatch(blurAddNote()); // потом прячем addNote
+      if (noteText || headerText) {
         dispatch(addNewNote(noteText, headerText));
       }
 
@@ -59,6 +82,9 @@ export default function setupContainer(state) {
         /* eslint-enable indent */
         ...notes,
       ],
+    },
+    eventHandlers: {
+      click: handleContainerFocus,
     },
   });
 }

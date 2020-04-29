@@ -6,12 +6,13 @@ import setupTitle from '@components/Title/Title';
 
 // ШАБЛОН КНОПКИ С ИКОНКОЙ / ICON-BUTTON
 // *
-export default function setupIconButton(
-  iconSymbol,
-  titleText,
+export default function setupIconButton({
+  iconSymbol = '',
+  titleText = '',
   modificator,
-  disabled
-) {
+  disabled,
+  onClick,
+}) {
   return setupBuilder('template-icon-button')({
     insert: {
       '.icon-button__icon': { html: iconSymbol },
@@ -29,5 +30,8 @@ export default function setupIconButton(
           tabIndex: -1,
         },
     /* eslint-enable indent */
+    eventHandlers: {
+      click: onClick,
+    },
   });
 }

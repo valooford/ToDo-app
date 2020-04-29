@@ -1,0 +1,35 @@
+@mixin popupMenuStylesheet(
+  $class-name: 'popup-menu',
+  $base-unit: 15px,
+  $smaller-base-unit: 11px,
+  $font-family: serif
+) {
+  .#{$class-name} {
+    position: absolute;
+    top: $smaller-base-unit * 3;
+    padding-top: $base-unit / 3;
+    padding-bottom: $base-unit / 2;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 5px;
+    box-shadow: (0 1px 5px #ddd, inset 0 -1px 2px #bbb);
+    color: #555;
+    font-family: $font-family;
+    font-size: 14px;
+    text-align: left;
+    white-space: nowrap;
+    z-index: 5;
+    cursor: default;
+
+    &__item {
+      padding: $base-unit/2 $base-unit;
+      display: block;
+      cursor: pointer;
+
+      &:hover {
+        background-color: #f1f1f1;
+      }
+    }
+  }
+}

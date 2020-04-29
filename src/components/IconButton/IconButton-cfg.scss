@@ -44,6 +44,12 @@
 
 @include extendIconButtonStylesheet(
   $class-name: $iconButtonClassName,
+  $modificator-name: 'no-hover',
+  $no-hover: true
+);
+
+@include extendIconButtonStylesheet(
+  $class-name: $iconButtonClassName,
   $modificator-name: 'notification',
   $base-unit: $notification-base-unit,
   $icon-size: 14px,

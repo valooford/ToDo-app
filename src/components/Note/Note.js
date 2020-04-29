@@ -6,7 +6,92 @@ import setupTextarea from '@components/Textarea/Textarea';
 import setupNotification from '@components/Notification/Notification';
 import setupCreationTime from '@components/CreationTime/CreationTime';
 import setupListItem from '@components/ListItem/ListItem';
+import setupPopupMenu from '@components/PopupMenu/PopupMenu';
 /* eslint-enable import/no-unresolved */
+
+function showPopupMenu(e) {
+  const button = e.currentTarget;
+  let popupMenu = button.querySelector('.popup-menu');
+  if (!popupMenu) {
+    popupMenu = setupPopupMenu();
+    button.append(popupMenu);
+    button.classList.add('icon-button_no-hover');
+    setTimeout(() => {
+      document.addEventListener('click', blurPopupMenuHandler);
+    }, 0);
+  }
+  function blurPopupMenuHandler(ev) {
+    const popup = ev.target.closest('.popup-menu');
+    if (!popup || popup !== popupMenu) {
+      popupMenu.remove();
+      button.classList.remove('icon-button_no-hover');
+      document.removeEventListener('click', blurPopupMenuHandler);
+    }
+  }
+  button.blur();
+}
+
+const noteButtons = [
+  [
+    {
+      iconSymbol: '&#xf0f3;',
+      titleText: 'Сохранить напоминание',
+      modificator: 'icon-button_smaller',
+    },
+  ],
+  [
+    {
+      iconSymbol: '&#xe803;',
+      titleText: 'Соавторы',
+      modificator: 'icon-button_smaller',
+    },
+  ],
+  [
+    {
+      iconSymbol: '&#xe804;',
+      titleText: 'Изменить цвет',
+      modificator: 'icon-button_smaller',
+    },
+  ],
+  [
+    {
+      iconSymbol: '&#xe802;',
+      titleText: 'Добавить картинку',
+      modificator: 'icon-button_smaller',
+    },
+  ],
+  [
+    {
+      iconSymbol: '&#xe805;',
+      titleText: 'Архивировать',
+      modificator: 'icon-button_smaller',
+    },
+  ],
+  [
+    {
+      iconSymbol: '&#xe81f;',
+      titleText: 'Ещё',
+      modificator: 'icon-button_smaller',
+      onClick: showPopupMenu,
+    },
+  ],
+  [
+    {
+      iconSymbol: '&#xe807;',
+      titleText: 'Отменить',
+      modificator: 'icon-button_smaller',
+      disabled: true,
+    },
+  ],
+  [
+    {
+      iconSymbol: '&#xe808;',
+      titleText: 'Повторить',
+      modificator: 'icon-button_smaller',
+      disabled: true,
+    },
+  ],
+];
 
 // ШАБЛОН ЗАМЕТКИ / NOTE
 // *
@@ -23,11 +108,27 @@ export default function setupNote({
     insert: {
       '.note__check': {
         setup: setupIconButton,
-        set: [['&#xe80b;', 'Выбрать заметку', 'icon-button_no-padding']],
+        set: [
+          [
+            {
+              iconSymbol: '&#xe80b;',
+              titleText: 'Выбрать заметку',
+              modificator: 'icon-button_no-padding',
+            },
+          ],
+        ],
       },
       '.note__cornerButtons': {
         setup: setupIconButton,
-        set: [['&#xe812;', 'Закрепить заметку', 'icon-button_smaller']],
+        set: [
+          [
+            {
+              iconSymbol: '&#xe812;',
+              titleText: 'Закрепить заметку',
+              modificator: 'icon-button_smaller',
+            },
+          ],
+        ],
       },
       '.note__text': {
         setup: setupTextarea,
@@ -50,20 +151,7 @@ export default function setupNote({
       },
       '.note__buttons': {
         setup: setupIconButton,
-        set: [
-          ['&#xf0f3;', 'Сохранить напоминание', 'icon-button_smaller'],
-          ['&#xe803;', 'Соавторы', 'icon-button_smaller'],
-          ['&#xe804;', 'Изменить цвет', 'icon-button_smaller'],
-          ['&#xe802;', 'Добавить картинку', 'icon-button_smaller'],
-          ['&#xe805;', 'Архивировать', 'icon-button_smaller'],
-          ['&#xe81f;', 'Ещё', 'icon-button_smaller'],
-          ['&#xe807;', 'Отменить', 'icon-button_smaller', true],
-          ['&#xe808;', 'Повторить', 'icon-button_smaller', true],
-        ],
-      },
-      '.notification__close': {
-        setup: setupIconButton,
-        set: [['&#xe80c;', 'Удалить напоминание', 'icon-button_notification']],
+        set: noteButtons,
       },
     },
     modificators: [type],

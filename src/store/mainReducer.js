@@ -1,9 +1,9 @@
-const SET_ADD_POST_FOCUS = 'main/switch-add-post-focus';
+const SET_ADD_NOTE_FOCUS = 'main/switch-add-note-focus';
 const ADD_NEW_NOTE = 'main/add-new-note';
 
 function mainReducer(state, action) {
   switch (action.type) {
-    case SET_ADD_POST_FOCUS:
+    case SET_ADD_NOTE_FOCUS:
       return {
         ...state,
         isAddPostFocused: action.isFocused,
@@ -20,13 +20,13 @@ function mainReducer(state, action) {
 
 export default mainReducer;
 
-export function focusAddPost() {
-  return { type: SET_ADD_POST_FOCUS, isFocused: true };
+export function focusAddNote() {
+  return { type: SET_ADD_NOTE_FOCUS, isFocused: true };
 }
-export function blurAddPost() {
-  return { type: SET_ADD_POST_FOCUS, isFocused: false };
+export function blurAddNote() {
+  return { type: SET_ADD_NOTE_FOCUS, isFocused: false };
 }
 
-export function addNewNote(text, headerText) {
+export function addNewNote(text = '', headerText = '') {
   return { type: ADD_NEW_NOTE, note: { text, headerText } };
 }
