@@ -12,14 +12,6 @@ import setupPopupMenu from '@components/PopupMenu/PopupMenu';
 function showPopupMenu(e) {
   const button = e.currentTarget;
   let popupMenu = button.querySelector('.popup-menu');
-  if (!popupMenu) {
-    popupMenu = setupPopupMenu();
-    button.append(popupMenu);
-    button.classList.add('icon-button_no-hover');
-    setTimeout(() => {
-      document.addEventListener('click', blurPopupMenuHandler);
-    }, 0);
-  }
   function blurPopupMenuHandler(ev) {
     const popup = ev.target.closest('.popup-menu');
     if (!popup || popup !== popupMenu) {
@@ -27,6 +19,14 @@ function showPopupMenu(e) {
       button.classList.remove('icon-button_no-hover');
       document.removeEventListener('click', blurPopupMenuHandler);
     }
+  }
+  if (!popupMenu) {
+    popupMenu = setupPopupMenu();
+    button.append(popupMenu);
+    button.classList.add('icon-button_no-hover');
+    setTimeout(() => {
+      document.addEventListener('click', blurPopupMenuHandler);
+    }, 0);
   }
   button.blur();
 }

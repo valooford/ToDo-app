@@ -12,8 +12,9 @@ const { dispatch } = store;
 
 let focusedContainerItem;
 function handleContainerFocus(e) {
-  function unfocusContainerItem() {
-    if (focusedContainerItem) {
+  function unfocusContainerItem(ev) {
+    const closestContainerItem = ev.target.closest('.container__item');
+    if (!closestContainerItem) {
       focusedContainerItem.classList.remove('container__item_focused');
       focusedContainerItem = null;
     }
