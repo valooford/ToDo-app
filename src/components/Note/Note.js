@@ -9,89 +9,96 @@ import setupListItem from '@components/ListItem/ListItem';
 import setupPopupMenu from '@components/PopupMenu/PopupMenu';
 /* eslint-enable import/no-unresolved */
 
-function showPopupMenu(e) {
-  const button = e.currentTarget;
-  let popupMenu = button.querySelector('.popup-menu');
-  function blurPopupMenuHandler(ev) {
-    const popup = ev.target.closest('.popup-menu');
-    if (!popup || popup !== popupMenu) {
-      popupMenu.remove();
-      button.classList.remove('icon-button_no-hover');
-      document.removeEventListener('click', blurPopupMenuHandler);
+function showPopupMenu({ type = 'expanded', index }) {
+  return (e) => {
+    const button = e.currentTarget;
+    let popupMenu = button.querySelector('.popup-menu');
+    function blurPopupMenuHandler(ev) {
+      const popup = ev.target.closest('.popup-menu');
+      if (!popup || popup !== popupMenu) {
+        popupMenu.remove();
+        button.classList.remove('icon-button_no-hover');
+        document.removeEventListener('click', blurPopupMenuHandler);
+      }
     }
-  }
-  if (!popupMenu) {
-    popupMenu = setupPopupMenu();
-    button.append(popupMenu);
-    button.classList.add('icon-button_no-hover');
-    setTimeout(() => {
-      document.addEventListener('click', blurPopupMenuHandler);
-    }, 0);
-  }
-  button.blur();
+    if (!popupMenu) {
+      popupMenu = setupPopupMenu({ index, type });
+      button.append(popupMenu);
+      button.classList.add('icon-button_no-hover');
+      setTimeout(() => {
+        document.addEventListener('click', blurPopupMenuHandler);
+      }, 0);
+    }
+    button.blur();
+  };
 }
 
-const noteButtons = [
-  [
-    {
-      iconSymbol: '&#xf0f3;',
-      titleText: 'Сохранить напоминание',
-      modificator: 'icon-button_smaller',
-    },
-  ],
-  [
-    {
-      iconSymbol: '&#xe803;',
-      titleText: 'Соавторы',
-      modificator: 'icon-button_smaller',
-    },
-  ],
-  [
-    {
-      iconSymbol: '&#xe804;',
-      titleText: 'Изменить цвет',
-      modificator: 'icon-button_smaller',
-    },
-  ],
-  [
-    {
-      iconSymbol: '&#xe802;',
-      titleText: 'Добавить картинку',
-      modificator: 'icon-button_smaller',
-    },
-  ],
-  [
-    {
-      iconSymbol: '&#xe805;',
-      titleText: 'Архивировать',
-      modificator: 'icon-button_smaller',
-    },
-  ],
-  [
-    {
-      iconSymbol: '&#xe81f;',
-      titleText: 'Ещё',
-      modificator: 'icon-button_smaller',
-      onClick: showPopupMenu,
-    },
-  ],
-  [
-    {
-      iconSymbol: '&#xe807;',
-      titleText: 'Отменить',
-      modificator: 'icon-button_smaller',
-      disabled: true,
-    },
-  ],
-  [
-    {
-      iconSymbol: '&#xe808;',
-      titleText: 'Повторить',
-      modificator: 'icon-button_smaller',
-      disabled: true,
-    },
-  ],
-];
+function getNoteButtons({ index, type = 'default' }) {
+  return [
+    [
+      {
+        iconSymbol: '&#xf0f3;',
+        titleText: 'Сохранить напоминание',
+        modificator: 'icon-button_smaller',
+      },
+    ],
+    [
+      {
+        iconSymbol: '&#xe803;',
+        titleText: 'Соавторы',
+        modificator: 'icon-button_smaller',
+      },
+    ],
+    [
+      {
+        iconSymbol: '&#xe804;',
+        titleText: 'Изменить цвет',
+        modificator: 'icon-button_smaller',
+      },
+    ],
+    [
+      {
+        iconSymbol: '&#xe802;',
+        titleText: 'Добавить картинку',
+        modificator: 'icon-button_smaller',
+      },
+    ],
+    [
+      {
+        iconSymbol: '&#xe805;',
+        titleText: 'Архивировать',
+        modificator: 'icon-button_smaller',
+      },
+    ],
+    [
+      {
+        iconSymbol: '&#xe81f;',
+        titleText: 'Ещё',
+        modificator: 'icon-button_smaller',
+        onClick: showPopupMenu({
+          type: type === 'add' ? 'tight' : 'expanded',
+          index,
+        }),
+      },
+    ],
+    [
+      {
+        iconSymbol: '&#xe807;',
+        titleText: 'Отменить',
+        modificator: 'icon-button_smaller',
+        disabled: true,
+      },
+    ],
+    [
+      {
+        iconSymbol: '&#xe808;',
+        titleText: 'Повторить',
+        modificator: 'icon-button_smaller',
+        disabled: true,
+      },
+    ],
+  ];
+}
 
 // ШАБЛОН ЗАМЕТКИ / NOTE
 // *
@@ -101,6 +108,7 @@ export default function setupNote({
   text = '',
   onConfirm,
   refs = { header: {}, textField: {} },
+  index,
 } = {}) {
   const { header, textField } = refs;
 
@@ -151,13 +159,14 @@ export default function setupNote({
       },
       '.note__buttons': {
         setup: setupIconButton,
-        set: noteButtons,
+        set: getNoteButtons({ type, index }),
       },
     },
     modificators: [type],
     cut: {
-      list: ['.note__text'],
-      default: ['.note__listWrapper'],
+      default: ['.note__listWrapper', '.note__button'],
+      list: ['.note__text', '.note__button'],
+      add: ['.note__listWrapper'],
     },
     add: {
       list: {

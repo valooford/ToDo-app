@@ -4,6 +4,8 @@ import store from '@store/store';
 import setupHeader from '@components/Header/Header';
 import setupAside from '@components/Aside/Aside';
 import setupContainer from '@components/Container/Container';
+
+// import setupPopupMenu from '@components/PopupMenu/PopupMenu';
 /* eslint-enable import/no-unresolved */
 
 const App = {
@@ -31,6 +33,7 @@ const App = {
     const main = this.root.querySelector('main');
     main.innerHTML = '';
     main.append(setupContainer(state.main));
+    // main.append(setupPopupMenu());
   },
 };
 

@@ -63,9 +63,9 @@ function confirmNote() {
 // ШАБЛОН КОНТЕЙНЕРА / CONTAINER
 // *
 export default function setupContainer(state) {
-  const notes = state.notes.map((note) => ({
+  const notes = state.notes.map((note, index) => ({
     setup: setupNote,
-    set: [[note]],
+    set: [[{ ...note, index }]],
   }));
   return setupBuilder('template-container')({
     clone: {
@@ -77,7 +77,15 @@ export default function setupContainer(state) {
         state.isAddPostFocused
           ? {
               setup: setupNote,
-              set: [[{ onConfirm: confirmNote, refs: { header, textField } }]],
+              set: [
+                [
+                  {
+                    type: 'add',
+                    onConfirm: confirmNote,
+                    refs: { header, textField },
+                  },
+                ],
+              ],
             }
           : { setup: setupAddNote, set: [[{ onClick: focusNoteHandler }]] },
         /* eslint-enable indent */

@@ -101,13 +101,22 @@ export default function setupBuilder(templateName) {
     });
     Object.keys(elementsEventHandlers).forEach((selector) => {
       const els = newElement.querySelectorAll(selector);
-      els.forEach((el) => {
+      els.forEach((el, index) => {
         const element = el;
         Object.keys(elementsEventHandlers[selector]).forEach((eventName) => {
-          element.addEventListener(
-            eventName,
-            elementsEventHandlers[selector][eventName]
-          );
+          if (elementsEventHandlers[selector][eventName].forEach) {
+            if (elementsEventHandlers[selector][eventName][index]) {
+              element.addEventListener(
+                eventName,
+                elementsEventHandlers[selector][eventName][index]
+              );
+            }
+          } else {
+            element.addEventListener(
+              eventName,
+              elementsEventHandlers[selector][eventName]
+            );
+          }
         });
       });
     });

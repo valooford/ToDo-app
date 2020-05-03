@@ -11,7 +11,7 @@ const store = {
         { type: 'default', headerText: 'Мой заголовок', text: 'Привет' },
         { type: 'list' },
       ],
-      // notes: [],
+      removedNotes: [],
     },
   },
   getState() {
