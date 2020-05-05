@@ -2,7 +2,7 @@ import './Container-cfg.scss';
 /* eslint-disable import/no-unresolved */
 import setupBuilder from '@components/templates';
 import setupAddNote from '@components/AddNote/AddNote';
-import setupNote from '@components/Note/Note';
+import Note from '@components/Note/Note';
 
 import store from '@store/store';
 import { focusAddNote, blurAddNote, addNewNote } from '@store/mainReducer';
@@ -64,7 +64,7 @@ function confirmNote() {
 // *
 export default function setupContainer(state) {
   const notes = state.notes.map((note, index) => ({
-    setup: setupNote,
+    setup: Note,
     set: [[{ ...note, index }]],
   }));
   return setupBuilder('template-container')({
@@ -76,7 +76,7 @@ export default function setupContainer(state) {
         /* eslint-disable indent */
         state.isAddPostFocused
           ? {
-              setup: setupNote,
+              setup: Note,
               set: [
                 [
                   {

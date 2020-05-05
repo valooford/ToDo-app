@@ -8,8 +8,31 @@ const store = {
       addPost: {},
       isAddPostFocused: false,
       notes: [
-        { type: 'default', headerText: 'Мой заголовок', text: 'Привет' },
-        { type: 'list' },
+        { type: 'default', headerText: 'Мой заголовок', text: 'Привет\nПока' },
+        {
+          type: 'list',
+          headerText: 'Список',
+          items: [
+            {
+              text: 'first',
+              sub: [],
+            },
+            {
+              text: 'second',
+              sub: [],
+              isMarked: true,
+            },
+            {
+              text: 'third',
+              sub: [],
+            },
+            {
+              text: 'fourth',
+              sub: [],
+              isMarked: true,
+            },
+          ],
+        },
       ],
       removedNotes: [],
     },

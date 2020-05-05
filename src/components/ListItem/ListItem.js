@@ -7,8 +7,22 @@ import setupIconButton from '@components/IconButton/IconButton';
 
 // ШАБЛОН ЭЛЕМЕНТА СПИСКА / LIST-ITEM
 // *
-export default function setupListItem({ type = 'default' } = {}) {
+export default function setupListItem({
+  type = 'default',
+  isChecked = false,
+  text = '',
+  onInput,
+  onRemove,
+  onCheck,
+} = {}) {
+  const textarea = {};
+  function handleInput() {
+    onInput(textarea.ref.value);
+  }
   return setupBuilder('template-list-item')({
+    insert: {
+      '.listItem__checkbox': isChecked ? { html: '&#xe800;' } : '',
+    },
     modificators: [type],
     cut: {
       add: ['.listItem__drag', '.listItem__checkbox', '.listItem__remove'],
@@ -18,12 +32,21 @@ export default function setupListItem({ type = 'default' } = {}) {
       add: {
         '.listItem__text': {
           setup: setupTextarea,
-          set: [['Новый пункт']],
+          set: [
+            [
+              {
+                placeholder: 'Новый пункт',
+                refs: { textarea },
+                onInput: handleInput,
+              },
+            ],
+          ],
         },
       },
       default: {
         '.listItem__text': {
           setup: setupTextarea,
+          set: [[{ value: text }]],
         },
         '.listItem__remove': {
           setup: setupIconButton,
@@ -33,10 +56,16 @@ export default function setupListItem({ type = 'default' } = {}) {
                 iconSymbol: '&#xe80c;',
                 titleText: 'Удалить',
                 modificator: 'icon-button_tiny',
+                onClick: onRemove,
               },
             ],
           ],
         },
+      },
+    },
+    elementsEventHandlers: {
+      '.listItem__checkbox': {
+        click: [onCheck],
       },
     },
   });

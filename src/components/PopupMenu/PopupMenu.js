@@ -3,7 +3,12 @@ import './PopupMenu-cfg.scss';
 import setupBuilder from '@components/templates';
 
 import store from '@store/store';
-import { removeNote } from '@store/mainReducer';
+import {
+  removeNote,
+  copyNote,
+  textNoteToList,
+  // listNoteToText,
+} from '@store/mainReducer';
 /* eslint-enable import/no-unresolved */
 
 const { dispatch } = store;
@@ -19,8 +24,24 @@ const menuItems = [
   },
   { text: 'Добавить ярлык', tight: true },
   { text: 'Добавить рисунок', tight: true },
-  { text: 'Создать копию' },
-  { text: 'В виде списка', tight: true },
+  {
+    text: 'Создать копию',
+    onClick(index) {
+      return () => {
+        dispatch(copyNote(index));
+      };
+    },
+  },
+  {
+    text: 'В виде списка',
+    tight: true,
+    onClick(index) {
+      return () => {
+        dispatch(textNoteToList(index));
+        // dispatch(listNoteToText(index));
+      };
+    },
+  },
   { text: 'Скопировать в Google Документы' },
 ];
 

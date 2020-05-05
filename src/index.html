@@ -77,7 +77,7 @@
       <li class="listItem">
         <span class="listItem__drag">&#xe811;</span>
         <span class="listItem__add">&#xe810;</span>
-        <span class="listItem__checkbox">&#xe800;</span>
+        <span class="listItem__checkbox"></span>
         <span class="listItem__text"></span>
         <span class="listItem__remove"></span>
       </li>
@@ -129,11 +129,11 @@
       </ul>
     </div>
 
-    <!-- polyfill.io default + dataset(data-* attr) -->
+    <!-- polyfill.io default + dataset(data-* attr) + Array#flat()-->
     <!-- FOR PROD -->
     <!-- <script
       crossorigin="anonymous"
-      src="https://polyfill.io/v3/polyfill.min.js?features=default%2CElement.prototype.dataset"
+      src="https://polyfill.io/v3/polyfill.min.js?features=default%2CElement.prototype.dataset%2CArray.prototype.flat"
     ></script> -->
 
     <!-- FOR DEV -->
@@ -141,7 +141,7 @@
       <script>
         document.write(
           '<' +
-            'script src="https://polyfill.io/v3/polyfill.min.js?features=default%2CElement.prototype.dataset&ua=ie/' +
+            'script src="https://polyfill.io/v3/polyfill.min.js?features=default%2CElement.prototype.dataset%2CArray.prototype.flat&ua=ie/' +
             document.documentMode +
             '"></' +
             'script>'
@@ -149,7 +149,7 @@
       </script>
     <![endif]-->
     <!--[if !IE]>-->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=default%2CElement.prototype.dataset"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default%2CElement.prototype.dataset%2CArray.prototype.flat"></script>
     <!--<![endif]-->
   </body>
 </html>

@@ -7,6 +7,14 @@ import setupNotification from '@components/Notification/Notification';
 import setupCreationTime from '@components/CreationTime/CreationTime';
 import setupListItem from '@components/ListItem/ListItem';
 import setupPopupMenu from '@components/PopupMenu/PopupMenu';
+
+import store from '@store/store';
+import {
+  addNoteListItem,
+  removeNoteListItem,
+  markNoteListItem,
+  unmarkNoteListItem,
+} from '@store/mainReducer';
 /* eslint-enable import/no-unresolved */
 
 function showPopupMenu({ type = 'expanded', index }) {
@@ -102,17 +110,23 @@ function getNoteButtons({ index, type = 'default' }) {
 
 // ШАБЛОН ЗАМЕТКИ / NOTE
 // *
-export default function setupNote({
+export function setupNote({
   type = 'default',
   headerText = '',
   text = '',
+  items = [],
+  markedItems = [],
   onConfirm,
+  onListItemAdd,
+  onListItemRemove,
+  onListItemCheck,
+  onListItemUncheck,
   refs = { header: {}, textField: {} },
   index,
 } = {}) {
   const { header, textField } = refs;
 
-  const Note = setupBuilder('template-note')({
+  const NoteElement = setupBuilder('template-note')({
     insert: {
       '.note__check': {
         setup: setupIconButton,
@@ -169,14 +183,36 @@ export default function setupNote({
       add: ['.note__listWrapper'],
     },
     add: {
+      default: {},
       list: {
         '.note__list': [
+          // not marked
           {
             setup: setupListItem,
-            set: [[], [{ type: 'add' }]],
+            set: [
+              ...items.map((item) => [
+                {
+                  text: item.text,
+                  onRemove: onListItemRemove(index, item.index),
+                  onCheck: onListItemCheck(index, item.index),
+                },
+              ]),
+              [{ type: 'add', onInput: onListItemAdd(index) }],
+            ],
           },
+          // inside markedList
           {
             setup: setupListItem,
+            set: [
+              ...markedItems.map((item) => [
+                {
+                  isChecked: true,
+                  text: item.text,
+                  onRemove: onListItemRemove(index, item.index),
+                  onCheck: onListItemUncheck(index, item.index),
+                },
+              ]),
+            ],
           },
         ],
       },
@@ -193,5 +229,49 @@ export default function setupNote({
     onConfirm('text', header.ref.value);
   }
 
-  return Note;
+  return NoteElement;
+}
+
+const { dispatch } = store;
+
+export default function Note(params) {
+  const { items, ...newParams } = params;
+  let itemsCopy;
+  let unmarkedItems;
+  let markedItems;
+  if (items) {
+    // adding indexes to items and sub items
+    itemsCopy = items.map((item, index) => ({ ...item, index }));
+    itemsCopy.forEach((item) => {
+      // eslint-disable-next-line no-param-reassign
+      item.sub = item.sub.map((subItem, index) => ({ ...subItem, index }));
+    });
+    unmarkedItems = itemsCopy.filter((item) => !item.isMarked);
+    unmarkedItems.forEach((item) => {
+      // eslint-disable-next-line no-param-reassign
+      item.sub = item.sub.filter((subItem) => !subItem.isMarked);
+    });
+    markedItems = itemsCopy.filter((item) => item.isMarked);
+    markedItems.forEach((item) => {
+      // eslint-disable-next-line no-param-reassign
+      item.sub = item.sub.filter((subItem) => subItem.isMarked);
+    });
+  }
+  return setupNote({
+    ...newParams,
+    items: unmarkedItems,
+    markedItems,
+    onListItemAdd: (index) => (text) => {
+      dispatch(addNoteListItem(index, text));
+    },
+    onListItemRemove: (index, itemNum) => () => {
+      dispatch(removeNoteListItem(index, itemNum));
+    },
+    onListItemCheck: (index, itemNum) => () => {
+      dispatch(markNoteListItem(index, itemNum));
+    },
+    onListItemUncheck: (index, itemNum) => () => {
+      dispatch(unmarkNoteListItem(index, itemNum));
+    },
+  });
 }
