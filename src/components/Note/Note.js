@@ -17,7 +17,12 @@ import {
 } from '@store/mainReducer';
 /* eslint-enable import/no-unresolved */
 
-function showPopupMenu({ type = 'expanded', index }) {
+function showPopupMenu({
+  type = 'expanded',
+  index,
+  isList = false,
+  hasMarkedItems = false,
+}) {
   return (e) => {
     const button = e.currentTarget;
     let popupMenu = button.querySelector('.popup-menu');
@@ -30,7 +35,12 @@ function showPopupMenu({ type = 'expanded', index }) {
       }
     }
     if (!popupMenu) {
-      popupMenu = setupPopupMenu({ index, type });
+      popupMenu = setupPopupMenu({
+        index,
+        isExpanded: type === 'expanded',
+        isList,
+        hasMarkedItems,
+      });
       button.append(popupMenu);
       button.classList.add('icon-button_no-hover');
       setTimeout(() => {
@@ -41,7 +51,7 @@ function showPopupMenu({ type = 'expanded', index }) {
   };
 }
 
-function getNoteButtons({ index, type = 'default' }) {
+function getNoteButtons({ index, type = 'default', hasMarkedItems = false }) {
   return [
     [
       {
@@ -86,6 +96,8 @@ function getNoteButtons({ index, type = 'default' }) {
         onClick: showPopupMenu({
           type: type === 'add' ? 'tight' : 'expanded',
           index,
+          isList: type === 'list',
+          hasMarkedItems,
         }),
       },
     ],
@@ -173,7 +185,11 @@ export function setupNote({
       },
       '.note__buttons': {
         setup: setupIconButton,
-        set: getNoteButtons({ type, index }),
+        set: getNoteButtons({
+          type,
+          index,
+          hasMarkedItems: !!markedItems.length,
+        }),
       },
     },
     modificators: [type],

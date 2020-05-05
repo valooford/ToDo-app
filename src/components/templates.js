@@ -97,7 +97,14 @@ export default function setupBuilder(templateName) {
       });
     });
     Object.keys(eventHandlers).forEach((eventName) => {
-      newElement.addEventListener(eventName, eventHandlers[eventName]);
+      let handlers = eventHandlers[eventName];
+      if (!handlers) return;
+      if (!handlers.forEach) {
+        handlers = [handlers];
+      }
+      handlers.forEach((handler) => {
+        newElement.addEventListener(eventName, handler);
+      });
     });
     Object.keys(elementsEventHandlers).forEach((selector) => {
       const els = newElement.querySelectorAll(selector);
