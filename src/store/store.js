@@ -41,9 +41,7 @@ const store = {
     return this._state;
   },
   // placeholder function
-  _renderApp() {
-    console.log("renderApp(..) function hasn't been set");
-  },
+  _renderApp() {},
   setStateCallback(callback) {
     // subscribe function
     this._renderApp = callback;

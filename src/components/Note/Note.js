@@ -128,6 +128,7 @@ export function setupNote({
   text = '',
   items = [],
   markedItems = [],
+  onClick = null,
   onConfirm,
   onListItemAdd,
   onListItemRemove,
@@ -136,7 +137,7 @@ export function setupNote({
   refs = { header: {}, textField: {} },
   index,
 } = {}) {
-  const { header, textField } = refs;
+  const { header = {}, textField = {} } = refs;
 
   const NoteElement = setupBuilder('template-note')({
     insert: {
@@ -192,15 +193,15 @@ export function setupNote({
         }),
       },
     },
-    modificators: [type],
+    modificators: type === 'default' ? ['default'] : [`note_${type}`],
     cut: {
       default: ['.note__listWrapper', '.note__button'],
-      list: ['.note__text', '.note__button'],
-      add: ['.note__listWrapper'],
+      note_list: ['.note__text', '.note__button'],
+      note_add: ['.note__listWrapper'],
     },
     add: {
       default: {},
-      list: {
+      note_list: {
         '.note__list': [
           // not marked
           {
@@ -236,13 +237,16 @@ export function setupNote({
     elementsProps: {
       '.note__header': { value: headerText },
     },
+    eventHandlers: {
+      click: onClick,
+    },
     refs: {
       '.note__header': header,
     },
   });
 
   if (onConfirm) {
-    onConfirm('text', header.ref.value);
+    onConfirm();
   }
 
   return NoteElement;

@@ -1,5 +1,7 @@
-const SET_ADD_NOTE_FOCUS = 'main/switch-add-note-focus';
+const SET_ADD_NOTE_FOCUS = 'main/set-add-note-focus';
+const SET_NOTE_FOCUS = 'main/set-note-focus';
 const ADD_NEW_NOTE = 'main/add-new-note';
+const UPDATE_NOTE = 'main/update-note';
 const REMOVE_NOTE = 'main/remove-note';
 const COPY_NOTE = 'main/copy-note';
 const ADD_NOTE_LIST_ITEM = 'main/add-note-list-item';
@@ -20,14 +22,45 @@ function mainReducer(state, action) {
         ...state,
         isAddPostFocused: action.isFocused,
       };
+    case SET_NOTE_FOCUS:
+      notes = [...state.notes];
+      note = { ...notes[action.index] };
+      note.isFocused = action.focus;
+      if (action.cb) {
+        note.blurCallback = action.cb;
+      }
+      notes[action.index] = note;
+      return {
+        ...state,
+        notes,
+      };
     case ADD_NEW_NOTE:
       return {
         ...state,
         notes: [action.note, ...state.notes],
       };
+    case UPDATE_NOTE:
+      notes = [...state.notes];
+      note = { ...notes[action.index] };
+      note.headerText = action.headerText;
+      if (note.type === 'list') {
+        // update list items
+      } else {
+        note.text = action.text;
+      }
+      notes[action.index] = note;
+      return {
+        ...state,
+        notes,
+      };
     case REMOVE_NOTE:
       notes = [...state.notes];
       removedNotes = notes.splice(action.index, 1);
+      removedNotes.forEach((removedNote) => {
+        if (removedNote.blurCallback) {
+          document.removeEventListener('click', removedNote.blurCallback);
+        }
+      });
       return {
         ...state,
         notes,
@@ -121,8 +154,30 @@ export function blurAddNote() {
   return { type: SET_ADD_NOTE_FOCUS, isFocused: false };
 }
 
+export function focusNote(index, blurCallback = null) {
+  return {
+    type: SET_NOTE_FOCUS,
+    index,
+    focus: true,
+    cb: blurCallback,
+  };
+}
+export function blurNote(index) {
+  return { type: SET_NOTE_FOCUS, index, focus: false };
+}
+
 export function addNewNote(text = '', headerText = '') {
   return { type: ADD_NEW_NOTE, note: { text, headerText } };
+}
+
+export function updateNote(index, { text = '', headerText = '', items = [] }) {
+  return {
+    type: UPDATE_NOTE,
+    index,
+    text,
+    headerText,
+    items,
+  };
 }
 
 export function removeNote(index = null) {
