@@ -130,14 +130,16 @@ export function setupNote({
   markedItems = [],
   onClick = null,
   onConfirm,
+  onHeaderBlur = [],
+  onTextFieldBlur,
   onListItemAdd,
   onListItemRemove,
   onListItemCheck,
   onListItemUncheck,
-  refs = { header: {}, textField: {} },
+  // refs = { header: {}, textField: {} },
   index,
 } = {}) {
-  const { header = {}, textField = {} } = refs;
+  // const { header = {}, textField = {} } = refs;
 
   const NoteElement = setupBuilder('template-note')({
     insert: {
@@ -172,7 +174,8 @@ export function setupNote({
             {
               placeholder: 'Заметка...',
               value: text,
-              refs: { textarea: textField },
+              onBlur: onTextFieldBlur,
+              // refs: { textarea: textField },
             },
           ],
         ],
@@ -240,9 +243,14 @@ export function setupNote({
     eventHandlers: {
       click: onClick,
     },
-    refs: {
-      '.note__header': header,
+    elementsEventHandlers: {
+      '.note__header': {
+        blur: onHeaderBlur,
+      },
     },
+    // refs: {
+    //   '.note__header': header,
+    // },
   });
 
   if (onConfirm) {

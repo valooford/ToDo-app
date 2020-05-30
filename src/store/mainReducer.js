@@ -1,4 +1,3 @@
-const SET_ADD_NOTE_FOCUS = 'main/set-add-note-focus';
 const SET_NOTE_FOCUS = 'main/set-note-focus';
 const ADD_NEW_NOTE = 'main/add-new-note';
 const UPDATE_NOTE = 'main/update-note';
@@ -17,11 +16,6 @@ function mainReducer(state, action) {
   let items;
   let removedNotes;
   switch (action.type) {
-    case SET_ADD_NOTE_FOCUS:
-      return {
-        ...state,
-        isAddPostFocused: action.isFocused,
-      };
     case SET_NOTE_FOCUS:
       notes = [...state.notes];
       note = { ...notes[action.index] };
@@ -35,18 +29,30 @@ function mainReducer(state, action) {
         notes,
       };
     case ADD_NEW_NOTE:
+      [note] = state.notes;
+      // add functionality for lists
+      if (!note.text && !note.headerText) {
+        return state;
+      }
       return {
         ...state,
-        notes: [action.note, ...state.notes],
+        notes: [{ type: 'default', headerText: '', text: '' }, ...state.notes],
       };
     case UPDATE_NOTE:
       notes = [...state.notes];
       note = { ...notes[action.index] };
-      note.headerText = action.headerText;
-      if (note.type === 'list') {
-        // update list items
-      } else {
+      if (action.headerText !== undefined) {
+        note.headerText = action.headerText;
+      }
+      if (action.text !== undefined) {
         note.text = action.text;
+      }
+      if (action.itemText !== undefined && action.itemNum !== undefined) {
+        if (action.subItem !== undefined) {
+          note.items[action.itemNum].sub[action.subItem] = action.itemText;
+        } else {
+          note.items[action.itemNum].text = action.itemText;
+        }
       }
       notes[action.index] = note;
       return {
@@ -147,13 +153,6 @@ function mainReducer(state, action) {
 
 export default mainReducer;
 
-export function focusAddNote() {
-  return { type: SET_ADD_NOTE_FOCUS, isFocused: true };
-}
-export function blurAddNote() {
-  return { type: SET_ADD_NOTE_FOCUS, isFocused: false };
-}
-
 export function focusNote(index, blurCallback = null) {
   return {
     type: SET_NOTE_FOCUS,
@@ -166,17 +165,31 @@ export function blurNote(index) {
   return { type: SET_NOTE_FOCUS, index, focus: false };
 }
 
-export function addNewNote(text = '', headerText = '') {
-  return { type: ADD_NEW_NOTE, note: { text, headerText } };
+export function addNewNote() {
+  return { type: ADD_NEW_NOTE };
 }
 
-export function updateNote(index, { text = '', headerText = '', items = [] }) {
+export function updateNoteHeader(index, headerText) {
+  return {
+    type: UPDATE_NOTE,
+    index,
+    headerText,
+  };
+}
+export function updateNoteText(index, text) {
   return {
     type: UPDATE_NOTE,
     index,
     text,
-    headerText,
-    items,
+  };
+}
+export function updateNoteListItem(index, itemNum, subNum = null, itemText) {
+  return {
+    type: UPDATE_NOTE,
+    index,
+    itemNum,
+    subNum,
+    itemText,
   };
 }
 

@@ -17,7 +17,6 @@ const App = {
         'App.root is not defined. Initialize it by passing it to initializeApp() function'
       );
     }
-    this.localState = { ...state };
 
     // HEADER
     const header = this.root.querySelector('header');
@@ -30,10 +29,13 @@ const App = {
     aside.append(setupAside());
 
     // MAIN
-    const main = this.root.querySelector('main');
-    main.innerHTML = '';
-    main.append(setupContainer(state.main));
-    // main.append(setupPopupMenu());
+    if (this.localState.main !== state.main) {
+      const main = this.root.querySelector('main');
+      main.innerHTML = '';
+      main.append(setupContainer(state.main));
+    }
+
+    this.localState = { ...state };
   },
 };
 

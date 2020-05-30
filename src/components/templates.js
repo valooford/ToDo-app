@@ -48,7 +48,7 @@ export default function setupBuilder(templateName) {
     elementsProps = {}, // properties to add to elements
     eventHandlers = {},
     elementsEventHandlers = {},
-    refs = {},
+    // refs = {},
   } = {}) {
     const newElement = template.cloneNode(true);
 
@@ -127,16 +127,16 @@ export default function setupBuilder(templateName) {
         });
       });
     });
-    Object.keys(refs).forEach((selector) => {
-      const els = newElement.querySelectorAll(selector);
-      /* eslint-disable no-param-reassign */
-      if (els.length === 1) {
-        [refs[selector].ref] = els; // mutation
-      } else {
-        refs[selector].refs = els; // mutation
-      }
-      /* eslint-enable no-param-reassign */
-    });
+    // Object.keys(refs).forEach((selector) => {
+    //   const els = newElement.querySelectorAll(selector);
+    //   /* eslint-disable no-param-reassign */
+    //   if (els.length === 1) {
+    //     [refs[selector].ref] = els; // mutation
+    //   } else {
+    //     refs[selector].refs = els; // mutation
+    //   }
+    //   /* eslint-enable no-param-reassign */
+    // });
 
     return newElement;
   };

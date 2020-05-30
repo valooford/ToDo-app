@@ -5,9 +5,8 @@ const store = {
   _state: {
     // initial state
     main: {
-      addPost: {},
-      isAddPostFocused: false,
       notes: [
+        { type: 'default', headerText: '', text: '' },
         { type: 'default', headerText: 'Мой заголовок', text: 'Привет\nПока' },
         {
           type: 'list',

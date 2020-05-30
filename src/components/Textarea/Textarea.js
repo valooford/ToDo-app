@@ -28,6 +28,7 @@ export default function setupTextarea({
   value = '',
   refs = { textarea: {} },
   onInput,
+  onBlur = [],
 } = {}) {
   const Textarea = setupBuilder('template-textarea')({
     props: { placeholder, value },
@@ -43,6 +44,7 @@ export default function setupTextarea({
           handleAutoResize(e.target);
         },
       ],
+      blur: onBlur,
     },
   });
   // eslint-disable-next-line no-param-reassign

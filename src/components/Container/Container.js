@@ -6,12 +6,12 @@ import Note from '@components/Note/Note';
 
 import store from '@store/store';
 import {
-  focusAddNote,
-  blurAddNote,
   focusNote,
   blurNote,
   addNewNote,
-  updateNote,
+  updateNoteHeader,
+  updateNoteText,
+  // updateNoteListItem,
 } from '@store/mainReducer';
 /* eslint-enable import/no-unresolved */
 
@@ -41,24 +41,11 @@ function handleContainerFocus(e) {
   }
 }
 
-// обработчик клика по addNote
-function focusNoteHandler() {
-  dispatch(focusAddNote());
-}
-
-// объекты для ссылок (refs) на элементы DOM
-const header = {};
-const textField = {};
-
 function confirmNote() {
   function blurNoteHandler(e) {
     if (!e.target.closest('.container__item:first-of-type .note')) {
-      const noteText = textField.ref.value; // сначала получаем value
-      const headerText = header.ref.value;
-      dispatch(blurAddNote()); // потом прячем addNote
-      if (noteText || headerText) {
-        dispatch(addNewNote(noteText, headerText));
-      }
+      dispatch(blurNote(0)); // потом прячем addNote
+      dispatch(addNewNote());
 
       document.removeEventListener('click', blurNoteHandler);
     }
@@ -69,33 +56,14 @@ function confirmNote() {
   }, 0);
 }
 
-// не могут быть частью setupContainer(), так как фокусировка приведет
-// к созданию новых объектов noteHeader и noteTextField, что сломает рефы
-const noteHeader = {};
-const noteTextField = {};
-
-function handleNoteBlur(index, noteType) {
+function handleNoteBlur(index) {
   function onNoteBlur(e) {
-    let headerText;
-    let text;
     const possibleContainerItem = e.target.closest(
-      `.container__item:nth-of-type(${index + 2})`
+      `.container__item:nth-of-type(${index + 1})`
     );
     if (!possibleContainerItem) {
-      switch (noteType) {
-        case 'list':
-          headerText = noteHeader.ref.value;
-          dispatch(blurNote(index));
-          dispatch(updateNote(index, { headerText }));
-          document.removeEventListener('click', onNoteBlur);
-          break;
-        default:
-          headerText = noteHeader.ref.value;
-          text = noteTextField.ref.value;
-          dispatch(blurNote(index));
-          dispatch(updateNote(index, { text, headerText }));
-          document.removeEventListener('click', onNoteBlur);
-      }
+      dispatch(blurNote(index));
+      document.removeEventListener('click', onNoteBlur);
     }
   }
   return onNoteBlur;
@@ -104,38 +72,44 @@ function handleNoteBlur(index, noteType) {
 // ШАБЛОН КОНТЕЙНЕРА / CONTAINER
 // *
 export default function setupContainer(state) {
-  const notes = state.notes.map((note, index) => {
-    let noteRefs;
-    if (note.type === 'list') {
-      noteRefs = { header: noteHeader };
-    } else {
-      noteRefs = { header: noteHeader, textField: noteTextField };
-    }
-    return {
+  const notes = state.notes
+    .map((note, index) => ({
       setup: Note,
       set: [
         [
           {
             ...note,
             index,
-            onClick:
-              /* eslint-disable indent */
-              note.isFocused
-                ? null
-                : () => {
-                    const handleBlurFunc = handleNoteBlur(index, note.type);
-                    dispatch(focusNote(index, handleBlurFunc));
-                    setTimeout(() => {
-                      document.addEventListener('click', handleBlurFunc);
-                    }, 0);
-                  },
+            /* eslint-disable indent */
+            onClick: note.isFocused
+              ? null
+              : () => {
+                  const handleBlurFunc = handleNoteBlur(index);
+                  dispatch(focusNote(index, handleBlurFunc));
+                  setTimeout(() => {
+                    document.addEventListener('click', handleBlurFunc);
+                  }, 0);
+                },
             /* eslint-enable indent */
-            refs: note.isFocused ? noteRefs : undefined,
+            /* eslint-disable indent */
+            onHeaderBlur: note.isFocused
+              ? ({ target: { value: headerText } }) => {
+                  dispatch(updateNoteHeader(index, headerText));
+                }
+              : undefined,
+            /* eslint-enable indent */
+            /* eslint-disable indent */
+            onTextFieldBlur: note.isFocused
+              ? ({ target: { value: text } }) => {
+                  dispatch(updateNoteText(index, text));
+                }
+              : undefined,
+            /* eslint-enable indent */
           },
         ],
       ],
-    };
-  });
+    }))
+    .slice(1);
   return setupBuilder('template-container')({
     clone: {
       '.container__item': notes.length,
@@ -143,20 +117,37 @@ export default function setupContainer(state) {
     insert: {
       '.container__item': [
         /* eslint-disable indent */
-        state.isAddPostFocused
+        state.notes[0].isFocused
           ? {
               setup: Note,
               set: [
                 [
                   {
-                    type: 'add',
+                    ...state.notes[0],
                     onConfirm: confirmNote,
-                    refs: { header, textField },
+                    // onTextFieldBlur:,
+                    onHeaderBlur: ({ target: { value: headerText } }) => {
+                      dispatch(updateNoteHeader(0, headerText));
+                    },
+                    onTextFieldBlur: ({ target: { value: text } }) => {
+                      dispatch(updateNoteText(0, text));
+                    },
                   },
                 ],
               ],
             }
-          : { setup: setupAddNote, set: [[{ onClick: focusNoteHandler }]] },
+          : {
+              setup: setupAddNote,
+              set: [
+                [
+                  {
+                    onClick() {
+                      dispatch(focusNote(0));
+                    },
+                  },
+                ],
+              ],
+            },
         /* eslint-enable indent */
         ...notes,
       ],
