@@ -127,16 +127,6 @@ export default function setupBuilder(templateName) {
         });
       });
     });
-    // Object.keys(refs).forEach((selector) => {
-    //   const els = newElement.querySelectorAll(selector);
-    //   /* eslint-disable no-param-reassign */
-    //   if (els.length === 1) {
-    //     [refs[selector].ref] = els; // mutation
-    //   } else {
-    //     refs[selector].refs = els; // mutation
-    //   }
-    //   /* eslint-enable no-param-reassign */
-    // });
 
     return newElement;
   };

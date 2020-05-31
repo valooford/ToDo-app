@@ -7,11 +7,11 @@ import Note from '@components/Note/Note';
 import store from '@store/store';
 import {
   focusNote,
+  // setBlurCallback,
   blurNote,
   addNewNote,
   updateNoteHeader,
   updateNoteText,
-  // updateNoteListItem,
 } from '@store/mainReducer';
 /* eslint-enable import/no-unresolved */
 
@@ -41,19 +41,12 @@ function handleContainerFocus(e) {
   }
 }
 
-function confirmNote() {
-  function blurNoteHandler(e) {
-    if (!e.target.closest('.container__item:first-of-type .note')) {
-      dispatch(blurNote(0)); // потом прячем addNote
-      dispatch(addNewNote());
-
-      document.removeEventListener('click', blurNoteHandler);
-    }
+function blurNoteHandler(e) {
+  if (!e.target.closest('.container__item:first-of-type .note')) {
+    dispatch(addNewNote());
+    dispatch(blurNote(0)); // потом прячем addNote
+    document.removeEventListener('click', blurNoteHandler);
   }
-  // во избежание перехвата во время всплытия текущего события
-  setTimeout(() => {
-    document.addEventListener('click', blurNoteHandler);
-  }, 0);
 }
 
 function handleNoteBlur(index) {
@@ -99,11 +92,12 @@ export default function setupContainer(state) {
               : undefined,
             /* eslint-enable indent */
             /* eslint-disable indent */
-            onTextFieldBlur: note.isFocused
-              ? ({ target: { value: text } }) => {
-                  dispatch(updateNoteText(index, text));
-                }
-              : undefined,
+            onTextFieldBlur:
+              note.isFocused && note.type === 'default'
+                ? ({ target: { value: text } }) => {
+                    dispatch(updateNoteText(index, text));
+                  }
+                : undefined,
             /* eslint-enable indent */
           },
         ],
@@ -124,8 +118,7 @@ export default function setupContainer(state) {
                 [
                   {
                     ...state.notes[0],
-                    onConfirm: confirmNote,
-                    // onTextFieldBlur:,
+                    index: 0,
                     onHeaderBlur: ({ target: { value: headerText } }) => {
                       dispatch(updateNoteHeader(0, headerText));
                     },
@@ -142,7 +135,11 @@ export default function setupContainer(state) {
                 [
                   {
                     onClick() {
-                      dispatch(focusNote(0));
+                      dispatch(focusNote(0, blurNoteHandler));
+                      // во избежание перехвата во время всплытия текущего события
+                      setTimeout(() => {
+                        document.addEventListener('click', blurNoteHandler);
+                      }, 0);
                     },
                   },
                 ],

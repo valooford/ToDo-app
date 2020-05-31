@@ -12,13 +12,10 @@ export default function setupListItem({
   isChecked = false,
   text = '',
   onInput,
+  onBlur,
   onRemove,
   onCheck,
 } = {}) {
-  const textarea = {};
-  function handleInput() {
-    onInput(textarea.ref.value);
-  }
   return setupBuilder('template-list-item')({
     insert: {
       '.listItem__checkbox': isChecked ? { html: '&#xe800;' } : '',
@@ -36,8 +33,7 @@ export default function setupListItem({
             [
               {
                 placeholder: 'Новый пункт',
-                refs: { textarea },
-                onInput: handleInput,
+                onInput,
               },
             ],
           ],
@@ -46,7 +42,7 @@ export default function setupListItem({
       default: {
         '.listItem__text': {
           setup: setupTextarea,
-          set: [[{ value: text }]],
+          set: [[{ value: text, onBlur }]],
         },
         '.listItem__remove': {
           setup: setupIconButton,

@@ -6,7 +6,7 @@ const store = {
     // initial state
     main: {
       notes: [
-        { type: 'default', headerText: '', text: '' },
+        { type: 'add-default', headerText: '', text: '' },
         { type: 'default', headerText: 'Мой заголовок', text: 'Привет\nПока' },
         {
           type: 'list',

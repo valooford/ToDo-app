@@ -27,19 +27,14 @@ export default function setupTextarea({
   placeholder = '',
   value = '',
   refs = { textarea: {} },
-  onInput,
+  onInput = [],
   onBlur = [],
 } = {}) {
   const Textarea = setupBuilder('template-textarea')({
     props: { placeholder, value },
     eventHandlers: {
       input: [
-        (e) => {
-          // IE 11 fires input event when placeholder is set
-          if (onInput && e.target.value !== '') {
-            onInput();
-          }
-        },
+        onInput,
         (e) => {
           handleAutoResize(e.target);
         },

@@ -11,6 +11,7 @@ import setupPopupMenu from '@components/PopupMenu/PopupMenu';
 import store from '@store/store';
 import {
   addNoteListItem,
+  updateNoteListItem,
   removeNoteListItem,
   markNoteListItem,
   unmarkNoteListItem,
@@ -94,9 +95,9 @@ function getNoteButtons({ index, type = 'default', hasMarkedItems = false }) {
         titleText: 'Ещё',
         modificator: 'icon-button_smaller',
         onClick: showPopupMenu({
-          type: type === 'add' ? 'tight' : 'expanded',
+          type: type.startsWith('add-') ? 'tight' : 'expanded',
           index,
-          isList: type === 'list',
+          isList: type.endsWith('list'),
           hasMarkedItems,
         }),
       },
@@ -129,17 +130,33 @@ export function setupNote({
   items = [],
   markedItems = [],
   onClick = null,
-  onConfirm,
   onHeaderBlur = [],
   onTextFieldBlur,
+  onListItemBlur,
   onListItemAdd,
   onListItemRemove,
   onListItemCheck,
   onListItemUncheck,
-  // refs = { header: {}, textField: {} },
   index,
 } = {}) {
-  // const { header = {}, textField = {} } = refs;
+  let modificatorsList;
+  switch (type) {
+    case 'default':
+      modificatorsList = ['default', 'note_no-button'];
+      break;
+    case 'list':
+      modificatorsList = ['note_list', 'note_no-button'];
+      break;
+    case 'add-default':
+      modificatorsList = ['default'];
+      break;
+    case 'add-list':
+      modificatorsList = ['note_list'];
+      break;
+    default:
+      modificatorsList = [`note_${type}`];
+      break;
+  }
 
   const NoteElement = setupBuilder('template-note')({
     insert: {
@@ -175,7 +192,6 @@ export function setupNote({
               placeholder: 'Заметка...',
               value: text,
               onBlur: onTextFieldBlur,
-              // refs: { textarea: textField },
             },
           ],
         ],
@@ -196,11 +212,11 @@ export function setupNote({
         }),
       },
     },
-    modificators: type === 'default' ? ['default'] : [`note_${type}`],
+    modificators: modificatorsList,
     cut: {
-      default: ['.note__listWrapper', '.note__button'],
-      note_list: ['.note__text', '.note__button'],
-      note_add: ['.note__listWrapper'],
+      default: ['.note__listWrapper'],
+      note_list: ['.note__text'],
+      'note_no-button': ['.note__button'],
     },
     add: {
       default: {},
@@ -213,6 +229,7 @@ export function setupNote({
               ...items.map((item) => [
                 {
                   text: item.text,
+                  onBlur: onListItemBlur(index, item.index),
                   onRemove: onListItemRemove(index, item.index),
                   onCheck: onListItemCheck(index, item.index),
                 },
@@ -228,6 +245,7 @@ export function setupNote({
                 {
                   isChecked: true,
                   text: item.text,
+                  onBlur: onListItemBlur(index, item.index),
                   onRemove: onListItemRemove(index, item.index),
                   onCheck: onListItemUncheck(index, item.index),
                 },
@@ -248,14 +266,7 @@ export function setupNote({
         blur: onHeaderBlur,
       },
     },
-    // refs: {
-    //   '.note__header': header,
-    // },
   });
-
-  if (onConfirm) {
-    onConfirm();
-  }
 
   return NoteElement;
 }
@@ -289,8 +300,15 @@ export default function Note(params) {
     ...newParams,
     items: unmarkedItems,
     markedItems,
-    onListItemAdd: (index) => (text) => {
-      dispatch(addNoteListItem(index, text));
+    onListItemBlur: (index, itemNum, subNum) => ({
+      target: { value: itemText },
+    }) => {
+      dispatch(updateNoteListItem(index, itemNum, subNum, itemText));
+    },
+    onListItemAdd: (index) => ({ target: { value: itemText } }) => {
+      if (itemText !== '') {
+        dispatch(addNoteListItem(index, itemText));
+      }
     },
     onListItemRemove: (index, itemNum) => () => {
       dispatch(removeNoteListItem(index, itemNum));

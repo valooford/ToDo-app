@@ -1,4 +1,5 @@
 const SET_NOTE_FOCUS = 'main/set-note-focus';
+// const SET_BLUR_CALLBACK = 'main/set-blur-callback';
 const ADD_NEW_NOTE = 'main/add-new-note';
 const UPDATE_NOTE = 'main/update-note';
 const REMOVE_NOTE = 'main/remove-note';
@@ -28,15 +29,27 @@ function mainReducer(state, action) {
         ...state,
         notes,
       };
+    // case SET_BLUR_CALLBACK:
+    //   notes = [...state.notes];
+    //   note = { ...notes[action.index] };
+    //   note.blurCallback = action.cb;
+    //   notes[action.index] = note;
+    //   return {
+    //     ...state,
+    //     notes,
+    //   };
     case ADD_NEW_NOTE:
-      [note] = state.notes;
+      notes = [...state.notes];
+      note = { ...notes[0] };
       // add functionality for lists
-      if (!note.text && !note.headerText) {
+      if (!note.headerText && !note.text && (!note.items || !note.items[0])) {
         return state;
       }
+      note.type = note.type.replace('add-', '');
+      notes[0] = note;
       return {
         ...state,
-        notes: [{ type: 'default', headerText: '', text: '' }, ...state.notes],
+        notes: [{ type: 'add-default', headerText: '', text: '' }, ...notes],
       };
     case UPDATE_NOTE:
       notes = [...state.notes];
@@ -65,6 +78,8 @@ function mainReducer(state, action) {
       removedNotes.forEach((removedNote) => {
         if (removedNote.blurCallback) {
           document.removeEventListener('click', removedNote.blurCallback);
+          // eslint-disable-next-line no-param-reassign
+          removedNote.blurCallback = null;
         }
       });
       return {
@@ -76,7 +91,7 @@ function mainReducer(state, action) {
       note = { ...state.notes[action.index] };
       return {
         ...state,
-        notes: [note, ...state.notes],
+        notes: [state.notes[0], note, ...state.notes.slice(1)],
       };
     case ADD_NOTE_LIST_ITEM:
       if (action.after === null) {
@@ -120,12 +135,23 @@ function mainReducer(state, action) {
     case TEXT_NOTE_TO_LIST:
       notes = [...state.notes];
       note = {
-        type: 'list',
+        type: action.index === 0 ? 'add-list' : 'list',
         headerText: notes[action.index].headerText,
-        items: notes[action.index].text
-          .split('\n')
-          .map((text) => ({ text, sub: [] })),
+        /* eslint-disable indent */
+        items:
+          notes[action.index].text === ''
+            ? []
+            : notes[action.index].text
+                .split('\n')
+                .map((text) => ({ text, sub: [] })),
+        /* eslint-enable indent */
+        isFocused: true,
+        blurCallback: notes[action.index].blurCallback,
       };
+      // if (notes[action.index].blurCallback) {
+      //   document.removeEventListener('click', notes[action.index].blurCallback);
+      //   notes[action.index].blurCallback = null;
+      // }
       notes[action.index] = note;
       return {
         ...state,
@@ -134,13 +160,19 @@ function mainReducer(state, action) {
     case LIST_NOTE_TO_TEXT:
       notes = [...state.notes];
       note = {
-        type: 'default',
+        type: action.index === 0 ? 'add-default' : 'default',
         headerText: notes[action.index].headerText,
         text: notes[action.index].items
           .map((i) => [i.text, ...i.sub.map((subItem) => subItem.text)])
           .flat()
           .join('\n'),
+        isFocused: true,
+        blurCallback: notes[action.index].blurCallback,
       };
+      // if (notes[action.index].blurCallback) {
+      //   document.removeEventListener('click', notes[action.index].blurCallback);
+      //   notes[action.index].blurCallback = null;
+      // }
       notes[action.index] = note;
       return {
         ...state,
@@ -161,6 +193,14 @@ export function focusNote(index, blurCallback = null) {
     cb: blurCallback,
   };
 }
+// export function setBlurCallback(index, blurCallback = null) {
+//   return {
+//     type: SET_BLUR_CALLBACK,
+//     index,
+//     cb: blurCallback,
+//   };
+// }
+
 export function blurNote(index) {
   return { type: SET_NOTE_FOCUS, index, focus: false };
 }
