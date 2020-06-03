@@ -7,7 +7,6 @@ import Note from '@components/Note/Note';
 import store from '@store/store';
 import {
   focusNote,
-  // setBlurCallback,
   blurNote,
   addNewNote,
   updateNoteHeader,

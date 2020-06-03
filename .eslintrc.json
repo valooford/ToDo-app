@@ -1,5 +1,5 @@
 // same file used by eslint-loader in Webpack and ESLint extension in VS Code
-// no Prettier integration yet, only Prettier isolated extension in VS Code
+// has Prettier integration, Prettier VS Code extension used
 {
   "root": true,
   "ignorePatterns": ["dist"], // ignores bundle folder
@@ -7,7 +7,8 @@
     "browser": true, // browser globals
     "es6": true // globals es2015 (es6)
   },
-  "extends": ["plugin:react/recommended", "airbnb"], // React + Airbnb rules
+  // React + Airbnb rules - Prettier conflicted rules
+  "extends": ["plugin:react/recommended", "airbnb", "prettier"],
   "globals": {
     "Atomics": "readonly", // global es2017
     "SharedArrayBuffer": "readonly" // global es2017

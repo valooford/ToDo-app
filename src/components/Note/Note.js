@@ -13,8 +13,8 @@ import {
   addNoteListItem,
   updateNoteListItem,
   removeNoteListItem,
-  markNoteListItem,
-  unmarkNoteListItem,
+  checkNoteListItem,
+  uncheckNoteListItem,
 } from '@store/mainReducer';
 /* eslint-enable import/no-unresolved */
 
@@ -303,7 +303,7 @@ export default function Note(params) {
     onListItemBlur: (index, itemNum, subNum) => ({
       target: { value: itemText },
     }) => {
-      dispatch(updateNoteListItem(index, itemNum, subNum, itemText));
+      dispatch(updateNoteListItem(index, itemText, itemNum, subNum));
     },
     onListItemAdd: (index) => ({ target: { value: itemText } }) => {
       if (itemText !== '') {
@@ -314,10 +314,10 @@ export default function Note(params) {
       dispatch(removeNoteListItem(index, itemNum));
     },
     onListItemCheck: (index, itemNum) => () => {
-      dispatch(markNoteListItem(index, itemNum));
+      dispatch(checkNoteListItem(index, itemNum));
     },
     onListItemUncheck: (index, itemNum) => () => {
-      dispatch(unmarkNoteListItem(index, itemNum));
+      dispatch(uncheckNoteListItem(index, itemNum));
     },
   });
 }

@@ -41,8 +41,8 @@ const store = {
   },
   // placeholder function
   _renderApp() {},
+  // subscribe function
   setStateCallback(callback) {
-    // subscribe function
     this._renderApp = callback;
   },
   dispatch(action) {

@@ -6,8 +6,8 @@ import store from '@store/store';
 import {
   removeNote,
   copyNote,
-  listNoteToText,
   textNoteToList,
+  listNoteToText,
 } from '@store/mainReducer';
 /* eslint-enable import/no-unresolved */
 
@@ -45,7 +45,7 @@ function getMenuItems({ isExpanded, isList, hasMarkedItems } = {}) {
       text: 'Удалить заметку',
       onClick(index) {
         return () => {
-          dispatch(removeNote(index));
+          dispatch(removeNote([index]));
         };
       },
     });

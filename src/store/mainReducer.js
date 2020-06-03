@@ -1,23 +1,27 @@
 const SET_NOTE_FOCUS = 'main/set-note-focus';
-// const SET_BLUR_CALLBACK = 'main/set-blur-callback';
-const ADD_NEW_NOTE = 'main/add-new-note';
+const ADD_NOTE = 'main/add-note';
+const COPY_NOTE = 'main/copy-note';
 const UPDATE_NOTE = 'main/update-note';
 const REMOVE_NOTE = 'main/remove-note';
-const COPY_NOTE = 'main/copy-note';
 const ADD_NOTE_LIST_ITEM = 'main/add-note-list-item';
 const REMOVE_NOTE_LIST_ITEM = 'main/remove-note-list-item';
-const SET_MARK_NOTE_LIST_ITEM = 'main/set-mark-note-list-item';
+const SET_CHECK_NOTE_LIST_ITEM = 'main/set-check-note-list-item';
 const TEXT_NOTE_TO_LIST = 'main/text-note-to-list';
 const LIST_NOTE_TO_TEXT = 'main/list-note-to-text';
 
-function mainReducer(state, action) {
+export default function mainReducer(state, action) {
   let note;
   let notes;
   let item;
   let items;
+  let sub;
+  let subItem;
   let removedNotes;
   switch (action.type) {
     case SET_NOTE_FOCUS:
+      if (state.notes[action.index].isFocused === action.focus) {
+        return state;
+      }
       notes = [...state.notes];
       note = { ...notes[action.index] };
       note.isFocused = action.focus;
@@ -29,43 +33,67 @@ function mainReducer(state, action) {
         ...state,
         notes,
       };
-    // case SET_BLUR_CALLBACK:
-    //   notes = [...state.notes];
-    //   note = { ...notes[action.index] };
-    //   note.blurCallback = action.cb;
-    //   notes[action.index] = note;
-    //   return {
-    //     ...state,
-    //     notes,
-    //   };
-    case ADD_NEW_NOTE:
+    case ADD_NOTE:
       notes = [...state.notes];
-      note = { ...notes[0] };
-      // add functionality for lists
-      if (!note.headerText && !note.text && (!note.items || !note.items[0])) {
-        return state;
-      }
-      note.type = note.type.replace('add-', '');
-      notes[0] = note;
+      note = {
+        type: action.text ? 'default' : 'list',
+        headerText: action.headerText,
+        text: action.text,
+        items: action.items,
+      };
+      notes = [notes[0], note, ...notes.slice(1)];
       return {
         ...state,
-        notes: [{ type: 'add-default', headerText: '', text: '' }, ...notes],
+        notes,
+      };
+    case COPY_NOTE:
+      notes = [...state.notes];
+      note = { ...notes[action.index] };
+      // first note is used for adding
+      if (action.index === 0) {
+        // no headerText and no text/items or items array is empty
+        if (!note.headerText && !note.text && (!note.items || !note.items[0])) {
+          return state; // nothing to add
+        }
+        note.type = note.type.replace('add-', '');
+        notes[0] = note;
+        notes = [{ type: 'add-default', headerText: '', text: '' }, ...notes];
+      } else {
+        note = {
+          type: note.type,
+          headerText: note.headerText,
+          text: note.text,
+          items: note.items,
+        };
+        notes = [notes[0], note, ...notes.slice(1)];
+      }
+      return {
+        ...state,
+        notes,
       };
     case UPDATE_NOTE:
       notes = [...state.notes];
       note = { ...notes[action.index] };
-      if (action.headerText !== undefined) {
+      if (action.headerText) {
         note.headerText = action.headerText;
       }
-      if (action.text !== undefined) {
+      if (action.text) {
         note.text = action.text;
       }
-      if (action.itemText !== undefined && action.itemNum !== undefined) {
-        if (action.subItem !== undefined) {
-          note.items[action.itemNum].sub[action.subItem] = action.itemText;
+      if (action.itemNum != null) {
+        items = [...note.items];
+        item = { ...items[action.itemNum] };
+        if (action.subItem == null) {
+          item.text = action.itemText;
         } else {
-          note.items[action.itemNum].text = action.itemText;
+          sub = [...item.sub];
+          subItem = { ...sub[action.subItem] };
+          subItem.text = action.itemText;
+          sub[action.subItem] = subItem;
+          item.sub = sub;
         }
+        items[action.itemNum] = item;
+        note.items = items;
       }
       notes[action.index] = note;
       return {
@@ -73,33 +101,50 @@ function mainReducer(state, action) {
         notes,
       };
     case REMOVE_NOTE:
+      if (action.indices.length === 0) {
+        return state;
+      }
       notes = [...state.notes];
-      removedNotes = notes.splice(action.index, 1);
-      removedNotes.forEach((removedNote) => {
-        if (removedNote.blurCallback) {
-          document.removeEventListener('click', removedNote.blurCallback);
-          // eslint-disable-next-line no-param-reassign
-          removedNote.blurCallback = null;
+      removedNotes = [...state.removedNotes];
+      notes = notes.filter((el, index) => {
+        const res = !action.indices.includes(index);
+        if (!res) {
+          removedNotes.unshift(el);
+          if (el.blurCallback) {
+            document.removeEventListener('click', el.blurCallback);
+            // eslint-disable-next-line no-param-reassign
+            el.blurCallback = null;
+          }
         }
+        return res;
       });
+      // *
+      // * removedNotes need to be sorted by date
+      // *
       return {
         ...state,
         notes,
-        removedNotes: [...state.removedNotes, ...removedNotes],
-      };
-    case COPY_NOTE:
-      note = { ...state.notes[action.index] };
-      return {
-        ...state,
-        notes: [state.notes[0], note, ...state.notes.slice(1)],
+        removedNotes,
       };
     case ADD_NOTE_LIST_ITEM:
-      if (action.after === null) {
-        notes = [...state.notes];
-        note = { ...notes[action.index] };
-        note.items = [...note.items, { text: action.text, sub: [] }];
-        notes[action.index] = note;
+      notes = [...state.notes];
+      note = { ...notes[action.index] };
+      items = [...note.items];
+      if (action.itemNum !== null) {
+        if (action.subNum == null) {
+          items.splice(action.itemNum, 0, { text: action.text, sub: [] });
+        } else {
+          item = { ...items[action.itemNum] };
+          sub = [...item.sub];
+          sub.splice(action.subNum, 0, { text: action.text });
+          item.sub = sub;
+          items[action.itemNum] = item;
+        }
+      } else {
+        items.splice(items.length, 0, { text: action.text, sub: [] });
       }
+      note.items = items;
+      notes[action.index] = note;
       return {
         ...state,
         notes,
@@ -108,8 +153,14 @@ function mainReducer(state, action) {
       notes = [...state.notes];
       note = { ...notes[action.index] };
       items = [...note.items];
-      if (action.subNum === null) {
+      if (action.subNum == null) {
         items.splice(action.itemNum, 1);
+      } else {
+        item = { ...items[action.itemNum] };
+        sub = [...item.sub];
+        sub.splice(action.subNum, 1);
+        item.sub = sub;
+        items[action.itemNum] = item;
       }
       note.items = items;
       notes[action.index] = note;
@@ -117,13 +168,19 @@ function mainReducer(state, action) {
         ...state,
         notes,
       };
-    case SET_MARK_NOTE_LIST_ITEM:
+    case SET_CHECK_NOTE_LIST_ITEM:
       notes = [...state.notes];
       note = { ...notes[action.index] };
       items = [...note.items];
       item = { ...items[action.itemNum] };
-      if (action.subNum === null) {
+      if (action.subNum == null) {
         item.isMarked = action.value;
+      } else {
+        sub = [...item.sub];
+        subItem = { ...sub[action.subItem] };
+        subItem.isMarked = action.value;
+        sub[action.subItem] = subItem;
+        item.sub = sub;
       }
       items[action.itemNum] = item;
       note.items = items;
@@ -135,8 +192,9 @@ function mainReducer(state, action) {
     case TEXT_NOTE_TO_LIST:
       notes = [...state.notes];
       note = {
+        ...notes[action.index],
+        text: null,
         type: action.index === 0 ? 'add-list' : 'list',
-        headerText: notes[action.index].headerText,
         /* eslint-disable indent */
         items:
           notes[action.index].text === ''
@@ -145,13 +203,7 @@ function mainReducer(state, action) {
                 .split('\n')
                 .map((text) => ({ text, sub: [] })),
         /* eslint-enable indent */
-        isFocused: true,
-        blurCallback: notes[action.index].blurCallback,
       };
-      // if (notes[action.index].blurCallback) {
-      //   document.removeEventListener('click', notes[action.index].blurCallback);
-      //   notes[action.index].blurCallback = null;
-      // }
       notes[action.index] = note;
       return {
         ...state,
@@ -160,19 +212,13 @@ function mainReducer(state, action) {
     case LIST_NOTE_TO_TEXT:
       notes = [...state.notes];
       note = {
+        ...notes[action.index],
         type: action.index === 0 ? 'add-default' : 'default',
-        headerText: notes[action.index].headerText,
         text: notes[action.index].items
-          .map((i) => [i.text, ...i.sub.map((subItem) => subItem.text)])
+          .map((i) => [i.text, ...i.sub.map((si) => si.text)])
           .flat()
           .join('\n'),
-        isFocused: true,
-        blurCallback: notes[action.index].blurCallback,
       };
-      // if (notes[action.index].blurCallback) {
-      //   document.removeEventListener('click', notes[action.index].blurCallback);
-      //   notes[action.index].blurCallback = null;
-      // }
       notes[action.index] = note;
       return {
         ...state,
@@ -183,8 +229,7 @@ function mainReducer(state, action) {
   }
 }
 
-export default mainReducer;
-
+// SET_NOTE_FOCUS
 export function focusNote(index, blurCallback = null) {
   return {
     type: SET_NOTE_FOCUS,
@@ -193,64 +238,94 @@ export function focusNote(index, blurCallback = null) {
     cb: blurCallback,
   };
 }
-// export function setBlurCallback(index, blurCallback = null) {
-//   return {
-//     type: SET_BLUR_CALLBACK,
-//     index,
-//     cb: blurCallback,
-//   };
-// }
-
 export function blurNote(index) {
-  return { type: SET_NOTE_FOCUS, index, focus: false };
+  return {
+    type: SET_NOTE_FOCUS,
+    index,
+    focus: false,
+  };
 }
 
+// ADD_NOTE
+export function addTextNote(headerText = '', text = '') {
+  return {
+    type: ADD_NOTE,
+    headerText,
+    text,
+  };
+}
+export function addListNote(headerText = '', items = []) {
+  return {
+    type: ADD_NOTE,
+    headerText,
+    items,
+  };
+}
+
+// COPY_NOTE
 export function addNewNote() {
-  return { type: ADD_NEW_NOTE };
+  return {
+    type: COPY_NOTE,
+    index: 0,
+  };
+}
+export function copyNote(index) {
+  return {
+    type: COPY_NOTE,
+    index,
+  };
 }
 
-export function updateNoteHeader(index, headerText) {
+// UPDATE_NOTE
+export function updateNoteHeader(index, headerText = '') {
   return {
     type: UPDATE_NOTE,
     index,
     headerText,
   };
 }
-export function updateNoteText(index, text) {
+export function updateNoteText(index, text = '') {
   return {
     type: UPDATE_NOTE,
     index,
     text,
   };
 }
-export function updateNoteListItem(index, itemNum, subNum = null, itemText) {
+export function updateNoteListItem(
+  index,
+  itemText = '',
+  itemNum = null,
+  subNum = null
+) {
   return {
     type: UPDATE_NOTE,
     index,
+    itemText,
     itemNum,
     subNum,
-    itemText,
   };
 }
 
-export function removeNote(index = null) {
-  if (index === null) return {};
-  return { type: REMOVE_NOTE, index };
+// REMOVE_NOTE
+export function removeNote(indices = []) {
+  return { type: REMOVE_NOTE, indices };
 }
 
-export function copyNote(index) {
-  return { type: COPY_NOTE, index };
-}
-
-export function addNoteListItem(index, text, after = null) {
+// LIST ITEM ACTION CREATORS
+export function addNoteListItem(
+  index,
+  text = '',
+  itemNum = null,
+  subNum = null
+) {
   return {
     type: ADD_NOTE_LIST_ITEM,
     index,
     text,
-    after,
+    itemNum,
+    subNum,
   };
 }
-
 export function removeNoteListItem(index, itemNum, subNum = null) {
   return {
     type: REMOVE_NOTE_LIST_ITEM,
@@ -259,20 +334,18 @@ export function removeNoteListItem(index, itemNum, subNum = null) {
     subNum,
   };
 }
-
-export function markNoteListItem(index, itemNum, subNum = null) {
+export function checkNoteListItem(index, itemNum, subNum = null) {
   return {
-    type: SET_MARK_NOTE_LIST_ITEM,
+    type: SET_CHECK_NOTE_LIST_ITEM,
     value: true,
     index,
     itemNum,
     subNum,
   };
 }
-
-export function unmarkNoteListItem(index, itemNum, subNum = null) {
+export function uncheckNoteListItem(index, itemNum, subNum = null) {
   return {
-    type: SET_MARK_NOTE_LIST_ITEM,
+    type: SET_CHECK_NOTE_LIST_ITEM,
     value: false,
     index,
     itemNum,
@@ -280,10 +353,12 @@ export function unmarkNoteListItem(index, itemNum, subNum = null) {
   };
 }
 
+// TEXT_NOTE_TO_LIST
 export function textNoteToList(index) {
   return { type: TEXT_NOTE_TO_LIST, index };
 }
 
+// LIST_NOTE_TO_TEXT
 export function listNoteToText(index) {
   return { type: LIST_NOTE_TO_TEXT, index };
 }
