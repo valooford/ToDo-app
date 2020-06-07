@@ -54,71 +54,55 @@ function showPopupMenu({
 
 function getNoteButtons({ index, type = 'default', hasMarkedItems = false }) {
   return [
-    [
-      {
-        iconSymbol: '&#xf0f3;',
-        titleText: 'Сохранить напоминание',
-        modificator: 'icon-button_smaller',
-      },
-    ],
-    [
-      {
-        iconSymbol: '&#xe803;',
-        titleText: 'Соавторы',
-        modificator: 'icon-button_smaller',
-      },
-    ],
-    [
-      {
-        iconSymbol: '&#xe804;',
-        titleText: 'Изменить цвет',
-        modificator: 'icon-button_smaller',
-      },
-    ],
-    [
-      {
-        iconSymbol: '&#xe802;',
-        titleText: 'Добавить картинку',
-        modificator: 'icon-button_smaller',
-      },
-    ],
-    [
-      {
-        iconSymbol: '&#xe805;',
-        titleText: 'Архивировать',
-        modificator: 'icon-button_smaller',
-      },
-    ],
-    [
-      {
-        iconSymbol: '&#xe81f;',
-        titleText: 'Ещё',
-        modificator: 'icon-button_smaller',
-        onClick: showPopupMenu({
-          type: type.startsWith('add-') ? 'tight' : 'expanded',
-          index,
-          isList: type.endsWith('list'),
-          hasMarkedItems,
-        }),
-      },
-    ],
-    [
-      {
-        iconSymbol: '&#xe807;',
-        titleText: 'Отменить',
-        modificator: 'icon-button_smaller',
-        disabled: true,
-      },
-    ],
-    [
-      {
-        iconSymbol: '&#xe808;',
-        titleText: 'Повторить',
-        modificator: 'icon-button_smaller',
-        disabled: true,
-      },
-    ],
-  ];
+    {
+      iconSymbol: '&#xf0f3;',
+      titleText: 'Сохранить напоминание',
+      modificator: 'icon-button_smaller',
+    },
+    {
+      iconSymbol: '&#xe803;',
+      titleText: 'Соавторы',
+      modificator: 'icon-button_smaller',
+    },
+    {
+      iconSymbol: '&#xe804;',
+      titleText: 'Изменить цвет',
+      modificator: 'icon-button_smaller',
+    },
+    {
+      iconSymbol: '&#xe802;',
+      titleText: 'Добавить картинку',
+      modificator: 'icon-button_smaller',
+    },
+    {
+      iconSymbol: '&#xe805;',
+      titleText: 'Архивировать',
+      modificator: 'icon-button_smaller',
+    },
+    {
+      iconSymbol: '&#xe81f;',
+      titleText: 'Ещё',
+      modificator: 'icon-button_smaller',
+      onClick: showPopupMenu({
+        type: type.startsWith('add-') ? 'tight' : 'expanded',
+        index,
+        isList: type.endsWith('list'),
+        hasMarkedItems,
+      }),
+    },
+    {
+      iconSymbol: '&#xe807;',
+      titleText: 'Отменить',
+      modificator: 'icon-button_smaller',
+      disabled: true,
+    },
+    {
+      iconSymbol: '&#xe808;',
+      titleText: 'Повторить',
+      modificator: 'icon-button_smaller',
+      disabled: true,
+    },
+  ].map((params) => setupIconButton(params));
 }
 
 // ШАБЛОН ЗАМЕТКИ / NOTE
@@ -159,112 +143,79 @@ export function setupNote({
   }
 
   const NoteElement = setupBuilder('template-note')({
-    insert: {
-      '.note__check': {
-        setup: setupIconButton,
-        set: [
-          [
-            {
-              iconSymbol: '&#xe80b;',
-              titleText: 'Выбрать заметку',
-              modificator: 'icon-button_no-padding',
-            },
-          ],
-        ],
-      },
-      '.note__cornerButtons': {
-        setup: setupIconButton,
-        set: [
-          [
-            {
-              iconSymbol: '&#xe812;',
-              titleText: 'Закрепить заметку',
-              modificator: 'icon-button_smaller',
-            },
-          ],
-        ],
-      },
-      '.note__text': {
-        setup: setupTextarea,
-        set: [
-          [
-            {
-              placeholder: 'Заметка...',
-              value: text,
-              onBlur: onTextFieldBlur,
-            },
-          ],
-        ],
-      },
-      '.note__info': {
-        setup: setupNotification,
-      },
-      '.note__creationTime': {
-        setup: setupCreationTime,
-        set: [['Изменено: вчера, 20:30', 'Создано 8 апр.']],
-      },
-      '.note__buttons': {
-        setup: setupIconButton,
-        set: getNoteButtons({
-          type,
-          index,
-          hasMarkedItems: !!markedItems.length,
-        }),
+    '.note': {
+      eventHandlers: {
+        click: onClick,
       },
     },
-    modificators: modificatorsList,
-    cut: {
-      default: ['.note__listWrapper'],
-      note_list: ['.note__text'],
-      'note_no-button': ['.note__button'],
+    '.note__check': {
+      append: setupIconButton({
+        iconSymbol: '&#xe80b;',
+        titleText: 'Выбрать заметку',
+        modificator: 'icon-button_no-padding',
+      }),
     },
-    add: {
-      default: {},
-      note_list: {
-        '.note__list': [
-          // not marked
-          {
-            setup: setupListItem,
-            set: [
-              ...items.map((item) => [
-                {
-                  text: item.text,
-                  onBlur: onListItemBlur(index, item.index),
-                  onRemove: onListItemRemove(index, item.index),
-                  onCheck: onListItemCheck(index, item.index),
-                },
-              ]),
-              [{ type: 'add', onInput: onListItemAdd(index) }],
-            ],
-          },
-          // inside markedList
-          {
-            setup: setupListItem,
-            set: [
-              ...markedItems.map((item) => [
-                {
-                  isChecked: true,
-                  text: item.text,
-                  onBlur: onListItemBlur(index, item.index),
-                  onRemove: onListItemRemove(index, item.index),
-                  onCheck: onListItemUncheck(index, item.index),
-                },
-              ]),
-            ],
-          },
-        ],
-      },
+    '.note__cornerButtons': {
+      append: setupIconButton({
+        iconSymbol: '&#xe812;',
+        titleText: 'Закрепить заметку',
+        modificator: 'icon-button_smaller',
+      }),
     },
-    elementsProps: {
-      '.note__header': { value: headerText },
+    '.note__header': {
+      props: { value: headerText },
+      eventHandlers: { blur: onHeaderBlur },
     },
-    eventHandlers: {
-      click: onClick,
+    '.note__text': {
+      cut: modificatorsList.includes('note_list'),
+      append: setupTextarea({
+        placeholder: 'Заметка...',
+        value: text,
+        onBlur: onTextFieldBlur,
+      }),
     },
-    elementsEventHandlers: {
-      '.note__header': {
-        blur: onHeaderBlur,
-      },
+    '.note__info': {
+      append: setupNotification(),
+    },
+    '.note__creationTime': {
+      append: setupCreationTime('Изменено: вчера, 20:30', 'Создано 8 апр.'),
+    },
+    '.note__buttons': {
+      append: getNoteButtons({
+        type,
+        index,
+        hasMarkedItems: !!markedItems.length,
+      }),
+    },
+    '.note__listWrapper': {
+      cut: modificatorsList.includes('default'),
+    },
+    '.note__list': {
+      append: [
+        ...items.map((item) =>
+          setupListItem({
+            text: item.text,
+            onBlur: onListItemBlur(index, item.index),
+            onRemove: onListItemRemove(index, item.index),
+            onCheck: onListItemCheck(index, item.index),
+          })
+        ),
+        setupListItem({ type: 'add', onInput: onListItemAdd(index) }),
+      ],
+    },
+    '.note__markedList .note__list': {
+      append: markedItems.map((item) =>
+        setupListItem({
+          isChecked: true,
+          text: item.text,
+          onBlur: onListItemBlur(index, item.index),
+          onRemove: onListItemRemove(index, item.index),
+          onCheck: onListItemUncheck(index, item.index),
+        })
+      ),
+    },
+    '.note__button': {
+      cut: modificatorsList.includes('note_no-button'),
     },
   });
 

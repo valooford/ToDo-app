@@ -6,57 +6,41 @@ import setupSearch from '@components/Search/Search';
 /* eslint-enable import/no-unresolved */
 
 const headerButtons = [
-  [
-    {
-      iconSymbol: '&#xe815;',
-      titleText: 'Обновить',
-      modificator: 'icon-button_bigger',
-    },
-  ],
-  [
-    {
-      iconSymbol: '&#xe819;',
-      titleText: 'Сетка',
-      modificator: 'icon-button_bigger',
-    },
-  ],
-  [
-    {
-      iconSymbol: '&#xe818;',
-      titleText: 'Настройки',
-      modificator: 'icon-button_bigger',
-    },
-  ],
-  [{ iconSymbol: '&#xe816;', titleText: 'Приложения Google' }],
-  [{ iconSymbol: 'V', titleText: 'Аккаунт Google' }],
-];
+  {
+    iconSymbol: '&#xe815;',
+    titleText: 'Обновить',
+    modificator: 'icon-button_bigger',
+  },
+  {
+    iconSymbol: '&#xe819;',
+    titleText: 'Сетка',
+    modificator: 'icon-button_bigger',
+  },
+  {
+    iconSymbol: '&#xe818;',
+    titleText: 'Настройки',
+    modificator: 'icon-button_bigger',
+  },
+  { iconSymbol: '&#xe816;', titleText: 'Приложения Google' },
+  { iconSymbol: 'V', titleText: 'Аккаунт Google' },
+].map((params) => setupIconButton(params));
 
 // ШАБЛОН ХЕДЕРА (ШАПКИ) / HEADER
 // *
 export default function setupHeader() {
   return setupBuilder('template-header')({
-    prepend: [
-      {
-        setup: setupIconButton,
-        set: [
-          [
-            {
-              iconSymbol: '&#xf0c9;',
-              titleText: 'Главное меню',
-              modificator: 'icon-button_bigger',
-            },
-          ],
-        ],
-      },
-    ],
-    insert: {
-      '.header__search': {
-        setup: setupSearch,
-      },
-      '.header__buttons': {
-        setup: setupIconButton,
-        set: headerButtons,
-      },
+    '.header': {
+      prepend: setupIconButton({
+        iconSymbol: '&#xf0c9;',
+        titleText: 'Главное меню',
+        modificator: 'icon-button_bigger',
+      }),
+    },
+    '.header__search': {
+      append: setupSearch(),
+    },
+    '.header__buttons': {
+      append: headerButtons,
     },
   });
 }

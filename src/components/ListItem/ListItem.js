@@ -17,52 +17,39 @@ export default function setupListItem({
   onCheck,
 } = {}) {
   return setupBuilder('template-list-item')({
-    insert: {
-      '.listItem__checkbox': isChecked ? { html: '&#xe800;' } : '',
+    '.listItem': {
+      modificators: [type],
     },
-    modificators: [type],
-    cut: {
-      add: ['.listItem__drag', '.listItem__checkbox', '.listItem__remove'],
-      default: ['.listItem__add'],
+    '.listItem__checkbox': {
+      cut: type === 'add',
+      html: isChecked && '&#xe800;',
+      eventHandlers: { click: onCheck },
     },
-    add: {
-      add: {
-        '.listItem__text': {
-          setup: setupTextarea,
-          set: [
-            [
-              {
-                placeholder: 'Новый пункт',
-                onInput,
-              },
-            ],
-          ],
-        },
-      },
-      default: {
-        '.listItem__text': {
-          setup: setupTextarea,
-          set: [[{ value: text, onBlur }]],
-        },
-        '.listItem__remove': {
-          setup: setupIconButton,
-          set: [
-            [
-              {
-                iconSymbol: '&#xe80c;',
-                titleText: 'Удалить',
-                modificator: 'icon-button_tiny',
-                onClick: onRemove,
-              },
-            ],
-          ],
-        },
-      },
+    '.listItem__drag': {
+      cut: type === 'add',
     },
-    elementsEventHandlers: {
-      '.listItem__checkbox': {
-        click: [onCheck],
-      },
+    '.listItem__remove': {
+      cut: type === 'add',
+      append:
+        type === 'default' &&
+        setupIconButton({
+          iconSymbol: '&#xe80c;',
+          titleText: 'Удалить',
+          modificator: 'icon-button_tiny',
+          onClick: onRemove,
+        }),
+    },
+    '.listItem__add': {
+      cut: type === 'default',
+    },
+    '.listItem__text': {
+      append:
+        (type === 'add' &&
+          setupTextarea({
+            placeholder: 'Новый пункт',
+            onInput,
+          })) ||
+        (type === 'default' && setupTextarea({ value: text, onBlur })),
     },
   });
 }

@@ -65,91 +65,64 @@ function handleNoteBlur(index) {
 // *
 export default function setupContainer(state) {
   const notes = state.notes
-    .map((note, index) => ({
-      setup: Note,
-      set: [
-        [
-          {
-            ...note,
-            index,
-            /* eslint-disable indent */
-            onClick: note.isFocused
-              ? null
-              : () => {
-                  const handleBlurFunc = handleNoteBlur(index);
-                  dispatch(focusNote(index, handleBlurFunc));
-                  setTimeout(() => {
-                    document.addEventListener('click', handleBlurFunc);
-                  }, 0);
-                },
-            /* eslint-enable indent */
-            /* eslint-disable indent */
-            onHeaderBlur: note.isFocused
-              ? ({ target: { value: headerText } }) => {
-                  dispatch(updateNoteHeader(index, headerText));
-                }
-              : undefined,
-            /* eslint-enable indent */
-            /* eslint-disable indent */
-            onTextFieldBlur:
-              note.isFocused && note.type === 'default'
-                ? ({ target: { value: text } }) => {
-                    dispatch(updateNoteText(index, text));
-                  }
-                : undefined,
-            /* eslint-enable indent */
-          },
-        ],
-      ],
-    }))
+    .map((note, index) => {
+      return Note({
+        ...note,
+        index,
+        onClick: note.isFocused
+          ? null
+          : () => {
+              const handleBlurFunc = handleNoteBlur(index);
+              dispatch(focusNote(index, handleBlurFunc));
+              setTimeout(() => {
+                document.addEventListener('click', handleBlurFunc);
+              }, 0);
+            },
+        onHeaderBlur: note.isFocused
+          ? ({ target: { value: headerText } }) => {
+              dispatch(updateNoteHeader(index, headerText));
+            }
+          : undefined,
+        onTextFieldBlur:
+          note.isFocused && note.type === 'default'
+            ? ({ target: { value: text } }) => {
+                dispatch(updateNoteText(index, text));
+              }
+            : undefined,
+      });
+    })
     .slice(1);
   return setupBuilder('template-container')({
-    clone: {
-      '.container__item': notes.length,
+    '.container': {
+      eventHandlers: {
+        click: handleContainerFocus,
+      },
     },
-    insert: {
-      '.container__item': [
-        /* eslint-disable indent */
+    '.container__item': {
+      clone: notes.length,
+      append: [
         state.notes[0].isFocused
-          ? {
-              setup: Note,
-              set: [
-                [
-                  {
-                    ...state.notes[0],
-                    index: 0,
-                    onHeaderBlur: ({ target: { value: headerText } }) => {
-                      dispatch(updateNoteHeader(0, headerText));
-                    },
-                    onTextFieldBlur: ({ target: { value: text } }) => {
-                      dispatch(updateNoteText(0, text));
-                    },
-                  },
-                ],
-              ],
-            }
-          : {
-              setup: setupAddNote,
-              set: [
-                [
-                  {
-                    onClick() {
-                      dispatch(focusNote(0, blurNoteHandler));
-                      // во избежание перехвата во время всплытия текущего события
-                      setTimeout(() => {
-                        document.addEventListener('click', blurNoteHandler);
-                      }, 0);
-                    },
-                  },
-                ],
-              ],
-            },
-        /* eslint-enable indent */
+          ? Note({
+              ...state.notes[0],
+              index: 0,
+              onHeaderBlur: ({ target: { value: headerText } }) => {
+                dispatch(updateNoteHeader(0, headerText));
+              },
+              onTextFieldBlur: ({ target: { value: text } }) => {
+                dispatch(updateNoteText(0, text));
+              },
+            })
+          : setupAddNote({
+              onClick() {
+                dispatch(focusNote(0, blurNoteHandler));
+                // во избежание перехвата во время всплытия текущего события
+                setTimeout(() => {
+                  document.addEventListener('click', blurNoteHandler);
+                }, 0);
+              },
+            }),
         ...notes,
       ],
-    },
-    eventHandlers: {
-      click: handleContainerFocus,
     },
   });
 }

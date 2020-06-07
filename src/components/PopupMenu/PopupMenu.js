@@ -72,19 +72,12 @@ export default function setupPopupMenu({
 } = {}) {
   const menuItems = getMenuItems({ isExpanded, isList, hasMarkedItems });
   return setupBuilder('template-popup-menu')({
-    clone: {
-      '.popup-menu__item': menuItems.length - 1,
-    },
-    insert: {
-      '.popup-menu__item': menuItems.map((item) => item.text),
-    },
-    elementsEventHandlers: {
-      '.popup-menu__item': {
+    '.popup-menu__item': {
+      clone: menuItems.length - 1,
+      append: menuItems.map((item) => item.text),
+      eventHandlers: {
         click: menuItems.map((item) => {
-          if (item.onClick) {
-            return item.onClick(index);
-          }
-          return null;
+          return item.onClick ? item.onClick(index) : null;
         }),
       },
     },

@@ -6,12 +6,11 @@ import setupTitle from '@components/Title/Title';
 
 export default function setupCreationTime(text, titleText) {
   return setupBuilder('template-creation-time')({
-    prepend: [text],
-    insert: {
-      '.creation-time__title': {
-        setup: setupTitle,
-        set: [[titleText]],
-      },
+    '.creation-time': {
+      prepend: text,
+    },
+    '.creation-time__title': {
+      append: setupTitle(titleText),
     },
   });
 }

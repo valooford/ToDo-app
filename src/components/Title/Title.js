@@ -7,8 +7,8 @@ import setupBuilder from '@components/templates';
 // *
 export default function setupTitle(text) {
   return setupBuilder('template-title')({
-    insert: {
-      '.title__text': text,
+    '.title__text': {
+      append: text,
     },
   });
 }

@@ -14,24 +14,21 @@ export default function setupIconButton({
   onClick,
 }) {
   return setupBuilder('template-icon-button')({
-    insert: {
-      '.icon-button__icon': { html: iconSymbol },
-      '.icon-button__title': {
-        setup: setupTitle,
-        set: [[titleText]],
-      },
+    '.icon-button': {
+      props: !disabled
+        ? {}
+        : {
+            disabled: true,
+            tabIndex: -1,
+          },
+      modificators: modificator ? [modificator] : [],
+      eventHandlers: { click: onClick },
     },
-    modificators: modificator ? [modificator] : [],
-    /* eslint-disable indent */
-    props: !disabled
-      ? {}
-      : {
-          disabled: true,
-          tabIndex: -1,
-        },
-    /* eslint-enable indent */
-    eventHandlers: {
-      click: onClick,
+    '.icon-button__icon': {
+      html: iconSymbol,
+    },
+    '.icon-button__title': {
+      append: setupTitle(titleText),
     },
   });
 }

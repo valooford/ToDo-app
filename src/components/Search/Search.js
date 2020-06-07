@@ -8,17 +8,14 @@ import setupIconButton from '@components/IconButton/IconButton';
 // *
 export default function setupSearch() {
   return setupBuilder('template-search')({
-    insert: {
-      '.search__icon': {
-        setup: setupIconButton,
-        set: [[{ iconSymbol: '&#xe814;', titleText: 'Поиск' }]],
-      },
-      '.search__clean': {
-        setup: setupIconButton,
-        set: [
-          [{ iconSymbol: '&#xe80c;', titleText: 'Удалить поисковый запрос' }],
-        ],
-      },
+    '.search__icon': {
+      append: setupIconButton({ iconSymbol: '&#xe814;', titleText: 'Поиск' }),
+    },
+    '.search__clean': {
+      append: setupIconButton({
+        iconSymbol: '&#xe80c;',
+        titleText: 'Удалить поисковый запрос',
+      }),
     },
   });
 }

@@ -31,15 +31,17 @@ export default function setupTextarea({
   onBlur = [],
 } = {}) {
   const Textarea = setupBuilder('template-textarea')({
-    props: { placeholder, value },
-    eventHandlers: {
-      input: [
-        onInput,
-        (e) => {
-          handleAutoResize(e.target);
-        },
-      ],
-      blur: onBlur,
+    '.textarea': {
+      props: { placeholder, value },
+      eventHandlers: {
+        input: [
+          onInput,
+          (e) => {
+            handleAutoResize(e.target);
+          },
+        ],
+        blur: onBlur,
+      },
     },
   });
   // eslint-disable-next-line no-param-reassign

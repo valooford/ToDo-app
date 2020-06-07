@@ -8,19 +8,12 @@ import setupIconButton from '@components/IconButton/IconButton';
 // *
 export default function setupNotification() {
   return setupBuilder('template-notification')({
-    insert: {
-      '.notification__close': {
-        setup: setupIconButton,
-        set: [
-          [
-            {
-              iconSymbol: '&#xe80c;',
-              titleText: 'Удалить напоминание',
-              modificator: 'icon-button_notification',
-            },
-          ],
-        ],
-      },
+    '.notification__close': {
+      append: setupIconButton({
+        iconSymbol: '&#xe80c;',
+        titleText: 'Удалить напоминание',
+        modificator: 'icon-button_notification',
+      }),
     },
   });
 }

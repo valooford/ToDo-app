@@ -7,10 +7,12 @@ import setupBuilder from '@components/templates';
 // *
 export default function setupIconedMenuItem(iconSymbol, text, isSelected) {
   return setupBuilder('template-iconed-menu-item')({
-    insert: {
-      '.iconed-menu-item__icon': { html: iconSymbol },
+    '.iconed-menu-item': {
+      append: text,
+      modificators: isSelected ? ['iconed-menu-item_selected'] : [],
     },
-    append: [text],
-    modificators: isSelected ? ['iconed-menu-item_selected'] : [],
+    '.iconed-menu-item__icon': {
+      html: iconSymbol,
+    },
   });
 }
