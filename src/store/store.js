@@ -6,7 +6,7 @@ const store = {
     // initial state
     main: {
       notes: [
-        { type: 'add-default', headerText: '', text: '' },
+        { type: 'default', headerText: '', text: '' },
         { type: 'default', headerText: 'Мой заголовок', text: 'Привет\nПока' },
         {
           type: 'list',
@@ -56,3 +56,4 @@ store.setStateCallback = store.setStateCallback.bind(store);
 store.dispatch = store.dispatch.bind(store);
 
 export default store;
+export const { dispatch } = store;

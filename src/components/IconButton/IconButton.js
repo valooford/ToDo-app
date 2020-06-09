@@ -1,7 +1,7 @@
 import './IconButton-cfg.scss';
 /* eslint-disable import/no-unresolved */
 import setupBuilder from '@components/templates';
-import setupTitle from '@components/Title/Title';
+import Title from '@components/Title/Title';
 /* eslint-enable import/no-unresolved */
 
 // ШАБЛОН КНОПКИ С ИКОНКОЙ / ICON-BUTTON
@@ -12,9 +12,11 @@ export default function setupIconButton({
   modificator,
   disabled,
   onClick,
+  append,
 }) {
   return setupBuilder('template-icon-button')({
     '.icon-button': {
+      append,
       props: !disabled
         ? {}
         : {
@@ -28,7 +30,7 @@ export default function setupIconButton({
       html: iconSymbol,
     },
     '.icon-button__title': {
-      append: setupTitle(titleText),
+      append: titleText !== '' && Title(titleText),
     },
   });
 }

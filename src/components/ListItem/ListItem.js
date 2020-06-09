@@ -1,13 +1,13 @@
 import './ListItem-cfg.scss';
 /* eslint-disable import/no-unresolved */
 import setupBuilder from '@components/templates';
-import setupTextarea from '@components/Textarea/Textarea';
-import setupIconButton from '@components/IconButton/IconButton';
+import Textarea from '@components/Textarea/Textarea';
+import IconButton from '@components/IconButton/IconButton';
 /* eslint-enable import/no-unresolved */
 
 // ШАБЛОН ЭЛЕМЕНТА СПИСКА / LIST-ITEM
 // *
-export default function setupListItem({
+export default function ListItem({
   type = 'default',
   isChecked = false,
   text = '',
@@ -15,6 +15,15 @@ export default function setupListItem({
   onBlur,
   onRemove,
   onCheck,
+  dragIconSymbol = '&#xe811;',
+  addIconSymbol = '&#xe810;',
+  checkIconSymbol = '&#xe800;',
+  removeButtonParams = {
+    iconSymbol: '&#xe80c;',
+    titleText: 'Удалить',
+    modificator: 'icon-button_tiny',
+    onClick: onRemove,
+  },
 } = {}) {
   return setupBuilder('template-list-item')({
     '.listItem': {
@@ -22,34 +31,29 @@ export default function setupListItem({
     },
     '.listItem__checkbox': {
       cut: type === 'add',
-      html: isChecked && '&#xe800;',
+      html: isChecked && checkIconSymbol,
       eventHandlers: { click: onCheck },
     },
     '.listItem__drag': {
       cut: type === 'add',
+      html: dragIconSymbol,
     },
     '.listItem__remove': {
       cut: type === 'add',
-      append:
-        type === 'default' &&
-        setupIconButton({
-          iconSymbol: '&#xe80c;',
-          titleText: 'Удалить',
-          modificator: 'icon-button_tiny',
-          onClick: onRemove,
-        }),
+      append: type === 'default' && IconButton(removeButtonParams),
     },
     '.listItem__add': {
       cut: type === 'default',
+      html: addIconSymbol,
     },
     '.listItem__text': {
       append:
         (type === 'add' &&
-          setupTextarea({
+          Textarea({
             placeholder: 'Новый пункт',
             onInput,
           })) ||
-        (type === 'default' && setupTextarea({ value: text, onBlur })),
+        (type === 'default' && Textarea({ value: text, onBlur })),
     },
   });
 }

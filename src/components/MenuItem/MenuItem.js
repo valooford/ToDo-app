@@ -5,11 +5,11 @@ import setupBuilder from '@components/templates';
 
 // ПУНКТ МЕНЮ С ИКОНКОЙ / ICONED-MENU-ITEM
 // *
-export default function setupIconedMenuItem(iconSymbol, text, isSelected) {
+export default function IconedMenuItem(iconSymbol, text, isSelected) {
   return setupBuilder('template-iconed-menu-item')({
     '.iconed-menu-item': {
       append: text,
-      modificators: isSelected ? ['iconed-menu-item_selected'] : [],
+      modificators: isSelected && ['iconed-menu-item_selected'],
     },
     '.iconed-menu-item__icon': {
       html: iconSymbol,

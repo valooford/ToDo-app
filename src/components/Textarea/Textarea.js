@@ -3,6 +3,22 @@ import './Textarea-cfg.scss';
 import setupBuilder from '@components/templates';
 /* eslint-enable import/no-unresolved */
 
+// ШАБЛОН ТЕКСТОВОГО ПОЛЯ / TEXTAREA
+// *
+function Textarea({ placeholder = '', value = '', onInput, onBlur } = {}) {
+  const TextareaElement = setupBuilder('template-textarea')({
+    '.textarea': {
+      props: { placeholder, value },
+      eventHandlers: {
+        input: onInput,
+        blur: onBlur,
+      },
+    },
+  });
+
+  return TextareaElement;
+}
+
 /* eslint-disable no-param-reassign */
 function handleAutoResize(textarea) {
   if (textarea.value === '') {
@@ -21,34 +37,21 @@ function handleAutoResize(textarea) {
 }
 /* eslint-enable no-param-reassign */
 
-// ШАБЛОН ТЕКСТОВОГО ПОЛЯ / TEXTAREA
-// *
-export default function setupTextarea({
-  placeholder = '',
-  value = '',
-  refs = { textarea: {} },
-  onInput = [],
-  onBlur = [],
-} = {}) {
-  const Textarea = setupBuilder('template-textarea')({
-    '.textarea': {
-      props: { placeholder, value },
-      eventHandlers: {
-        input: [
-          onInput,
-          (e) => {
-            handleAutoResize(e.target);
-          },
-        ],
-        blur: onBlur,
-      },
-    },
-  });
-  // eslint-disable-next-line no-param-reassign
-  refs.textarea.ref = Textarea;
-  setTimeout(() => {
-    handleAutoResize(refs.textarea.ref);
-  }, 0);
+export default function TextareaContainer(props) {
+  const { onInput, ...newProps } = props;
 
-  return Textarea;
+  const TextareaElement = Textarea({
+    ...newProps,
+    onInput(e) {
+      if (onInput) onInput(e);
+      handleAutoResize(e.target);
+    },
+    creationCallback: handleAutoResize,
+  });
+
+  // calculate textarea size after creation
+  setTimeout(() => {
+    handleAutoResize(TextareaElement);
+  }, 0);
+  return TextareaElement;
 }

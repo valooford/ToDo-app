@@ -1,20 +1,21 @@
 import './Note-cfg.scss';
 /* eslint-disable import/no-unresolved */
 import setupBuilder from '@components/templates';
-import setupIconButton from '@components/IconButton/IconButton';
-import setupTextarea from '@components/Textarea/Textarea';
-import setupNotification from '@components/Notification/Notification';
-import setupCreationTime from '@components/CreationTime/CreationTime';
-import setupListItem from '@components/ListItem/ListItem';
-import setupPopupMenu from '@components/PopupMenu/PopupMenu';
+import IconButton from '@components/IconButton/IconButton';
+import Textarea from '@components/Textarea/Textarea';
+import Notification from '@components/Notification/Notification';
+import CreationTime from '@components/CreationTime/CreationTime';
+import ListItem from '@components/ListItem/ListItem';
+import PopupMenu from '@components/PopupMenu/PopupMenu';
 
-import store from '@store/store';
+import { dispatch } from '@store/store';
 import {
   addNoteListItem,
   updateNoteListItem,
   removeNoteListItem,
   checkNoteListItem,
   uncheckNoteListItem,
+  setNotePopup,
 } from '@store/mainReducer';
 /* eslint-enable import/no-unresolved */
 
@@ -26,6 +27,7 @@ function showPopupMenu({
 }) {
   return (e) => {
     const button = e.currentTarget;
+
     let popupMenu = button.querySelector('.popup-menu');
     function blurPopupMenuHandler(ev) {
       const popup = ev.target.closest('.popup-menu');
@@ -35,8 +37,9 @@ function showPopupMenu({
         document.removeEventListener('click', blurPopupMenuHandler);
       }
     }
+
     if (!popupMenu) {
-      popupMenu = setupPopupMenu({
+      popupMenu = PopupMenu({
         index,
         isExpanded: type === 'expanded',
         isList,
@@ -44,15 +47,17 @@ function showPopupMenu({
       });
       button.append(popupMenu);
       button.classList.add('icon-button_no-hover');
+
       setTimeout(() => {
         document.addEventListener('click', blurPopupMenuHandler);
       }, 0);
     }
-    button.blur();
+
+    button.blur(); // ???
   };
 }
 
-function getNoteButtons({ index, type = 'default', hasMarkedItems = false }) {
+function getNoteButtons({ index, popup, hasMarkedItems = false }) {
   return [
     {
       iconSymbol: '&#xf0f3;',
@@ -83,12 +88,16 @@ function getNoteButtons({ index, type = 'default', hasMarkedItems = false }) {
       iconSymbol: '&#xe81f;',
       titleText: 'Ещё',
       modificator: 'icon-button_smaller',
-      onClick: showPopupMenu({
-        type: type.startsWith('add-') ? 'tight' : 'expanded',
-        index,
-        isList: type.endsWith('list'),
-        hasMarkedItems,
-      }),
+      // onClick: showPopupMenu({
+      //   type: type.startsWith('add-') ? 'tight' : 'expanded',
+      //   index,
+      //   isList: type.endsWith('list'),
+      //   hasMarkedItems,
+      // }),
+      onClick() {
+        dispatch(setNotePopup(index, 'menu'));
+      },
+      append: popup === 'menu' && PopupMenu(),
     },
     {
       iconSymbol: '&#xe807;',
@@ -102,17 +111,20 @@ function getNoteButtons({ index, type = 'default', hasMarkedItems = false }) {
       modificator: 'icon-button_smaller',
       disabled: true,
     },
-  ].map((params) => setupIconButton(params));
+  ].map((params) => IconButton(params));
 }
 
 // ШАБЛОН ЗАМЕТКИ / NOTE
 // *
-export function setupNote({
+export function Note({
   type = 'default',
+  index,
+  popup,
   headerText = '',
   text = '',
   items = [],
   markedItems = [],
+  isFocused,
   onClick = null,
   onHeaderBlur = [],
   onTextFieldBlur,
@@ -121,27 +133,17 @@ export function setupNote({
   onListItemRemove,
   onListItemCheck,
   onListItemUncheck,
-  index,
+  checkButtonParams = {
+    iconSymbol: '&#xe80b;',
+    titleText: 'Выбрать заметку',
+    modificator: 'icon-button_no-padding',
+  },
+  cornerButtonsParams = {
+    iconSymbol: '&#xe812;',
+    titleText: 'Закрепить заметку',
+    modificator: 'icon-button_smaller',
+  },
 } = {}) {
-  let modificatorsList;
-  switch (type) {
-    case 'default':
-      modificatorsList = ['default', 'note_no-button'];
-      break;
-    case 'list':
-      modificatorsList = ['note_list', 'note_no-button'];
-      break;
-    case 'add-default':
-      modificatorsList = ['default'];
-      break;
-    case 'add-list':
-      modificatorsList = ['note_list'];
-      break;
-    default:
-      modificatorsList = [`note_${type}`];
-      break;
-  }
-
   const NoteElement = setupBuilder('template-note')({
     '.note': {
       eventHandlers: {
@@ -149,63 +151,56 @@ export function setupNote({
       },
     },
     '.note__check': {
-      append: setupIconButton({
-        iconSymbol: '&#xe80b;',
-        titleText: 'Выбрать заметку',
-        modificator: 'icon-button_no-padding',
-      }),
+      append: IconButton(checkButtonParams),
     },
     '.note__cornerButtons': {
-      append: setupIconButton({
-        iconSymbol: '&#xe812;',
-        titleText: 'Закрепить заметку',
-        modificator: 'icon-button_smaller',
-      }),
+      append: IconButton(cornerButtonsParams),
     },
     '.note__header': {
       props: { value: headerText },
       eventHandlers: { blur: onHeaderBlur },
     },
     '.note__text': {
-      cut: modificatorsList.includes('note_list'),
-      append: setupTextarea({
+      cut: type === 'list',
+      append: Textarea({
         placeholder: 'Заметка...',
         value: text,
         onBlur: onTextFieldBlur,
       }),
     },
     '.note__info': {
-      append: setupNotification(),
+      append: Notification(),
     },
     '.note__creationTime': {
-      append: setupCreationTime('Изменено: вчера, 20:30', 'Создано 8 апр.'),
+      append: CreationTime('Изменено: вчера, 20:30', 'Создано 8 апр.'),
     },
     '.note__buttons': {
       append: getNoteButtons({
-        type,
+        // REPLACE!!!
+        popup,
         index,
         hasMarkedItems: !!markedItems.length,
       }),
     },
     '.note__listWrapper': {
-      cut: modificatorsList.includes('default'),
+      cut: type === 'default',
     },
     '.note__list': {
       append: [
         ...items.map((item) =>
-          setupListItem({
+          ListItem({
             text: item.text,
             onBlur: onListItemBlur(index, item.index),
             onRemove: onListItemRemove(index, item.index),
             onCheck: onListItemCheck(index, item.index),
           })
         ),
-        setupListItem({ type: 'add', onInput: onListItemAdd(index) }),
+        ListItem({ type: 'add', onInput: onListItemAdd(index) }),
       ],
     },
     '.note__markedList .note__list': {
       append: markedItems.map((item) =>
-        setupListItem({
+        ListItem({
           isChecked: true,
           text: item.text,
           onBlur: onListItemBlur(index, item.index),
@@ -215,16 +210,14 @@ export function setupNote({
       ),
     },
     '.note__button': {
-      cut: modificatorsList.includes('note_no-button'),
+      cut: !isFocused,
     },
   });
 
   return NoteElement;
 }
 
-const { dispatch } = store;
-
-export default function Note(params) {
+export default function NoteContainer(params) {
   const { items, ...newParams } = params;
   let itemsCopy;
   let unmarkedItems;
@@ -247,7 +240,7 @@ export default function Note(params) {
       item.sub = item.sub.filter((subItem) => subItem.isMarked);
     });
   }
-  return setupNote({
+  return Note({
     ...newParams,
     items: unmarkedItems,
     markedItems,

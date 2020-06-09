@@ -8,6 +8,7 @@ const REMOVE_NOTE_LIST_ITEM = 'main/remove-note-list-item';
 const SET_CHECK_NOTE_LIST_ITEM = 'main/set-check-note-list-item';
 const TEXT_NOTE_TO_LIST = 'main/text-note-to-list';
 const LIST_NOTE_TO_TEXT = 'main/list-note-to-text';
+const SET_NOTE_POPUP = 'main/set-note-popup';
 
 export default function mainReducer(state, action) {
   let note;
@@ -55,9 +56,8 @@ export default function mainReducer(state, action) {
         if (!note.headerText && !note.text && (!note.items || !note.items[0])) {
           return state; // nothing to add
         }
-        note.type = note.type.replace('add-', '');
         notes[0] = note;
-        notes = [{ type: 'add-default', headerText: '', text: '' }, ...notes];
+        notes = [{ type: 'default', headerText: '', text: '' }, ...notes];
       } else {
         note = {
           type: note.type,
@@ -194,15 +194,13 @@ export default function mainReducer(state, action) {
       note = {
         ...notes[action.index],
         text: null,
-        type: action.index === 0 ? 'add-list' : 'list',
-        /* eslint-disable indent */
+        type: 'list',
         items:
           notes[action.index].text === ''
             ? []
             : notes[action.index].text
                 .split('\n')
                 .map((text) => ({ text, sub: [] })),
-        /* eslint-enable indent */
       };
       notes[action.index] = note;
       return {
@@ -213,12 +211,24 @@ export default function mainReducer(state, action) {
       notes = [...state.notes];
       note = {
         ...notes[action.index],
-        type: action.index === 0 ? 'add-default' : 'default',
+        type: 'default',
         text: notes[action.index].items
           .map((i) => [i.text, ...i.sub.map((si) => si.text)])
           .flat()
           .join('\n'),
       };
+      notes[action.index] = note;
+      return {
+        ...state,
+        notes,
+      };
+    case SET_NOTE_POPUP:
+      if (state.notes[action.index].popup === action.popup) {
+        return state;
+      }
+      notes = [...state.notes];
+      note = { ...notes[action.index] };
+      note.popup = action.popup;
       notes[action.index] = note;
       return {
         ...state,
@@ -361,4 +371,13 @@ export function textNoteToList(index) {
 // LIST_NOTE_TO_TEXT
 export function listNoteToText(index) {
   return { type: LIST_NOTE_TO_TEXT, index };
+}
+
+// SET_NOTE_POPUP
+export function setNotePopup(index, popup = null) {
+  return {
+    type: SET_NOTE_POPUP,
+    index,
+    popup,
+  };
 }

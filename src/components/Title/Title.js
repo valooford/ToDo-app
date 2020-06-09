@@ -5,7 +5,7 @@ import setupBuilder from '@components/templates';
 
 // ШАБЛОН ОКНА С ПОДСКАЗКОЙ / TITLE
 // *
-export default function setupTitle(text) {
+export default function Title(text) {
   return setupBuilder('template-title')({
     '.title__text': {
       append: text,
