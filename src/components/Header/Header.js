@@ -11,7 +11,7 @@ function Header({
   headerButtonParams = {
     iconSymbol: '&#xf0c9;',
     titleText: 'Главное меню',
-    modificator: 'icon-button_bigger',
+    modificators: 'icon-button_bigger',
   },
   buttonsParams = [],
 } = {}) {
@@ -35,17 +35,17 @@ export default function HeaderContainer(props) {
     {
       iconSymbol: '&#xe815;',
       titleText: 'Обновить',
-      modificator: 'icon-button_bigger',
+      modificators: 'icon-button_bigger',
     },
     {
       iconSymbol: '&#xe819;',
       titleText: 'Сетка',
-      modificator: 'icon-button_bigger',
+      modificators: 'icon-button_bigger',
     },
     {
       iconSymbol: '&#xe818;',
       titleText: 'Настройки',
-      modificator: 'icon-button_bigger',
+      modificators: 'icon-button_bigger',
     },
     {
       iconSymbol: '&#xe816;',

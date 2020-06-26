@@ -10,7 +10,7 @@ export default function Notification({
   closeIconParams = {
     iconSymbol: '&#xe80c;',
     titleText: 'Удалить напоминание',
-    modificator: 'icon-button_notification',
+    modificators: 'icon-button_notification',
   },
 } = {}) {
   return setupBuilder('template-notification')({

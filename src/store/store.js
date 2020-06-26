@@ -47,7 +47,12 @@ const store = {
   },
   dispatch(action) {
     this._state.main = mainReducer(this._state.main, action);
-    this._renderApp(this._state);
+    // next statement redraw app asynchronously
+    // because sync redraw breaks event listeners behaviour in IE
+    // (e.g. Element.closest(..) unable to find DOM elements)
+    setTimeout(() => {
+      this._renderApp(this._state);
+    }, 0);
   },
 };
 

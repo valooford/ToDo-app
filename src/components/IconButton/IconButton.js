@@ -6,14 +6,23 @@ import Title from '@components/Title/Title';
 
 // ШАБЛОН КНОПКИ С ИКОНКОЙ / ICON-BUTTON
 // *
-export default function setupIconButton({
+export default function IconButton({
   iconSymbol = '',
   titleText = '',
-  modificator,
+  modificators,
   disabled,
   onClick,
   append,
 }) {
+  let modificatorsList;
+  if (modificators) {
+    if (modificators.forEach) {
+      modificatorsList = [...modificators];
+    } else {
+      modificatorsList = [modificators];
+    }
+  }
+
   return setupBuilder('template-icon-button')({
     '.icon-button': {
       append,
@@ -23,7 +32,7 @@ export default function setupIconButton({
             disabled: true,
             tabIndex: -1,
           },
-      modificators: modificator ? [modificator] : [],
+      modificators: modificatorsList,
       eventHandlers: { click: onClick },
     },
     '.icon-button__icon': {

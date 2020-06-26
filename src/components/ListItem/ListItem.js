@@ -21,7 +21,7 @@ export default function ListItem({
   removeButtonParams = {
     iconSymbol: '&#xe80c;',
     titleText: 'Удалить',
-    modificator: 'icon-button_tiny',
+    modificators: 'icon-button_tiny',
     onClick: onRemove,
   },
 } = {}) {

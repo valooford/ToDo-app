@@ -6,6 +6,8 @@ const REMOVE_NOTE = 'main/remove-note';
 const ADD_NOTE_LIST_ITEM = 'main/add-note-list-item';
 const REMOVE_NOTE_LIST_ITEM = 'main/remove-note-list-item';
 const SET_CHECK_NOTE_LIST_ITEM = 'main/set-check-note-list-item';
+const UNCHECK_ALL_LIST_ITEMS = 'main/uncheck-all-list-items';
+const REMOVE_CHECKED_LIST_ITEMS = 'main/remove-checked-list-items';
 const TEXT_NOTE_TO_LIST = 'main/text-note-to-list';
 const LIST_NOTE_TO_TEXT = 'main/list-note-to-text';
 const SET_NOTE_POPUP = 'main/set-note-popup';
@@ -18,6 +20,8 @@ export default function mainReducer(state, action) {
   let sub;
   let subItem;
   let removedNotes;
+  let flag = false;
+  const emptyNote = { type: 'default', headerText: '', text: '' };
   switch (action.type) {
     case SET_NOTE_FOCUS:
       if (state.notes[action.index].isFocused === action.focus) {
@@ -49,15 +53,15 @@ export default function mainReducer(state, action) {
       };
     case COPY_NOTE:
       notes = [...state.notes];
-      note = { ...notes[action.index] };
+      note = { ...notes[action.index], popup: null };
       // first note is used for adding
-      if (action.index === 0) {
+      if (action.index === 0 && action.isAdding) {
         // no headerText and no text/items or items array is empty
         if (!note.headerText && !note.text && (!note.items || !note.items[0])) {
           return state; // nothing to add
         }
         notes[0] = note;
-        notes = [{ type: 'default', headerText: '', text: '' }, ...notes];
+        notes = [{ ...emptyNote }, ...notes];
       } else {
         note = {
           type: note.type,
@@ -74,10 +78,10 @@ export default function mainReducer(state, action) {
     case UPDATE_NOTE:
       notes = [...state.notes];
       note = { ...notes[action.index] };
-      if (action.headerText) {
+      if (typeof action.headerText === 'string') {
         note.headerText = action.headerText;
       }
-      if (action.text) {
+      if (typeof action.text === 'string') {
         note.text = action.text;
       }
       if (action.itemNum != null) {
@@ -106,18 +110,25 @@ export default function mainReducer(state, action) {
       }
       notes = [...state.notes];
       removedNotes = [...state.removedNotes];
+
       notes = notes.filter((el, index) => {
-        const res = !action.indices.includes(index);
-        if (!res) {
+        const res = action.indices.includes(index);
+        if (res) {
           removedNotes.unshift(el);
           if (el.blurCallback) {
             document.removeEventListener('click', el.blurCallback);
             // eslint-disable-next-line no-param-reassign
             el.blurCallback = null;
           }
+          if (index === 0) {
+            flag = true;
+          }
         }
-        return res;
+        return !res;
       });
+      if (flag) {
+        notes.unshift({ ...emptyNote });
+      }
       // *
       // * removedNotes need to be sorted by date
       // *
@@ -184,6 +195,52 @@ export default function mainReducer(state, action) {
       }
       items[action.itemNum] = item;
       note.items = items;
+      notes[action.index] = note;
+      return {
+        ...state,
+        notes,
+      };
+    case UNCHECK_ALL_LIST_ITEMS:
+      notes = [...state.notes];
+      note = { ...notes[action.index] };
+      items = [...note.items];
+      items.forEach((i) => {
+        if (i.isMarked) {
+          // eslint-disable-next-line no-param-reassign
+          i.isMarked = false;
+        }
+        sub = [...i.sub];
+        sub.forEach((si) => {
+          if (si.isMarked) {
+            // eslint-disable-next-line no-param-reassign
+            si.isMarked = false;
+          }
+        });
+        // eslint-disable-next-line no-param-reassign
+        i.sub = sub;
+      });
+      note.items = items;
+      notes[action.index] = note;
+      return {
+        ...state,
+        notes,
+      };
+    case REMOVE_CHECKED_LIST_ITEMS:
+      notes = [...state.notes];
+      note = { ...notes[action.index] };
+      note.items = note.items.filter((i) => {
+        if (i.isMarked) {
+          return false;
+        }
+        // eslint-disable-next-line no-param-reassign
+        i.sub = i.sub.filter((si) => {
+          if (si.isMarked) {
+            return false;
+          }
+          return true;
+        });
+        return true;
+      });
       notes[action.index] = note;
       return {
         ...state,
@@ -277,6 +334,7 @@ export function addNewNote() {
   return {
     type: COPY_NOTE,
     index: 0,
+    isAdding: true,
   };
 }
 export function copyNote(index) {
@@ -360,6 +418,18 @@ export function uncheckNoteListItem(index, itemNum, subNum = null) {
     index,
     itemNum,
     subNum,
+  };
+}
+export function uncheckAllListItems(index) {
+  return {
+    type: UNCHECK_ALL_LIST_ITEMS,
+    index,
+  };
+}
+export function removeCheckedListItems(index) {
+  return {
+    type: REMOVE_CHECKED_LIST_ITEMS,
+    index,
   };
 }
 
