@@ -100,6 +100,8 @@ export function Note({
   items = [],
   markedItems = [],
   isFocused,
+  creationDate,
+  editingDate,
   onClick = null,
   onHeaderBlur = [],
   onTextFieldBlur,
@@ -132,6 +134,7 @@ export function Note({
       append: IconButton(cornerButtonsParams),
     },
     '.note__header': {
+      cut: !isFocused && headerText === '',
       props: { value: headerText },
       eventHandlers: { blur: onHeaderBlur },
     },
@@ -147,7 +150,9 @@ export function Note({
       append: Notification(),
     },
     '.note__creationTime': {
-      append: CreationTime('Изменено: вчера, 20:30', 'Создано 8 апр.'),
+      cut: !isFocused,
+      append:
+        creationDate && editingDate && CreationTime(creationDate, editingDate),
     },
     '.note__buttons': {
       append: buttons,
@@ -156,6 +161,7 @@ export function Note({
       cut: type === 'default',
     },
     '.note__list': {
+      // here: make items flat???
       append: [
         ...items.map((item) =>
           ListItem({
@@ -167,6 +173,9 @@ export function Note({
         ),
         ListItem({ type: 'add', onInput: onListItemAdd(index) }),
       ],
+    },
+    '.note__markedCount': {
+      append: `${markedItems.length} отмеченных пунктов`,
     },
     '.note__markedList .note__list': {
       append: markedItems.map((item) =>
@@ -204,10 +213,10 @@ export default function NoteContainer(props) {
       // eslint-disable-next-line no-param-reassign
       item.sub = item.sub.filter((subItem) => !subItem.isMarked);
     });
-    markedItems = itemsCopy.filter((item) => item.isMarked);
-    markedItems.forEach((item) => {
+    markedItems = itemsCopy.filter((item) => {
       // eslint-disable-next-line no-param-reassign
       item.sub = item.sub.filter((subItem) => subItem.isMarked);
+      return item.isMarked || item.sub.length > 0;
     });
   }
   return Note({

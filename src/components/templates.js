@@ -82,9 +82,17 @@ export default function setupBuilder(templateName) {
       }
 
       if (modificators) {
-        modificators.forEach((modificator) => {
-          elementNode.classList.add(modificator);
-        });
+        if (isSequence) {
+          Object.keys(modificators).forEach((index) => {
+            modificators[index].forEach((modificator) => {
+              elementNodes[index].classList.add(modificator);
+            });
+          });
+        } else {
+          modificators.forEach((modificator) => {
+            elementNode.classList.add(modificator);
+          });
+        }
       }
 
       if (eventHandlers) {

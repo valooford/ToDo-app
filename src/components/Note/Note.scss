@@ -11,6 +11,19 @@
     padding-bottom: 0.5 * $base-unit;
     cursor: default;
 
+    &__check,
+    &__cornerButtons,
+    &__buttons {
+      visibility: hidden;
+    }
+    *:hover > & {
+      .#{$class-name}__check,
+      .#{$class-name}__cornerButtons,
+      .#{$class-name}__buttons {
+        visibility: visible;
+      }
+    }
+
     &__check {
       position: absolute;
       top: 3px + -$no-padding-icon-size / 2;
@@ -68,6 +81,7 @@
     &__creationTime {
       position: absolute;
       right: 0;
+      text-align: right;
     }
     &__buttons {
       margin-bottom: 0;

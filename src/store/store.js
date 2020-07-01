@@ -7,7 +7,13 @@ const store = {
     main: {
       notes: [
         { type: 'default', headerText: '', text: '' },
-        { type: 'default', headerText: 'Мой заголовок', text: 'Привет\nПока' },
+        {
+          type: 'default',
+          headerText: 'Мой заголовок',
+          text: 'Привет\nПока',
+          creationDate: new Date(2020, 5, 30, 10),
+          editingDate: new Date(2020, 6, 1, 1, 12),
+        },
         {
           type: 'list',
           headerText: 'Список',
@@ -18,19 +24,20 @@ const store = {
             },
             {
               text: 'second',
-              sub: [],
+              sub: [
+                {
+                  text: 'nested',
+                },
+              ],
               isMarked: true,
             },
             {
               text: 'third',
               sub: [],
             },
-            {
-              text: 'fourth',
-              sub: [],
-              isMarked: true,
-            },
           ],
+          creationDate: new Date(2020, 5, 30, 10),
+          editingDate: new Date(2020, 6, 1, 1, 12),
         },
       ],
       removedNotes: [],

@@ -16,11 +16,14 @@ import {
 
 // ШАБЛОН КОНТЕЙНЕРА / CONTAINER
 // *
-function Container({ children = [] } = {}) {
+function Container({ children = [], focusedNoteIndex } = {}) {
   return setupBuilder('template-container')({
     '.container__item': {
       clone: children.length - 1,
       append: children,
+      modificators: focusedNoteIndex && {
+        [focusedNoteIndex]: ['container__item_focused'],
+      },
     },
   });
 }
@@ -62,8 +65,12 @@ export default function ContainerContainer(state) {
           }, 0);
         },
       });
+  let focusedNoteIndex;
   const notes = state.notes
     .map((note, index) => {
+      if (note.isFocused) {
+        focusedNoteIndex = index;
+      }
       return Note({
         ...note,
         index,
@@ -82,7 +89,7 @@ export default function ContainerContainer(state) {
             }
           : undefined,
         onTextFieldBlur:
-          note.isFocused && note.type === 'default'
+          note.type === 'default'
             ? ({ target: { value: text } }) => {
                 dispatch(updateNoteText(index, text));
               }
@@ -91,5 +98,5 @@ export default function ContainerContainer(state) {
     })
     .slice(1);
 
-  return Container({ children: [add, ...notes] });
+  return Container({ children: [add, ...notes], focusedNoteIndex });
 }

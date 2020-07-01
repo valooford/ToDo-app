@@ -21,6 +21,7 @@ export default function mainReducer(state, action) {
   let subItem;
   let removedNotes;
   let flag = false;
+  // eslint-disable-next-line no-param-reassign
   const emptyNote = { type: 'default', headerText: '', text: '' };
   switch (action.type) {
     case SET_NOTE_FOCUS:
@@ -45,6 +46,8 @@ export default function mainReducer(state, action) {
         headerText: action.headerText,
         text: action.text,
         items: action.items,
+        creationDate: new Date(),
+        editingDate: new Date(),
       };
       notes = [notes[0], note, ...notes.slice(1)];
       return {
@@ -53,7 +56,13 @@ export default function mainReducer(state, action) {
       };
     case COPY_NOTE:
       notes = [...state.notes];
-      note = { ...notes[action.index], popup: null };
+      note = {
+        ...notes[action.index],
+        isFocused: false,
+        popup: null,
+        creationDate: new Date(),
+        editingDate: new Date(),
+      };
       // first note is used for adding
       if (action.index === 0 && action.isAdding) {
         // no headerText and no text/items or items array is empty
@@ -63,11 +72,14 @@ export default function mainReducer(state, action) {
         notes[0] = note;
         notes = [{ ...emptyNote }, ...notes];
       } else {
+        notes[action.index] = { ...notes[action.index], isFocused: false };
         note = {
           type: note.type,
           headerText: note.headerText,
           text: note.text,
           items: note.items,
+          creationDate: note.creationDate,
+          editingDate: note.editingDate,
         };
         notes = [notes[0], note, ...notes.slice(1)];
       }
@@ -99,6 +111,7 @@ export default function mainReducer(state, action) {
         items[action.itemNum] = item;
         note.items = items;
       }
+      note.editingDate = new Date();
       notes[action.index] = note;
       return {
         ...state,
@@ -155,6 +168,7 @@ export default function mainReducer(state, action) {
         items.splice(items.length, 0, { text: action.text, sub: [] });
       }
       note.items = items;
+      note.editingDate = new Date();
       notes[action.index] = note;
       return {
         ...state,
@@ -174,6 +188,7 @@ export default function mainReducer(state, action) {
         items[action.itemNum] = item;
       }
       note.items = items;
+      note.editingDate = new Date();
       notes[action.index] = note;
       return {
         ...state,
@@ -195,6 +210,7 @@ export default function mainReducer(state, action) {
       }
       items[action.itemNum] = item;
       note.items = items;
+      note.editingDate = new Date();
       notes[action.index] = note;
       return {
         ...state,
@@ -220,6 +236,7 @@ export default function mainReducer(state, action) {
         i.sub = sub;
       });
       note.items = items;
+      note.editingDate = new Date();
       notes[action.index] = note;
       return {
         ...state,
@@ -241,6 +258,7 @@ export default function mainReducer(state, action) {
         });
         return true;
       });
+      note.editingDate = new Date();
       notes[action.index] = note;
       return {
         ...state,
@@ -259,6 +277,7 @@ export default function mainReducer(state, action) {
                 .split('\n')
                 .map((text) => ({ text, sub: [] })),
       };
+      note.editingDate = new Date();
       notes[action.index] = note;
       return {
         ...state,
@@ -274,6 +293,7 @@ export default function mainReducer(state, action) {
           .flat()
           .join('\n'),
       };
+      note.editingDate = new Date();
       notes[action.index] = note;
       return {
         ...state,
