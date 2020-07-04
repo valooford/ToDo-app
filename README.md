@@ -6,7 +6,7 @@ Then it must be easy to rewrite this application using modern framework.
 
 ---
 
-### Stage 1: Reinvent the wheel `completed`
+## Stage 1: Reinvent the wheel `completed`
 
 I might start by simply using a `create-react-app` and have everything working somehow.
 But that wasn't my goal.
@@ -33,7 +33,7 @@ Simple example of such a template:
 
 Template's instances are configured by a **setup** functions which are created by `setupBuilder`.
 
-The main problem with such an approach is that it has no **virtual DOM** like React has. This leads to user experience suffers from blinking and focus losses.
+The main problem with such an approach is that it has no **virtual DOM** like React has. This leads to user experience which suffers from blinking and focus losses.
 Template system can't benefit from composition as **JSX** does, though it has some perspective in extensibility after some improvements.
 
 So after i took some important application setup skills, practiced in vanilla JS and understood problems solved by React, I decided to go to a stage 2.
@@ -41,10 +41,10 @@ So after i took some important application setup skills, practiced in vanilla JS
 My expectations from the stage 1 was to implement all basic functionality of the original application.
 But it makes no sense because of the problems mentioned above.
 
-### Stage 2: Modernization `in process`
+## Stage 2: Modernization `in process`
 
 Making a React+Redux based full featured clone...
 
-### Stage 3: Broadening horizons
+## Stage 3: Broadening horizons
 
 Experiments with approaches and technologies...
