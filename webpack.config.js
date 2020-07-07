@@ -11,6 +11,7 @@ const config = {
     main: './src/index.jsx',
   },
   resolve: {
+    extensions: ['.js', '.json', '.jsx'],
     alias: {
       '@': path.resolve(__dirname, 'src'),
       '@components': '@/components',
