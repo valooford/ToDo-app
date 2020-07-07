@@ -8,7 +8,7 @@ const isDev = process.env.NODE_ENV === 'development';
 
 const config = {
   entry: {
-    main: './src/index.js',
+    main: './src/index.jsx',
   },
   resolve: {
     alias: {
@@ -25,6 +25,21 @@ const config = {
   module: {
     rules: [
       {
+        // JSX Правило
+        test: /\.jsx$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            // транспиляция
+            loader: 'babel-loader',
+            options: {
+              presets: ['@babel/preset-react'],
+            },
+          },
+        ],
+      },
+      {
+        // Правило для файлов шрифтов
         test: /\.(eot|svg|ttf|woff|woff2)$/,
         use: [
           {
@@ -94,6 +109,7 @@ if (isDev) {
   // + MiniCssExtractPlugin & OptimizeCssAssetsPlugin
   config.module.rules = config.module.rules.concat([
     {
+      // JS Правило
       test: /\.js$/,
       exclude: /node_modules/,
       use: [
