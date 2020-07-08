@@ -3,6 +3,7 @@
 import React from 'react';
 
 // import setupHeader from '@components/Header/Header';
+import Header from '@components/Header/Header';
 // import setupAside from '@components/Aside/Aside';
 import Aside from '@components/Aside/Aside';
 // import setupContainer from '@components/Container/Container';
@@ -52,7 +53,9 @@ import Aside from '@components/Aside/Aside';
 export default function App() {
   return (
     <div>
-      {/* <header>{setupHeader()}</header> */}
+      <header>
+        <Header />
+      </header>
       <aside>
         <Aside />
       </aside>
