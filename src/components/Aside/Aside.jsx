@@ -50,6 +50,7 @@ export default function Aside() {
             iconSymbol={params[0]}
             text={params[1]}
             isSelected={params[2]}
+            key={params[1]}
           />
         ))}
       </ul>

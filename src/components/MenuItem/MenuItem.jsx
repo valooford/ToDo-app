@@ -18,15 +18,16 @@ import React from 'react';
 
 // ПУНКТ МЕНЮ С ИКОНКОЙ / ICONED-MENU-ITEM
 // *
-export default function IconedMenuItem({ iconSymbol, text, isSelected }) {
+/* eslint-disable react/destructuring-assignment */
+export default function IconedMenuItem(props) {
   return (
     <li
       className={`iconed-menu-item${
-        isSelected ? ' iconed-menu-item_selected' : ''
+        props.isSelected ? ' iconed-menu-item_selected' : ''
       }`}
     >
-      <i className="iconed-menu-item__icon">{iconSymbol}</i>
-      {text}
+      <i className="iconed-menu-item__icon">{props.iconSymbol}</i>
+      {props.text}
     </li>
   );
 }

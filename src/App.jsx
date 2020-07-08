@@ -1,11 +1,11 @@
 /* eslint-disable import/no-unresolved */
-import store from '@store/store';
+// import store from '@store/store';
 import React from 'react';
 
-import setupHeader from '@components/Header/Header';
+// import setupHeader from '@components/Header/Header';
 // import setupAside from '@components/Aside/Aside';
 import Aside from '@components/Aside/Aside';
-import setupContainer from '@components/Container/Container';
+// import setupContainer from '@components/Container/Container';
 
 // import setupPopupMenu from '@components/PopupMenu/PopupMenu';
 /* eslint-enable import/no-unresolved */

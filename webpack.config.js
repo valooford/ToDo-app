@@ -26,20 +26,6 @@ const config = {
   module: {
     rules: [
       {
-        // JSX Правило
-        test: /\.jsx$/,
-        exclude: /node_modules/,
-        use: [
-          {
-            // транспиляция
-            loader: 'babel-loader',
-            options: {
-              presets: ['@babel/preset-react'],
-            },
-          },
-        ],
-      },
-      {
         // Правило для файлов шрифтов
         test: /\.(eot|svg|ttf|woff|woff2)$/,
         use: [
@@ -65,6 +51,20 @@ if (isDev) {
   // + source maps
   config.output.filename = '[name].js'; // в development при hot-reload не допускается chunkhash и contenthash
   config.module.rules = config.module.rules.concat([
+    {
+      // JS/JSX Правило
+      test: /\.(js|jsx)$/,
+      exclude: /node_modules/,
+      use: [
+        {
+          // транспиляция
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-react'],
+          },
+        },
+      ],
+    },
     {
       // CSS Правило
       test: /\.css$/,
@@ -110,8 +110,8 @@ if (isDev) {
   // + MiniCssExtractPlugin & OptimizeCssAssetsPlugin
   config.module.rules = config.module.rules.concat([
     {
-      // JS Правило
-      test: /\.js$/,
+      // JS/JSX Правило
+      test: /\.(js|jsx)$/,
       exclude: /node_modules/,
       use: [
         {
@@ -127,6 +127,7 @@ if (isDev) {
                   corejs: '3.6', // corejs minor version
                 },
               ],
+              '@babel/preset-react',
             ],
           },
         },
