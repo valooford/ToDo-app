@@ -12,7 +12,46 @@ const TEXT_NOTE_TO_LIST = 'main/text-note-to-list';
 const LIST_NOTE_TO_TEXT = 'main/list-note-to-text';
 const SET_NOTE_POPUP = 'main/set-note-popup';
 
-export default function mainReducer(state, action) {
+const initialState = {
+  notes: [
+    { type: 'default', headerText: '', text: '' },
+    {
+      type: 'default',
+      headerText: 'Мой заголовок',
+      text: 'Привет\nПока',
+      creationDate: new Date(2020, 5, 30, 10),
+      editingDate: new Date(2020, 6, 1, 1, 12),
+    },
+    {
+      type: 'list',
+      headerText: 'Список',
+      items: [
+        {
+          text: 'first',
+          sub: [],
+        },
+        {
+          text: 'second',
+          sub: [
+            {
+              text: 'nested',
+            },
+          ],
+          isMarked: true,
+        },
+        {
+          text: 'third',
+          sub: [],
+        },
+      ],
+      creationDate: new Date(2020, 5, 30, 10),
+      editingDate: new Date(2020, 6, 1, 1, 12),
+    },
+  ],
+  removedNotes: [],
+};
+
+export default function mainReducer(state = initialState, action) {
   let note;
   let notes;
   let item;
