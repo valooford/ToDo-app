@@ -12,7 +12,6 @@ export default function IconButton({
   modificators,
   // disabled,
   onClick,
-  // append,
   children,
 }) {
   let modificatorsList = '';

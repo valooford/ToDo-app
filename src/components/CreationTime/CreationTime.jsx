@@ -1,6 +1,6 @@
 import './CreationTime-cfg.scss';
+import React from 'react';
 /* eslint-disable import/no-unresolved */
-import setupBuilder from '@components/templates';
 import Title from '@components/Title/Title';
 /* eslint-enable import/no-unresolved */
 
@@ -46,13 +46,16 @@ function getFormattedDate(date) {
   return formattedDate;
 }
 
-export default function CreationTime(creationDate, editingDate) {
-  return setupBuilder('template-creation-time')({
-    '.creation-time': {
-      prepend: `Изменено: ${getFormattedDate(editingDate)}`,
-    },
-    '.creation-time__title': {
-      append: Title(`Создано: ${getFormattedDate(creationDate)}`),
-    },
-  });
+// КОМПОНЕНТ ВРЕМЕНИ СОЗДАНИЯ / CREATION-TIME
+// *
+export default function CreationTime({ creationDate, editingDate }) {
+  return (
+    <span className="creation-time">
+      {`Изменено: ${getFormattedDate(editingDate)}`}
+      <br />
+      <span className="creation-time__title">
+        <Title text={`Создано: ${getFormattedDate(creationDate)}`} />
+      </span>
+    </span>
+  );
 }
