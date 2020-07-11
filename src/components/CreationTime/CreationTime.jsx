@@ -1,8 +1,8 @@
-import './CreationTime-cfg.scss';
 import React from 'react';
 /* eslint-disable import/no-unresolved */
 import Title from '@components/Title/Title';
 /* eslint-enable import/no-unresolved */
+import style from './CreationTime-cfg.module.scss';
 
 const oneDayMs = 8.64e7;
 const months = [
@@ -50,10 +50,10 @@ function getFormattedDate(date) {
 // *
 export default function CreationTime({ creationDate, editingDate }) {
   return (
-    <span className="creation-time">
+    <span className={style['creation-time']}>
       {`Изменено: ${getFormattedDate(editingDate)}`}
       <br />
-      <span className="creation-time__title">
+      <span className={style['creation-time__title']}>
         <Title text={`Создано: ${getFormattedDate(creationDate)}`} />
       </span>
     </span>

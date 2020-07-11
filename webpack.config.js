@@ -5,6 +5,10 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 
 const isDev = process.env.NODE_ENV === 'development';
+const fontFileRegexp = /\.(eot|svg|ttf|woff|woff2)$/;
+const jsJsxRegexp = /\.(js|jsx)$/;
+const cssModuleRegexp = /\.module\.css$/;
+const sassModuleRegexp = /\.module\.s[ac]ss$/i;
 
 const config = {
   entry: {
@@ -27,7 +31,7 @@ const config = {
     rules: [
       {
         // Правило для файлов шрифтов
-        test: /\.(eot|svg|ttf|woff|woff2)$/,
+        test: fontFileRegexp,
         use: [
           {
             loader: 'file-loader',
@@ -45,6 +49,20 @@ const config = {
   ],
 };
 
+const cssLoaderDev = {
+  loader: 'css-loader',
+  options: {
+    sourceMap: true, // включает CSS source maps
+    modules: true, // CSS Modules
+  },
+};
+const cssLoaderProd = {
+  loader: 'css-loader',
+  options: {
+    modules: true, // CSS Modules
+  },
+};
+
 if (isDev) {
   // DEVELOPMENT
   // + devServer
@@ -53,7 +71,7 @@ if (isDev) {
   config.module.rules = config.module.rules.concat([
     {
       // JS/JSX Правило
-      test: /\.(js|jsx)$/,
+      test: jsJsxRegexp,
       exclude: /node_modules/,
       use: [
         {
@@ -66,29 +84,16 @@ if (isDev) {
       ],
     },
     {
-      // CSS Правило
-      test: /\.css$/,
-      use: [
-        'style-loader',
-        {
-          loader: 'css-loader',
-          options: {
-            sourceMap: true, // включает CSS source maps
-          },
-        },
-      ],
+      // CSS Module Правило
+      test: cssModuleRegexp,
+      use: ['style-loader', cssLoaderDev],
     },
     {
-      // Sass Правило
-      test: /\.s[ac]ss$/i,
+      // Sass Module Правило
+      test: sassModuleRegexp,
       use: [
         'style-loader',
-        {
-          loader: 'css-loader',
-          options: {
-            sourceMap: true, // включает CSS source maps
-          },
-        },
+        cssLoaderDev,
         'sass-loader', // в этом загрузчике значение sourceMap зависит от config.devtool
       ],
     },
@@ -111,7 +116,7 @@ if (isDev) {
   config.module.rules = config.module.rules.concat([
     {
       // JS/JSX Правило
-      test: /\.(js|jsx)$/,
+      test: jsJsxRegexp,
       exclude: /node_modules/,
       use: [
         {
@@ -141,14 +146,14 @@ if (isDev) {
       ],
     },
     {
-      // CSS Правило
-      test: /\.css$/,
-      use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      // CSS Module Правило
+      test: cssModuleRegexp,
+      use: [MiniCssExtractPlugin.loader, cssLoaderProd],
     },
     {
-      // Sass Правило
-      test: /\.s[ac]ss$/i,
-      use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
+      // Sass Module Правило
+      test: sassModuleRegexp,
+      use: [MiniCssExtractPlugin.loader, cssLoaderProd, 'sass-loader'],
     },
   ]);
   config.plugins = config.plugins.concat([

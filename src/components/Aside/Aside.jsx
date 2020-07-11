@@ -1,8 +1,8 @@
-import './Aside-cfg.scss';
 import React from 'react';
 /* eslint-disable import/no-unresolved */
 import IconedMenuItem from '@components/MenuItem/MenuItem';
 /* eslint-enable import/no-unresolved */
+import style from './Aside-cfg.module.scss';
 
 const menuItemsParams = [
   ['\ue80d', 'Заметки', true],
@@ -17,8 +17,8 @@ const menuItemsParams = [
 // *
 export default function Aside() {
   return (
-    <div className="aside">
-      <ul className="aside__menu">
+    <div className={style.aside}>
+      <ul className={style.aside__menu}>
         {menuItemsParams.map((params) => (
           <IconedMenuItem
             iconSymbol={params[0]}

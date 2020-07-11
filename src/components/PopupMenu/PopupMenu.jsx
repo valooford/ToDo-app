@@ -1,4 +1,3 @@
-import './PopupMenu-cfg.scss';
 import React from 'react';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
@@ -12,14 +11,15 @@ import {
   setNotePopup,
 } from '@store/mainReducer';
 /* eslint-enable import/no-unresolved */
+import style from './PopupMenu-cfg.module.scss';
 
 // КОМПОНЕНТ УВЕДОМЛЕНИЯ / NOTIFICATION
 // *
 function PopupMenu({ items }) {
   return (
-    <ul className="popup-menu">
+    <ul className={style['popup-menu']}>
       {items.map((item) => (
-        <li className="popup-menu__item">
+        <li className={style['popup-menu__item']}>
           {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events */}
           <span onClick={item.onClick}>{item.text}</span>
         </li>

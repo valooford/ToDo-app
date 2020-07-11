@@ -1,9 +1,9 @@
-import './Header-cfg.scss';
 import React from 'react';
 /* eslint-disable import/no-unresolved */
 import IconButton from '@components/IconButton/IconButton';
 import Search from '@components/Search/Search';
 /* eslint-enable import/no-unresolved */
+import style from './Header-cfg.module.scss';
 
 const headerButtonParams = {
   iconSymbol: '\uf0c9',
@@ -40,20 +40,20 @@ const buttonsParams = [
 // *
 export default function Header() {
   return (
-    <div className="header">
+    <div className={style.header}>
       <IconButton
         iconSymbol={headerButtonParams.iconSymbol}
         titleText={headerButtonParams.titleText}
         modificators={headerButtonParams.modificators}
       />
-      <span className="header__logo">
+      <span className={style.header__logo}>
         <i>&#xe80d;</i>
         ToDo
       </span>
-      <span className="header__search">
+      <span className={style.header__search}>
         <Search />
       </span>
-      <span className="header__buttons">
+      <span className={style.header__buttons}>
         {buttonsParams.map((params) => (
           <IconButton
             iconSymbol={params.iconSymbol}

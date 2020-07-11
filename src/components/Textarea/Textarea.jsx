@@ -1,5 +1,5 @@
-import './Textarea-cfg.scss';
 import React, { useRef, useEffect } from 'react';
+import style from './Textarea-cfg.module.scss';
 
 /* eslint-disable no-param-reassign */
 function handleAutoResize(textarea) {
@@ -33,7 +33,7 @@ export default function Textarea({
   });
   return (
     <textarea
-      className="textarea"
+      className={style.textarea}
       rows="1"
       ref={textareaRef}
       placeholder={placeholder}

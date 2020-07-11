@@ -1,4 +1,3 @@
-import './Container-cfg.scss';
 import React from 'react';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
@@ -7,16 +6,21 @@ import Note from '@components/Note/Note';
 
 import { focusNote, blurNote, addNewNote } from '@store/mainReducer';
 /* eslint-enable import/no-unresolved */
+import style from './Container-cfg.module.scss';
 
 // КОМПОНЕНТ КОНТЕЙНЕРА / CONTAINER
 // *
 function Container({ elements = [], focusedNoteIndex }) {
   return (
-    <div className="container" id="container">
+    <div className={style.container} id="container">
       {elements.map((element, i) => {
         const modificator =
-          i === focusedNoteIndex ? ' container__item_focused' : '';
-        return <div className={`container__item${modificator}`}>{element}</div>;
+          i === focusedNoteIndex ? ` ${style.container__item_focused}` : '';
+        return (
+          <div className={`${style.container__item}${modificator}`}>
+            {element}
+          </div>
+        );
       })}
     </div>
   );
@@ -26,7 +30,7 @@ function Container({ elements = [], focusedNoteIndex }) {
 function handleNoteBlur(index, actions = []) {
   function onNoteBlur(e) {
     const possibleContainerItem = e.target.closest(
-      `.container__item:nth-of-type(${index + 1})`
+      `.${style.container__item}:nth-of-type(${index + 1})`
     );
     if (!possibleContainerItem) {
       actions.forEach((action) => {

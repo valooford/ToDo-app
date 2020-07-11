@@ -1,8 +1,8 @@
-import './AddNote-cfg.scss';
 import React from 'react';
 /* eslint-disable import/no-unresolved */
 import IconButton from '@components/IconButton/IconButton';
 /* eslint-enable import/no-unresolved */
+import style from './AddNote-cfg.module.scss';
 
 const buttonsParams = [
   { iconSymbol: '\ue800', titleText: 'Создать список' },
@@ -15,9 +15,9 @@ const buttonsParams = [
 export default function AddNote({ onClick }) {
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
-    <div className="addNote" onClick={onClick}>
+    <div className={style.addNote} onClick={onClick}>
       Заметка...
-      <div className="addNote__buttons">
+      <div className={style.addNote__buttons}>
         {buttonsParams.map((params) => (
           <IconButton
             iconSymbol={params.iconSymbol}

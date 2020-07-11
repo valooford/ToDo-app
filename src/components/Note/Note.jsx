@@ -1,4 +1,3 @@
-import './Note-cfg.scss';
 import React from 'react';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
@@ -20,6 +19,7 @@ import {
   setNotePopup,
 } from '@store/mainReducer';
 /* eslint-enable import/no-unresolved */
+import style from './Note-cfg.module.scss';
 
 function Note({
   noteData: {
@@ -47,18 +47,18 @@ function Note({
   return (
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
     <form
-      className="note"
+      className={style.note}
       onSubmit={(e) => e.preventDefault()}
       onClick={onClick}
     >
-      <div className="note__check">
+      <div className={style.note__check}>
         <IconButton
           iconSymbol="&#xe80b;"
           titleText="Выбрать заметку"
           modificators="icon-button_no-padding"
         />
       </div>
-      <div className="note__cornerButtons">
+      <div className={style.note__cornerButtons}>
         <IconButton
           iconSymbol="&#xe812;"
           titleText="Закрепить заметку"
@@ -67,7 +67,7 @@ function Note({
       </div>
       {(isFocused || headerText !== '') && (
         <input
-          className="note__header"
+          className={style.note__header}
           type="text"
           placeholder="Введите заголовок"
           value={headerText}
@@ -77,7 +77,7 @@ function Note({
         />
       )}
       {type !== 'list' && (
-        <div className="note__text">
+        <div className={style.note__text}>
           <Textarea
             placeholder="Заметка..."
             value={text}
@@ -86,8 +86,8 @@ function Note({
         </div>
       )}
       {type === 'list' && (
-        <div className="note__listWrapper">
-          <ul className="note__list">
+        <div className={style.note__listWrapper}>
+          <ul className={style.note__list}>
             {items.map((item) => (
               <ListItem
                 text={item.text}
@@ -98,12 +98,12 @@ function Note({
             ))}
             <ListItem isAddItem onInput={onListItemAdd} />
           </ul>
-          <div className="note__markedList">
+          <div className={style.note__markedList}>
             <i>&#xe81a;</i>
-            <span className="note__markedCount">
+            <span className={style.note__markedCount}>
               {`${markedItems.length} отмеченных пунктов`}
             </span>
-            <ul className="note__list">
+            <ul className={style.note__list}>
               {markedItems.map((item) => (
                 <ListItem
                   isChecked
@@ -117,9 +117,9 @@ function Note({
           </div>
         </div>
       )}
-      <div className="note__info">
+      <div className={style.note__info}>
         {isFocused && creationDate && editingDate && (
-          <span className="note__creationTime">
+          <span className={style.note__creationTime}>
             <CreationTime
               creationDate={creationDate}
               editingDate={editingDate}
@@ -128,9 +128,9 @@ function Note({
         )}
         <Notification />
       </div>
-      <div className="note__buttons">
+      <div className={style.note__buttons}>
         {isFocused && (
-          <button className="note__button" type="button">
+          <button className={style.note__button} type="button">
             Закрыть
           </button>
         )}
