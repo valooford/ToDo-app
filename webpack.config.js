@@ -52,14 +52,19 @@ const config = {
 const cssLoaderDev = {
   loader: 'css-loader',
   options: {
+    importLoaders: 1, // 1 means that it also applies CSS modules on @imported resources
     sourceMap: true, // включает CSS source maps
-    modules: true, // CSS Modules
+    // CSS Modules
+    modules: {
+      localIdentName: '[local]---[hash:base64:5]',
+    },
   },
 };
 const cssLoaderProd = {
   loader: 'css-loader',
   options: {
-    modules: true, // CSS Modules
+    importLoaders: 1, // 1 means that it also applies CSS modules on @imported resources
+    modules: true,
   },
 };
 
