@@ -3,7 +3,7 @@ import React from 'react';
 
 import Header from '@components/Header/Header';
 import Aside from '@components/Aside/Aside';
-import Container from '@components/Container/Container';
+import Container from '@components/Container/Container.container';
 /* eslint-enable import/no-unresolved */
 
 export default function App() {
