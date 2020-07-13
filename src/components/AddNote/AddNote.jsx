@@ -5,9 +5,21 @@ import IconButton from '@components/IconButton/IconButton';
 import style from './AddNote-cfg.module.scss';
 
 const buttonsParams = [
-  { iconSymbol: '\ue800', titleText: 'Создать список' },
-  { iconSymbol: '\uf1fc', titleText: 'Создать заметку с рисунком' },
-  { iconSymbol: '\ue802', titleText: 'Создать фотозаметку' },
+  {
+    iconSymbol: '\ue800',
+    titleText: 'Создать список',
+    key: 'list',
+  },
+  {
+    iconSymbol: '\uf1fc',
+    titleText: 'Создать заметку с рисунком',
+    key: 'drawing',
+  },
+  {
+    iconSymbol: '\ue802',
+    titleText: 'Создать фотозаметку',
+    key: 'photo',
+  },
 ];
 
 // КОМПОНЕНТ БЛОКА ДОБАВЛЕНИЯ ЗАМЕТКИ / ADD-NOTE
@@ -22,7 +34,7 @@ export default function AddNote({ onClick }) {
           <IconButton
             iconSymbol={params.iconSymbol}
             titleText={params.titleText}
-            key={params.titleText}
+            key={params.key}
           />
         ))}
       </div>

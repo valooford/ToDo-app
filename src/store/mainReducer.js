@@ -19,7 +19,7 @@ const initialState = {
       type: 'default',
       headerText: 'Мой заголовок',
       text: 'Привет\nПока',
-      creationDate: new Date(2020, 5, 30, 10),
+      creationDate: new Date(2020, 5, 29, 10),
       editingDate: new Date(2020, 6, 1, 1, 12),
     },
     {
@@ -29,19 +29,23 @@ const initialState = {
         {
           text: 'first',
           sub: [],
+          key: '0-',
         },
         {
           text: 'second',
           sub: [
             {
               text: 'nested',
+              key: '10-',
             },
           ],
           isMarked: true,
+          key: '1-',
         },
         {
           text: 'third',
           sub: [],
+          key: '2-',
         },
       ],
       creationDate: new Date(2020, 5, 30, 10),
@@ -60,6 +64,7 @@ export default function mainReducer(state = initialState, action) {
   let subItem;
   let removedNotes;
   let flag = false;
+  let key;
   // eslint-disable-next-line no-param-reassign
   const emptyNote = { type: 'default', headerText: '', text: '' };
   switch (action.type) {
@@ -190,21 +195,33 @@ export default function mainReducer(state = initialState, action) {
         removedNotes,
       };
     case ADD_NOTE_LIST_ITEM:
+      key = Date.now();
       notes = [...state.notes];
       note = { ...notes[action.index] };
       items = [...note.items];
       if (action.itemNum !== null) {
         if (action.subNum == null) {
-          items.splice(action.itemNum, 0, { text: action.text, sub: [] });
+          items.splice(action.itemNum, 0, {
+            text: action.text,
+            sub: [],
+            key: `${action.itemNum}-${key}`,
+          });
         } else {
           item = { ...items[action.itemNum] };
           sub = [...item.sub];
-          sub.splice(action.subNum, 0, { text: action.text });
+          sub.splice(action.subNum, 0, {
+            text: action.text,
+            key: `${action.itemNum}${action.subNum}-${key}`,
+          });
           item.sub = sub;
           items[action.itemNum] = item;
         }
       } else {
-        items.splice(items.length, 0, { text: action.text, sub: [] });
+        items.splice(items.length, 0, {
+          text: action.text,
+          sub: [],
+          key: `${items.length}-${key}`,
+        });
       }
       note.items = items;
       note.editingDate = new Date();
@@ -314,7 +331,11 @@ export default function mainReducer(state = initialState, action) {
             ? []
             : notes[action.index].text
                 .split('\n')
-                .map((text) => ({ text, sub: [] })),
+                .map((text, i) => ({
+                  text,
+                  sub: [],
+                  key: `${i}-${Date.now()}`,
+                })),
       };
       note.editingDate = new Date();
       notes[action.index] = note;

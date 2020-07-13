@@ -1,17 +1,21 @@
 import React from 'react';
+import cn from 'classnames';
 import style from './Container-cfg.module.scss';
 
 // КОМПОНЕНТ КОНТЕЙНЕРА / CONTAINER
 // *
-export default function Container({ elements = [], focusedNoteIndex }) {
+export default function Container({ elements = [], focusedIndex }) {
   return (
-    <div className={style.container} id="container">
+    <div className={style.container}>
       {elements.map((element, i) => {
-        const modificator =
-          i === focusedNoteIndex ? ` ${style.container__item_focused}` : '';
         return (
-          <div className={`${style.container__item}${modificator}`}>
-            {element}
+          <div
+            className={cn(style.container__item, {
+              [style.container__item_focused]: i === focusedIndex,
+            })}
+            key={element.key}
+          >
+            {element.node}
           </div>
         );
       })}

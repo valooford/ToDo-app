@@ -1,6 +1,7 @@
 import React, { useRef, useEffect } from 'react';
 import style from './Textarea-cfg.module.scss';
 
+// функция автоматического изменения высоты Textarea
 /* eslint-disable no-param-reassign */
 function handleAutoResize(textarea) {
   if (textarea.value === '') {
@@ -21,12 +22,7 @@ function handleAutoResize(textarea) {
 
 // КОМПОНЕНТ ТЕКСТОВОГО ПОЛЯ / TEXTAREA
 // *
-export default function Textarea({
-  placeholder = '',
-  value = '',
-  onInput,
-  onBlur,
-}) {
+export default function Textarea({ placeholder = '', value = '', onChange }) {
   const textareaRef = useRef(null);
   useEffect(() => {
     handleAutoResize(textareaRef.current);
@@ -38,10 +34,7 @@ export default function Textarea({
       ref={textareaRef}
       placeholder={placeholder}
       value={value}
-      // readOnly
-      onInput={onInput}
-      // onBlur={onBlur}
-      onChange={onBlur}
+      onChange={onChange}
     />
   );
 }

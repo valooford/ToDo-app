@@ -1,4 +1,5 @@
 import React from 'react';
+import cn from 'classnames';
 /* eslint-disable import/no-unresolved */
 import Textarea from '@components/Textarea/Textarea';
 import IconButton from '@components/IconButton/IconButton';
@@ -10,18 +11,13 @@ import style from './ListItem-cfg.module.scss';
 export default function ListItem({
   isAddItem,
   isChecked,
-  text = '',
-  onInput,
-  onBlur,
+  value,
+  onChange,
   onRemove,
   onCheck,
 }) {
   return (
-    <li
-      className={`${style.listItem}${
-        isAddItem ? ` ${style.listItem_add}` : ''
-      }`}
-    >
+    <li className={cn(style.listItem, { [style.listItem_add]: isAddItem })}>
       {!isAddItem ? (
         [
           <span className={style.listItem__drag} key="drag">
@@ -49,9 +45,9 @@ export default function ListItem({
       )}
       <span className={style.listItem__text}>
         {isAddItem ? (
-          <Textarea placeholder="Новый пункт" onInput={onInput} />
+          <Textarea placeholder="Новый пункт" onChange={onChange} />
         ) : (
-          <Textarea value={text} onBlur={onBlur} />
+          <Textarea value={value} onChange={onChange} />
         )}
       </span>
     </li>

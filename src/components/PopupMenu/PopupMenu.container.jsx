@@ -14,32 +14,38 @@ import {
 } from '@store/mainReducer';
 /* eslint-enable import/no-unresolved */
 
+// функция получения элементов всплывающего меню
 function getMenuItems({
   index,
   isFieldsFilled,
   isList,
   hasMarkedItems,
-  remove,
-  copy,
-  uncheckAll,
-  removeChecked,
-  textToList,
-  listToText,
+  onRemove,
+  onCopy,
+  onUncheckAll,
+  onRemoveChecked,
+  onTextToList,
+  onListToText,
   setPopup,
 } = {}) {
-  const menuItems = [{ text: 'Добавить ярлык' }, { text: 'Добавить рисунок' }];
+  const menuItems = [
+    { text: 'Добавить ярлык', key: 'tag' },
+    { text: 'Добавить рисунок', key: 'paint' },
+  ];
   if (isFieldsFilled) {
     menuItems.unshift({
       text: 'Удалить заметку',
+      key: 'remove',
       onClick() {
-        remove([index]);
+        onRemove([index]);
       },
     });
     menuItems.push({
       text: 'Создать копию',
+      key: 'copy',
       onClick() {
         setPopup(index, '');
-        copy(index);
+        onCopy(index);
       },
     });
   }
@@ -48,34 +54,38 @@ function getMenuItems({
       menuItems.push(
         {
           text: 'Снять все флажки',
+          key: 'uncheck',
           onClick() {
-            uncheckAll(index);
+            onUncheckAll(index);
           },
         },
         {
           text: 'Удалить отмеченные пункты',
+          key: 'remove checked',
           onClick() {
-            removeChecked(index);
+            onRemoveChecked(index);
           },
         }
       );
     }
     menuItems.push({
       text: 'Обычный текст',
+      key: 'to text',
       onClick() {
-        listToText(index);
+        onListToText(index);
       },
     });
   } else {
     menuItems.push({
       text: 'В виде списка',
+      key: 'to list',
       onClick() {
-        textToList(index);
+        onTextToList(index);
       },
     });
   }
   if (isFieldsFilled) {
-    menuItems.push({ text: 'Скопировать в Google Документы' });
+    menuItems.push({ text: 'Скопировать в Google Документы', key: 'docs' });
   }
 
   return menuItems;
@@ -85,12 +95,12 @@ function getMenuItems({
 // *
 function PopupMenuContainer({ notes, index, hasMarkedItems, ...props }) {
   const {
-    remove,
-    copy,
-    uncheckAll,
-    removeChecked,
-    textToList,
-    listToText,
+    onRemove,
+    onCopy,
+    onUncheckAll,
+    onRemoveChecked,
+    onTextToList,
+    onListToText,
     setPopup,
   } = props;
   const { type, headerText, text, items } = notes[index];
@@ -109,12 +119,12 @@ function PopupMenuContainer({ notes, index, hasMarkedItems, ...props }) {
         isList: type === 'list',
         isFieldsFilled,
         hasMarkedItems,
-        remove,
-        copy,
-        uncheckAll,
-        removeChecked,
-        textToList,
-        listToText,
+        onRemove,
+        onCopy,
+        onUncheckAll,
+        onRemoveChecked,
+        onTextToList,
+        onListToText,
         setPopup,
       })}
     />
@@ -126,11 +136,11 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, {
-  remove: removeNote,
-  copy: copyNote,
-  uncheckAll: uncheckAllListItems,
-  removeChecked: removeCheckedListItems,
-  textToList: textNoteToList,
-  listToText: listNoteToText,
+  onRemove: removeNote,
+  onCopy: copyNote,
+  onUncheckAll: uncheckAllListItems,
+  onRemoveChecked: removeCheckedListItems,
+  onTextToList: textNoteToList,
+  onListToText: listNoteToText,
   setPopup: setNotePopup,
 })(PopupMenuContainer);

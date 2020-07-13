@@ -5,11 +5,6 @@ import Search from '@components/Search/Search';
 /* eslint-enable import/no-unresolved */
 import style from './Header-cfg.module.scss';
 
-const headerButtonParams = {
-  iconSymbol: '\uf0c9',
-  titleText: 'Главное меню',
-  modificators: 'icon-button_bigger',
-};
 const buttonsParams = [
   {
     iconSymbol: '\ue815',
@@ -42,9 +37,9 @@ export default function Header() {
   return (
     <div className={style.header}>
       <IconButton
-        iconSymbol={headerButtonParams.iconSymbol}
-        titleText={headerButtonParams.titleText}
-        modificators={headerButtonParams.modificators}
+        iconSymbol="&#xf0c9;"
+        titleText="Главное меню"
+        modificators="icon-button_bigger"
       />
       <span className={style.header__logo}>
         <i>&#xe80d;</i>

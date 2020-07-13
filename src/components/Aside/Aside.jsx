@@ -5,12 +5,12 @@ import IconedMenuItem from '@components/MenuItem/MenuItem';
 import style from './Aside-cfg.module.scss';
 
 const menuItemsParams = [
-  ['\ue80d', 'Заметки', true],
-  ['\uf0f3', 'Напоминания'],
-  ['\ue81d', '123'],
-  ['\ue80e', 'Изменение ярлыков'],
-  ['\ue805', 'Архив'],
-  ['\ue80f', 'Корзина'],
+  { iconSymbol: '\ue80d', text: 'Заметки', isSelected: true },
+  { iconSymbol: '\uf0f3', text: 'Напоминания' },
+  { iconSymbol: '\ue81d', text: '123' },
+  { iconSymbol: '\ue80e', text: 'Изменение ярлыков' },
+  { iconSymbol: '\ue805', text: 'Архив' },
+  { iconSymbol: '\ue80f', text: 'Корзина' },
 ];
 
 // КОНТЕЙНЕР БОКОВОГО МЕНЮ / ASIDE
@@ -21,10 +21,10 @@ export default function Aside() {
       <ul className={style.aside__menu}>
         {menuItemsParams.map((params) => (
           <IconedMenuItem
-            iconSymbol={params[0]}
-            text={params[1]}
-            isSelected={params[2]}
-            key={params[1]}
+            iconSymbol={params.iconSymbol}
+            text={params.text}
+            isSelected={params.isSelected}
+            key={params.text}
           />
         ))}
       </ul>

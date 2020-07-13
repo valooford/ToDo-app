@@ -19,18 +19,73 @@ export default function Note({
     creationDate,
     editingDate,
   },
-  buttons,
+  popup = {},
   eventHandlers: {
     onClick,
-    onHeaderBlur,
-    onTextFieldBlur,
+    onHeaderChange,
+    onTextFieldChange,
     onListItemAdd,
-    onListItemBlur,
-    onListItemRemove,
-    onListItemCheck,
-    onListItemUncheck,
+    onMoreButtonClick,
   },
 }) {
+  const buttons = [
+    {
+      iconSymbol: '\uf0f3',
+      titleText: 'Сохранить напоминание',
+      modificators: 'icon-button_smaller',
+    },
+    {
+      iconSymbol: '\ue803',
+      titleText: 'Соавторы',
+      modificators: 'icon-button_smaller',
+    },
+    {
+      iconSymbol: '\ue804',
+      titleText: 'Изменить цвет',
+      modificators: 'icon-button_smaller',
+    },
+    {
+      iconSymbol: '\ue802',
+      titleText: 'Добавить картинку',
+      modificators: 'icon-button_smaller',
+    },
+    {
+      iconSymbol: '\ue805',
+      titleText: 'Архивировать',
+      modificators: 'icon-button_smaller',
+    },
+    {
+      iconSymbol: '\ue81f',
+      titleText: 'Ещё',
+      modificators: popup.menu
+        ? ['icon-button_smaller', 'icon-button_no-hover']
+        : 'icon-button_smaller',
+      onClick: onMoreButtonClick,
+      append: popup.menu,
+    },
+    {
+      iconSymbol: '\ue807',
+      titleText: 'Отменить',
+      modificators: 'icon-button_smaller',
+      // disabled: true,
+    },
+    {
+      iconSymbol: '\ue808',
+      titleText: 'Повторить',
+      modificators: 'icon-button_smaller',
+      // disabled: true,
+    },
+  ].map((params) => (
+    <IconButton
+      iconSymbol={params.iconSymbol}
+      titleText={params.titleText}
+      modificators={params.modificators}
+      onClick={params.onClick}
+      key={params.titleText}
+    >
+      {params.append}
+    </IconButton>
+  ));
   return (
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
     <form
@@ -58,9 +113,7 @@ export default function Note({
           type="text"
           placeholder="Введите заголовок"
           value={headerText}
-          // readOnly
-          // onBlur={onHeaderBlur}
-          onChange={onHeaderBlur}
+          onChange={onHeaderChange}
         />
       )}
       {type !== 'list' && (
@@ -68,7 +121,7 @@ export default function Note({
           <Textarea
             placeholder="Заметка..."
             value={text}
-            onBlur={onTextFieldBlur}
+            onChange={onTextFieldChange}
           />
         </div>
       )}
@@ -77,13 +130,14 @@ export default function Note({
           <ul className={style.note__list}>
             {items.map((item) => (
               <ListItem
-                text={item.text}
-                onBlur={onListItemBlur(item.index)}
-                onRemove={onListItemRemove(item.index)}
-                onCheck={onListItemCheck(item.index)}
+                value={item.text}
+                onChange={item.onChange}
+                onRemove={item.onRemove}
+                onCheck={item.onCheck}
+                key={item.key}
               />
             ))}
-            <ListItem isAddItem onInput={onListItemAdd} />
+            <ListItem isAddItem onChange={onListItemAdd} />
           </ul>
           <div className={style.note__markedList}>
             <i>&#xe81a;</i>
@@ -94,10 +148,11 @@ export default function Note({
               {markedItems.map((item) => (
                 <ListItem
                   isChecked
-                  text={item.text}
-                  onBlur={onListItemBlur(item.index)}
-                  onRemove={onListItemRemove(item.index)}
-                  onCheck={onListItemUncheck(item.index)}
+                  value={item.text}
+                  onChange={item.onChange}
+                  onRemove={item.onRemove}
+                  onCheck={item.onCheck}
+                  key={item.key}
                 />
               ))}
             </ul>

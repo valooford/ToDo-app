@@ -27,27 +27,33 @@ function handleNoteBlur(index, actions = []) {
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ CONTAINER
 // *
 function ContainerContainer({ notes, onNoteFocus, onNoteBlur, onNoteAdd }) {
-  const add = notes[0].isFocused ? (
-    <Note index={0} />
-  ) : (
-    <AddNote
-      onClick={() => {
-        const handleBlurFunc = handleNoteBlur(0, [onNoteAdd, onNoteBlur]);
-        onNoteFocus(0, handleBlurFunc);
-        // во избежание перехвата во время всплытия текущего события
-        setTimeout(() => {
-          document.addEventListener('click', handleBlurFunc);
-        }, 0);
-      }}
-    />
-  );
+  const add = {
+    key: 'add',
+    node: notes[0].isFocused ? (
+      <Note index={0} />
+    ) : (
+      <AddNote
+        onClick={() => {
+          const handleBlurFunc = handleNoteBlur(0, [onNoteAdd, onNoteBlur]);
+          onNoteFocus(0, handleBlurFunc);
+          // во избежание перехвата во время всплытия текущего события
+          setTimeout(() => {
+            document.addEventListener('click', handleBlurFunc);
+          }, 0);
+        }}
+      />
+    ),
+  };
   let focusedNoteIndex;
-  const noteElements = notes
-    .map((note, index) => {
-      if (note.isFocused) {
-        focusedNoteIndex = index;
-      }
-      return (
+  const noteElements = notes.slice(1).map((note, i) => {
+    const index = i + 1;
+    if (note.isFocused) {
+      focusedNoteIndex = index;
+    }
+    return {
+      // assume that creationDate is unique for every note
+      key: note.creationDate.getTime(),
+      node: (
         <Note
           index={index}
           onClick={
@@ -62,14 +68,16 @@ function ContainerContainer({ notes, onNoteFocus, onNoteBlur, onNoteAdd }) {
                 }
           }
         />
-      );
-    })
-    .slice(1);
+      ),
+    };
+  });
   return (
     <Container
       elements={[add, ...noteElements]}
-      focusedNoteIndex={focusedNoteIndex}
-    />
+      focusedIndex={focusedNoteIndex}
+    >
+      {[add, ...noteElements]}
+    </Container>
   );
 }
 
