@@ -16,7 +16,10 @@
     &__buttons {
       visibility: hidden;
     }
-    *:hover > & {
+
+    *:hover > &,
+    &_interacting,
+    &_focused {
       .#{$class-name}__check,
       .#{$class-name}__cornerButtons,
       .#{$class-name}__buttons {

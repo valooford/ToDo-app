@@ -1,4 +1,5 @@
 import React from 'react';
+import cn from 'classnames';
 /* eslint-disable import/no-unresolved */
 import IconButton from '@components/IconButton/IconButton';
 import Textarea from '@components/Textarea/Textarea';
@@ -7,6 +8,8 @@ import CreationTime from '@components/CreationTime/CreationTime';
 import ListItem from '@components/ListItem/ListItem';
 /* eslint-enable import/no-unresolved */
 import style from './Note-cfg.module.scss';
+
+export { style };
 
 export default function Note({
   noteData: {
@@ -22,6 +25,7 @@ export default function Note({
   popup = {},
   eventHandlers: {
     onClick,
+    onClose,
     onHeaderChange,
     onTextFieldChange,
     onListItemAdd,
@@ -89,7 +93,13 @@ export default function Note({
   return (
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
     <form
-      className={style.note}
+      className={cn(
+        style.note,
+        { [style.note_focused]: isFocused },
+        {
+          [style.note_interacting]: Object.values(popup).some((v) => v),
+        }
+      )}
       onSubmit={(e) => e.preventDefault()}
       onClick={onClick}
     >
@@ -172,7 +182,11 @@ export default function Note({
       </div>
       <div className={style.note__buttons}>
         {isFocused && (
-          <button className={style.note__button} type="button">
+          <button
+            className={style.note__button}
+            type="button"
+            onClick={onClose}
+          >
             Закрыть
           </button>
         )}

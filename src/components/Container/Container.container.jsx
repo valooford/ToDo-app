@@ -1,50 +1,25 @@
 import React from 'react';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
-import AddNote from '@components/AddNote/AddNote';
+import AddNote from '@components/AddNote/AddNote.container';
 import Note from '@components/Note/Note.container';
 
-import { focusNote, blurNote, addNewNote } from '@store/mainReducer';
+import { blurNote } from '@store/mainReducer';
+import { readyModal } from '@store/modalReducer';
 /* eslint-enable import/no-unresolved */
-import Container, { style } from './Container';
-
-// функция для создания обработчиков расфокусировки заметок
-function handleNoteBlur(index, actions = []) {
-  function onNoteBlur(e) {
-    const possibleContainerItem = e.target.closest(
-      `.${style.container__item}:nth-of-type(${index + 1})`
-    );
-    if (!possibleContainerItem) {
-      actions.forEach((action) => {
-        action(index);
-      });
-      document.removeEventListener('click', onNoteBlur);
-    }
-  }
-  return onNoteBlur;
-}
+import Container from './Container';
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ CONTAINER
 // *
-function ContainerContainer({ notes, onNoteFocus, onNoteBlur, onNoteAdd }) {
+function ContainerContainer({ notes, modalRef, onModalReady, onNoteBlur }) {
   const add = {
     key: 'add',
-    node: notes[0].isFocused ? (
-      <Note index={0} />
-    ) : (
-      <AddNote
-        onClick={() => {
-          const handleBlurFunc = handleNoteBlur(0, [onNoteAdd, onNoteBlur]);
-          onNoteFocus(0, handleBlurFunc);
-          // во избежание перехвата во время всплытия текущего события
-          setTimeout(() => {
-            document.addEventListener('click', handleBlurFunc);
-          }, 0);
-        }}
-      />
-    ),
+    node: notes[0].isFocused ? <Note index={0} /> : <AddNote />,
   };
   let focusedNoteIndex;
+  // заметка с индексом 0 используется для добавления
+  // контейнеру может передаваться только индекс в пределах [1,...)
+  // в модальном окне могут редактироваться только уже добавленные заметки
   const noteElements = notes.slice(1).map((note, i) => {
     const index = i + 1;
     if (note.isFocused) {
@@ -53,28 +28,20 @@ function ContainerContainer({ notes, onNoteFocus, onNoteBlur, onNoteAdd }) {
     return {
       // assume that creationDate is unique for every note
       key: note.creationDate.getTime(),
-      node: (
-        <Note
-          index={index}
-          onClick={
-            note.isFocused
-              ? null
-              : () => {
-                  const handleBlurFunc = handleNoteBlur(index, [onNoteBlur]);
-                  onNoteFocus(index, handleBlurFunc);
-                  setTimeout(() => {
-                    document.addEventListener('click', handleBlurFunc);
-                  }, 0);
-                }
-          }
-        />
-      ),
+      node: <Note index={index} />,
     };
   });
   return (
     <Container
       elements={[add, ...noteElements]}
-      focusedIndex={focusedNoteIndex}
+      portal={[
+        focusedNoteIndex,
+        () => {
+          onNoteBlur(focusedNoteIndex);
+        },
+        modalRef.current,
+      ]}
+      onModalReady={onModalReady}
     >
       {[add, ...noteElements]}
     </Container>
@@ -88,7 +55,6 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, {
-  onNoteFocus: focusNote,
   onNoteBlur: blurNote,
-  onNoteAdd: addNewNote,
+  onModalReady: readyModal,
 })(ContainerContainer);

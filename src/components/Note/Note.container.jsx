@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 /* eslint-disable import/no-unresolved */
-import Note from '@components/Note/Note';
+import Note, { style } from '@components/Note/Note';
 import PopupMenu from '@components/PopupMenu/PopupMenu.container';
 
 import {
+  focusNote,
+  blurNote,
+  addNewNote,
   updateNoteHeader,
   updateNoteText,
   addNoteListItem,
@@ -14,6 +18,7 @@ import {
   uncheckNoteListItem,
   setNotePopup,
 } from '@store/mainReducer';
+import { closeModal } from '@store/modalReducer';
 /* eslint-enable import/no-unresolved */
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ NOTE
@@ -21,7 +26,9 @@ import {
 function NoteContainer({
   index,
   notes,
-  onClick,
+  onNoteFocus,
+  onNoteBlur,
+  onNoteAdd,
   onHeaderChange,
   onTextFieldChange,
   onListItemAdd,
@@ -33,6 +40,36 @@ function NoteContainer({
 }) {
   const note = notes[index];
   const { items, popup } = note;
+
+  // click inside note
+  const [isTouched, setIsTouched] = useState(false);
+  // handled by global handler
+  const [globalClick, setGlobalClick] = useState(null);
+
+  const globalClickListener = () => {
+    setGlobalClick((prev) => !prev);
+  };
+  useEffect(() => {
+    if (globalClick === null) return;
+    if (!isTouched) {
+      onNoteBlur(index);
+      if (index === 0) {
+        onNoteAdd();
+      }
+      document.removeEventListener('click', globalClickListener);
+    } else {
+      setIsTouched(false);
+    }
+  }, [globalClick]);
+
+  useEffect(() => {
+    if (index !== 0 || !note.isFocused) return undefined;
+    document.addEventListener('click', globalClickListener);
+    return () => {
+      document.removeEventListener('click', globalClickListener);
+    };
+  }, [note.isFocused]);
+
   let itemsCopy;
   let unmarkedItems;
   let markedItems;
@@ -107,6 +144,26 @@ function NoteContainer({
         };
       });
   }
+
+  let onClick = null;
+  if (index === 0) {
+    onClick = () => {
+      setIsTouched(true); // клик был осуществлен в пределах note
+    };
+  } else if (!note.isFocused) {
+    onClick = ({ target }) => {
+      const nonFocusingElementsSelectors = [
+        style.note__check,
+        style.note__cornerButtons,
+        style.note__buttons,
+        style.note__info,
+      ].map((s) => `.${s}`);
+      if (nonFocusingElementsSelectors.every((s) => !target.closest(s))) {
+        onNoteFocus(index);
+      }
+    };
+  }
+
   return (
     <Note
       noteData={{
@@ -129,6 +186,12 @@ function NoteContainer({
       }}
       eventHandlers={{
         onClick,
+        onClose() {
+          onNoteBlur(index);
+          if (index === 0) {
+            onNoteAdd();
+          }
+        },
         onHeaderChange: ({ target: { value: headerText } }) => {
           onHeaderChange(index, headerText);
         },
@@ -168,13 +231,27 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, {
-  onHeaderChange: updateNoteHeader,
-  onTextFieldChange: updateNoteText,
-  onListItemAdd: addNoteListItem,
-  onListItemChange: updateNoteListItem,
-  onListItemRemove: removeNoteListItem,
-  onListItemCheck: checkNoteListItem,
-  onListItemUncheck: uncheckNoteListItem,
-  setPopup: setNotePopup,
-})(NoteContainer);
+function mapDispatchToProps(dispatch) {
+  return {
+    onNoteBlur(index) {
+      dispatch(blurNote(index));
+      dispatch(closeModal());
+    },
+  };
+}
+
+export default compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  connect(null, {
+    onNoteFocus: focusNote,
+    onNoteAdd: addNewNote,
+    onHeaderChange: updateNoteHeader,
+    onTextFieldChange: updateNoteText,
+    onListItemAdd: addNoteListItem,
+    onListItemChange: updateNoteListItem,
+    onListItemRemove: removeNoteListItem,
+    onListItemCheck: checkNoteListItem,
+    onListItemUncheck: uncheckNoteListItem,
+    setPopup: setNotePopup,
+  })
+)(NoteContainer);

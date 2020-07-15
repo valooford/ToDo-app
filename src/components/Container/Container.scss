@@ -4,17 +4,24 @@
     margin: 0 auto;
 
     &__item {
+      width: 600px;
       margin-top: 2 * $base-unit;
       padding: 0 $base-unit;
+      background-color: #fff;
       border: 1px solid #ddd;
       border-radius: 10px;
 
       &:nth-child(n + 3) {
         margin-top: 0.5 * $base-unit;
       }
+
+      &_hidden,
+      &_hidden * {
+        visibility: hidden;
+      }
       &_focused {
-        position: relative;
-        left: -15%;
+        margin-top: 0;
+        margin: 0 auto;
       }
       &_focused,
       &:hover {

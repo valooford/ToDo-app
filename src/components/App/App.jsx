@@ -1,14 +1,16 @@
+import React, { useRef } from 'react';
 /* eslint-disable import/no-unresolved */
-import React from 'react';
-
 import Header from '@components/Header/Header';
 import Aside from '@components/Aside/Aside';
 import Container from '@components/Container/Container.container';
+import Modal from '@components/Modal/Modal';
 /* eslint-enable import/no-unresolved */
 
-export default function App() {
+export default function App({ modalCallback, closeModal }) {
+  const modalRef = useRef();
   return (
     <div>
+      <Modal ref={modalRef} callback={modalCallback} closeModal={closeModal} />
       <header>
         <Header />
       </header>
@@ -16,7 +18,7 @@ export default function App() {
         <Aside />
       </aside>
       <main>
-        <Container />
+        <Container modalRef={modalRef} />
       </main>
     </div>
   );

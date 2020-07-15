@@ -75,9 +75,6 @@ export default function mainReducer(state = initialState, action) {
       notes = [...state.notes];
       note = { ...notes[action.index] };
       note.isFocused = action.focus;
-      if (action.cb) {
-        note.blurCallback = action.cb;
-      }
       notes[action.index] = note;
       return {
         ...state,
@@ -116,7 +113,7 @@ export default function mainReducer(state = initialState, action) {
         notes[0] = note;
         notes = [{ ...emptyNote }, ...notes];
       } else {
-        notes[action.index] = { ...notes[action.index], isFocused: false };
+        notes[action.index] = { ...notes[action.index] };
         note = {
           type: note.type,
           headerText: note.headerText,
@@ -172,11 +169,6 @@ export default function mainReducer(state = initialState, action) {
         const res = action.indices.includes(index);
         if (res) {
           removedNotes.unshift(el);
-          if (el.blurCallback) {
-            document.removeEventListener('click', el.blurCallback);
-            // eslint-disable-next-line no-param-reassign
-            el.blurCallback = null;
-          }
           if (index === 0) {
             flag = true;
           }
@@ -329,13 +321,11 @@ export default function mainReducer(state = initialState, action) {
         items:
           notes[action.index].text === ''
             ? []
-            : notes[action.index].text
-                .split('\n')
-                .map((text, i) => ({
-                  text,
-                  sub: [],
-                  key: `${i}-${Date.now()}`,
-                })),
+            : notes[action.index].text.split('\n').map((text, i) => ({
+                text,
+                sub: [],
+                key: `${i}-${Date.now()}`,
+              })),
       };
       note.editingDate = new Date();
       notes[action.index] = note;
@@ -377,12 +367,11 @@ export default function mainReducer(state = initialState, action) {
 }
 
 // SET_NOTE_FOCUS
-export function focusNote(index, blurCallback = null) {
+export function focusNote(index) {
   return {
     type: SET_NOTE_FOCUS,
     index,
     focus: true,
-    cb: blurCallback,
   };
 }
 export function blurNote(index) {
