@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
+/* eslint-disable import/no-unresolved */
 import ReactDOM from 'react-dom';
+/* eslint-enable import/no-unresolved */
 import cn from 'classnames';
 import style from './Container-cfg.module.scss';
 

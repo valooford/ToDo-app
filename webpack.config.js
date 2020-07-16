@@ -17,6 +17,7 @@ const config = {
   resolve: {
     extensions: ['.js', '.json', '.jsx'],
     alias: {
+      'react-dom': '@hot-loader/react-dom',
       '@': path.resolve(__dirname, 'src'),
       '@components': '@/components',
       '@styles': '@/styles',
@@ -83,7 +84,9 @@ if (isDev) {
           // транспиляция
           loader: 'babel-loader',
           options: {
+            cacheDirectory: true, // ./node_modules/.cache/babel-loader
             presets: ['@babel/preset-react'],
+            plugins: ['react-hot-loader/babel'],
           },
         },
       ],

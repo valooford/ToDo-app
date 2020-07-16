@@ -1,3 +1,4 @@
+import { hot } from 'react-hot-loader/root';
 import React, { useRef } from 'react';
 /* eslint-disable import/no-unresolved */
 import Header from '@components/Header/Header';
@@ -6,7 +7,7 @@ import Container from '@components/Container/Container.container';
 import Modal from '@components/Modal/Modal';
 /* eslint-enable import/no-unresolved */
 
-export default function App({ modalCallback, closeModal }) {
+function App({ modalCallback, closeModal }) {
   const modalRef = useRef();
   return (
     <div>
@@ -23,3 +24,5 @@ export default function App({ modalCallback, closeModal }) {
     </div>
   );
 }
+
+export default hot(App);
