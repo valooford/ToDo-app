@@ -4,14 +4,14 @@ import React, { useRef } from 'react';
 import Header from '@components/Header/Header';
 import Aside from '@components/Aside/Aside';
 import Container from '@components/Container/Container.container';
-import Modal from '@components/Modal/Modal';
+import Modal from '@components/Modal/Modal.container';
 /* eslint-enable import/no-unresolved */
 
-function App({ modalCallback, closeModal }) {
+function App() {
   const modalRef = useRef();
   return (
     <div>
-      <Modal ref={modalRef} callback={modalCallback} closeModal={closeModal} />
+      <Modal modalRef={modalRef} />
       <header>
         <Header />
       </header>

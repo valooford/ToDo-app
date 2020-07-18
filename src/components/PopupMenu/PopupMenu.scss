@@ -7,6 +7,7 @@
   .#{$class-name} {
     position: absolute;
     top: $smaller-base-unit * 3;
+    left: 0;
     padding-top: $base-unit / 3;
     padding-bottom: $base-unit / 2;
     background-color: #fff;
@@ -17,6 +18,7 @@
     color: #555;
     font-family: $font-family;
     font-size: 14px;
+    font-weight: normal;
     text-align: left;
     white-space: nowrap;
     z-index: 5;

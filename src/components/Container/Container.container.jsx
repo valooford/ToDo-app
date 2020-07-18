@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
 import AddNote from '@components/AddNote/AddNote.container';
@@ -12,6 +12,8 @@ import Container from './Container';
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ CONTAINER
 // *
 function ContainerContainer({ notes, modalRef, onModalReady, onNoteBlur }) {
+  const [containerFocusInfo, setContainerFocusInfo] = useState({});
+
   const add = {
     key: 'add',
     node: notes[0].isFocused ? <Note index={0} /> : <AddNote />,
@@ -28,7 +30,30 @@ function ContainerContainer({ notes, modalRef, onModalReady, onNoteBlur }) {
     return {
       // assume that creationDate is unique for every note
       key: note.creationDate.getTime(),
-      node: <Note index={index} />,
+      node: (
+        <Note
+          index={index}
+          onFocusInfoChange={(noteFocusInfo) => {
+            setContainerFocusInfo({
+              noteIndex: index,
+              noteFocusInfo,
+            });
+          }}
+          focusInfo={
+            focusedNoteIndex === index
+              ? {
+                  fieldName:
+                    note.type === 'list' ? 'add-list-item' : 'textfield',
+                  ...containerFocusInfo.noteFocusInfo,
+                }
+              : undefined
+          }
+          isSelected={index === containerFocusInfo.noteIndex}
+        />
+      ),
+      onItemFocus: () => {
+        setContainerFocusInfo({ noteIndex: index });
+      },
     };
   });
   return (

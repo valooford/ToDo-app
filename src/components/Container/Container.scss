@@ -10,13 +10,13 @@
       background-color: #fff;
       border: 1px solid #ddd;
       border-radius: 10px;
+      outline: none;
 
       &:nth-child(n + 3) {
         margin-top: 0.5 * $base-unit;
       }
 
-      &_hidden,
-      &_hidden * {
+      &_hidden {
         visibility: hidden;
       }
       &_focused {

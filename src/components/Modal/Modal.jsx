@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
 import style from './Modal.module.scss';
 
-function Modal({ callback, closeModal }, ref) {
+function Modal({ callback, onModalClose }, ref) {
   const modalRef = ref;
+  // handle modal size
   useEffect(() => {
     function handleResize() {
       modalRef.current.style.width = `${document.documentElement.clientWidth}px`;
@@ -14,6 +15,7 @@ function Modal({ callback, closeModal }, ref) {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+  // handle modal display
   useEffect(() => {
     if (ref.current.children.length === 0) {
       modalRef.current.style.display = 'none';
@@ -29,7 +31,7 @@ function Modal({ callback, closeModal }, ref) {
       onClick={({ target, currentTarget }) => {
         if (target === currentTarget) {
           callback();
-          closeModal();
+          onModalClose();
         }
       }}
     />

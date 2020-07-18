@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect, createRef } from 'react';
 import style from './Textarea-cfg.module.scss';
 
 // функция автоматического изменения высоты Textarea
@@ -26,8 +26,11 @@ function handleAutoResize(textarea) {
 
 // КОМПОНЕНТ ТЕКСТОВОГО ПОЛЯ / TEXTAREA
 // *
-export default function Textarea({ placeholder = '', value = '', onChange }) {
-  const textareaRef = useRef(null);
+function Textarea(
+  { placeholder = '', value = '', onChange, onFocus, tabIndex },
+  ref
+) {
+  const textareaRef = ref || createRef();
   useEffect(() => {
     handleAutoResize(textareaRef.current);
   });
@@ -39,6 +42,10 @@ export default function Textarea({ placeholder = '', value = '', onChange }) {
       placeholder={placeholder}
       value={value}
       onChange={onChange}
+      onFocus={onFocus}
+      tabIndex={tabIndex}
     />
   );
 }
+
+export default React.forwardRef(Textarea);

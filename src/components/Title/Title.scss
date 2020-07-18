@@ -8,6 +8,7 @@
   .#{$class-name} {
     // parent must have: 'display: inline-block'
     position: relative;
+    visibility: hidden;
     right: $title-width / 2;
     width: $title-width;
     height: 1.8 * $base-unit;
@@ -17,6 +18,7 @@
 
     > * {
       display: inline-block;
+      visibility: visible;
       margin-right: -100% * (100% / $title-width);
 
       padding: 0 7px;

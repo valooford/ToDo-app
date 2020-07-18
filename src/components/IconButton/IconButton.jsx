@@ -11,13 +11,13 @@ export default function IconButton({
   iconSymbol = '',
   titleText = '',
   modificators = [],
-  // disabled,
+  disabled,
   onClick,
-  children,
 }) {
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
-    <span
+    <button
+      type="button"
       className={cn(
         style['icon-button'],
         modificators.map
@@ -25,13 +25,13 @@ export default function IconButton({
           : style[modificators]
       )}
       onClick={onClick}
+      disabled={disabled}
     >
       <span className={style['icon-button__icon']}>{iconSymbol}</span>
       <br />
       <span className={style['icon-button__title']}>
         {titleText && <Title text={titleText} />}
       </span>
-      {children}
-    </span>
+    </button>
   );
 }

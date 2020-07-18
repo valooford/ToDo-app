@@ -25,6 +25,9 @@ import { closeModal } from '@store/modalReducer';
 // *
 function NoteContainer({
   index,
+  focusInfo = {},
+  isSelected,
+  onFocusInfoChange,
   notes,
   onNoteFocus,
   onNoteBlur,
@@ -41,6 +44,18 @@ function NoteContainer({
   const note = notes[index];
   const { items, popup } = note;
 
+  const [noteFocusInfo, setNoteFocusInfo] = useState(focusInfo);
+  useEffect(() => {
+    if (noteFocusInfo && noteFocusInfo.fieldName && onFocusInfoChange) {
+      onFocusInfoChange(noteFocusInfo);
+    }
+    // console.log(noteFocusInfo);
+  }, [noteFocusInfo]);
+
+  // logic below are used to detect click inside note[0]
+  // popup is a part of note, but when clicked it is removed and
+  // not considered as a part of note anymore
+  // *
   // click inside note
   const [isTouched, setIsTouched] = useState(false);
   // handled by global handler
@@ -61,7 +76,6 @@ function NoteContainer({
       setIsTouched(false);
     }
   }, [globalClick]);
-
   useEffect(() => {
     if (index !== 0 || !note.isFocused) return undefined;
     document.addEventListener('click', globalClickListener);
@@ -69,6 +83,7 @@ function NoteContainer({
       document.removeEventListener('click', globalClickListener);
     };
   }, [note.isFocused]);
+  // *
 
   let itemsCopy;
   let unmarkedItems;
@@ -150,7 +165,7 @@ function NoteContainer({
     onClick = () => {
       setIsTouched(true); // клик был осуществлен в пределах note
     };
-  } else if (!note.isFocused) {
+  } else {
     onClick = ({ target }) => {
       const nonFocusingElementsSelectors = [
         style.note__check,
@@ -160,6 +175,10 @@ function NoteContainer({
       ].map((s) => `.${s}`);
       if (nonFocusingElementsSelectors.every((s) => !target.closest(s))) {
         onNoteFocus(index);
+      } else {
+        setNoteFocusInfo({
+          fieldName: note.type === 'list' ? 'add-list-item' : 'textfield',
+        });
       }
     };
   }
@@ -186,7 +205,7 @@ function NoteContainer({
       }}
       eventHandlers={{
         onClick,
-        onClose() {
+        onClose: () => {
           onNoteBlur(index);
           if (index === 0) {
             onNoteAdd();
@@ -195,13 +214,25 @@ function NoteContainer({
         onHeaderChange: ({ target: { value: headerText } }) => {
           onHeaderChange(index, headerText);
         },
+        onHeaderFocus: () => {
+          setNoteFocusInfo({ fieldName: 'header' });
+        },
         onTextFieldChange: ({ target: { value: text } }) => {
           onTextFieldChange(index, text);
+        },
+        onTextFieldFocus: () => {
+          setNoteFocusInfo({ fieldName: 'textfield' });
         },
         onListItemAdd: ({ target: { value: itemText } }) => {
           if (itemText !== '') {
             onListItemAdd(index, itemText);
           }
+        },
+        listItemFocusHandlerCreator: (isMarked, itemIndex) => () => {
+          setNoteFocusInfo({
+            fieldName: isMarked ? 'marked-list-item' : 'unmarked-list-item',
+            itemIndex,
+          });
         },
         onMoreButtonClick() {
           function popupDisappearanceHandler() {
@@ -221,6 +252,8 @@ function NoteContainer({
           }
         },
       }}
+      focusInfo={focusInfo}
+      isSelected={isSelected}
     />
   );
 }

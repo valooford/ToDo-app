@@ -6,11 +6,9 @@
   $icon-size: $base-unit,
   $font-size: 0.8 * $base-unit,
   $no-padding: false,
-  $no-hover: false,
   $hover-color: rgba(231, 231, 231, 0.5)
 ) {
   .#{$class-name} {
-    position: relative;
     display: inline-block;
     padding: 0;
     @if not $no-padding {
@@ -33,17 +31,16 @@
     overflow: visible; // IE
     cursor: pointer;
 
-    @if not $no-hover {
-      &:hover {
-        color: #000;
-        background-color: $hover-color;
+    &:hover {
+      color: #000;
+      background-color: $hover-color;
 
-        .#{$class-name}__title {
-          display: block;
-          z-index: 10;
-          &:hover {
-            display: none;
-          }
+      .#{$class-name}__title {
+        display: block;
+        z-index: 10;
+        &:hover,
+        &:focus {
+          display: none;
         }
       }
     }
@@ -89,7 +86,6 @@
   $icon-size: $base-unit,
   $font-size: $base-unit,
   $no-padding: false,
-  $no-hover: false,
   $hover-color: null
 ) {
   @if $base-unit and $font-size == $base-unit {
@@ -116,19 +112,8 @@
     font-family: $icon-font-name;
     font-size: $icon-size;
 
-    @if $no-hover {
-      &:hover {
-        color: #777;
-        background-color: transparent;
-
-        .#{$class-name}__title {
-          display: none;
-        }
-      }
-    } @else {
-      &:hover {
-        background-color: $hover-color;
-      }
+    &:hover {
+      background-color: $hover-color;
     }
 
     .#{$class-name}__icon {

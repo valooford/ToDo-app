@@ -17,6 +17,7 @@ export default function Container({
       onModalReady(modalCallback);
     }
   });
+
   return (
     <div className={style.container}>
       {elements.map((element, index) => {
@@ -25,6 +26,9 @@ export default function Container({
             className={cn(style.container__item, {
               [style.container__item_hidden]: index === focusedIndex,
             })}
+            onFocus={element.onItemFocus}
+            // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+            tabIndex={0}
             key={element.key}
           >
             {element.node}
