@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 /* eslint-disable import/no-unresolved */
 import ReactDOM from 'react-dom';
 /* eslint-enable import/no-unresolved */
@@ -11,24 +11,43 @@ export default function Container({
   elements = [],
   portal: [focusedIndex, modalCallback, modal],
   onModalReady,
+  itemToFocusIndex,
 }) {
   useEffect(() => {
     if (focusedIndex) {
       onModalReady(modalCallback);
     }
   });
+  const containerItemToFocusRef = useRef(null);
+  useEffect(() => {
+    if (typeof itemToFocusIndex === 'number') {
+      if (containerItemToFocusRef.current) {
+        containerItemToFocusRef.current.focus();
+      }
+    }
+  }, [itemToFocusIndex]);
 
   return (
     <div className={style.container}>
       {elements.map((element, index) => {
         return (
+          // eslint-disable-next-line jsx-a11y/no-static-element-interactions
           <div
-            className={cn(style.container__item, {
-              [style.container__item_hidden]: index === focusedIndex,
-            })}
+            className={cn(
+              style.container__item,
+              {
+                [style.container__item_focused]: element.isItemFocused,
+              },
+              {
+                [style.container__item_hidden]: index === focusedIndex,
+              }
+            )}
             onFocus={element.onItemFocus}
+            onBlur={element.onItemBlur}
+            onKeyDown={element.onItemKeyDown}
             // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-            tabIndex={0}
+            tabIndex={element.isFocusable ? 0 : -1}
+            ref={index === itemToFocusIndex ? containerItemToFocusRef : null}
             key={element.key}
           >
             {element.node}
@@ -38,7 +57,7 @@ export default function Container({
       {focusedIndex &&
         ReactDOM.createPortal(
           <div
-            className={cn(style.container__item, style.container__item_focused)}
+            className={cn(style.container__item, style.container__item_modal)}
           >
             {elements[focusedIndex].node}
           </div>,

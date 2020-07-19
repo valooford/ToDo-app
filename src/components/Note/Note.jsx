@@ -10,6 +10,8 @@ import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
 /* eslint-enable import/no-unresolved */
 import style from './Note-cfg.module.scss';
 
+// eslint-disable-next-line import/no-unresolved
+export { style as listItemStyle } from '@components/ListItem/ListItem';
 export { style };
 
 export default function Note({
@@ -32,7 +34,7 @@ export default function Note({
     onTextFieldChange,
     onTextFieldFocus,
     onListItemAdd,
-    listItemFocusHandlerCreator,
+    listItemMouseUpHandlerCreator,
     onMoreButtonClick,
   },
   focusInfo = {},
@@ -43,9 +45,8 @@ export default function Note({
     setTimeout(() => {
       if (!fieldToFocusRef.current) return;
       fieldToFocusRef.current.focus();
-      // must be some maxCharCount instead of 1000
-      // used only for focusing to a text end in IE
-      fieldToFocusRef.current.setSelectionRange(1000, 1000);
+      const caretPos = focusInfo.caret != null ? focusInfo.caret : 9999;
+      fieldToFocusRef.current.setSelectionRange(caretPos, caretPos);
     }, 0);
   }, [focusInfo.fieldName, focusInfo.itemIndex]);
   const { fieldName, itemIndex } = focusInfo;
@@ -62,7 +63,7 @@ export default function Note({
       setIsInteracting(true);
     });
     noteRef.current.addEventListener('focusout', () => {
-      setIsInteracting(false);
+      setIsInteracting(false || isSelected);
     });
   }, [noteRef.current]);
   useEffect(() => {
@@ -138,6 +139,12 @@ export default function Note({
       )}
       onSubmit={(e) => e.preventDefault()}
       onClick={onClick}
+      onKeyDown={({ keyCode }) => {
+        // Esc
+        if (keyCode === 27) {
+          onClose();
+        }
+      }}
       ref={noteRef}
     >
       {!isFocused && (
@@ -163,7 +170,7 @@ export default function Note({
           placeholder="Введите заголовок"
           value={headerText}
           onChange={onHeaderChange}
-          onFocus={onHeaderFocus}
+          onMouseUp={onHeaderFocus}
           tabIndex={isFocused ? 0 : -1}
           ref={isHeaderToFocus ? fieldToFocusRef : null}
         />
@@ -174,7 +181,7 @@ export default function Note({
             placeholder="Заметка..."
             value={text}
             onChange={onTextFieldChange}
-            onFocus={onTextFieldFocus}
+            onMouseUp={onTextFieldFocus}
             tabIndex={isFocused ? 0 : -1}
             ref={isTextfieldToFocus ? fieldToFocusRef : null}
           />
@@ -190,7 +197,7 @@ export default function Note({
                 onChange={item.onChange}
                 onRemove={item.onRemove}
                 onCheck={item.onCheck}
-                onFocus={listItemFocusHandlerCreator(false, i)}
+                onMouseUp={listItemMouseUpHandlerCreator(false, i)}
                 key={item.key}
                 ref={
                   isUnmarkedListItemToFocus && i === itemIndex
@@ -221,7 +228,7 @@ export default function Note({
                   onChange={item.onChange}
                   onRemove={item.onRemove}
                   onCheck={item.onCheck}
-                  onFocus={listItemFocusHandlerCreator(true, i)}
+                  onMouseUp={listItemMouseUpHandlerCreator(true, i)}
                   key={item.key}
                   ref={
                     isMarkedListItemToFocus && i === itemIndex

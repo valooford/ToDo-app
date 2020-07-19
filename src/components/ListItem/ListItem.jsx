@@ -6,6 +6,8 @@ import IconButton from '@components/IconButton/IconButton';
 /* eslint-enable import/no-unresolved */
 import style from './ListItem-cfg.module.scss';
 
+export { style };
+
 // КОМПОНЕНТ ЭЛЕМЕНТА СПИСКА / LIST-ITEM
 // *
 function ListItem(
@@ -17,15 +19,19 @@ function ListItem(
     onChange,
     onRemove,
     onCheck,
-    onFocus,
+    onMouseUp,
   },
   ref
 ) {
   const listItemInteractiveElements = [
-    // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
-    <span className={style.listItem__checkbox} key="checkbox" onClick={onCheck}>
+    <button
+      className={style.listItem__checkbox}
+      type="button"
+      key="checkbox"
+      onClick={onCheck}
+    >
       {isChecked && '\ue800'}
-    </span>,
+    </button>,
   ];
   if (!isPreview) {
     listItemInteractiveElements.push(
@@ -54,7 +60,7 @@ function ListItem(
           value={value}
           placeholder={isAddItem ? 'Новый пункт' : ''}
           onChange={onChange}
-          onFocus={onFocus}
+          onMouseUp={onMouseUp}
           tabIndex={isPreview ? -1 : 0}
           ref={ref}
         />

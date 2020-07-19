@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 /* eslint-disable import/no-unresolved */
-import Note, { style } from '@components/Note/Note';
+import Note, { style, listItemStyle } from '@components/Note/Note';
 import PopupMenu from '@components/PopupMenu/PopupMenu.container';
 
 import {
@@ -29,6 +29,7 @@ function NoteContainer({
   isSelected,
   onFocusInfoChange,
   notes,
+  onClose,
   onNoteFocus,
   onNoteBlur,
   onNoteAdd,
@@ -43,6 +44,14 @@ function NoteContainer({
 }) {
   const note = notes[index];
   const { items, popup } = note;
+
+  // havePopupBeenClosed used to set the focus after popup's actions
+  const [havePopupBeenClosed, setHavePopupBeenClosed] = useState(false);
+  useEffect(() => {
+    if (!havePopupBeenClosed) {
+      setHavePopupBeenClosed(false);
+    }
+  }, [havePopupBeenClosed]);
 
   const [noteFocusInfo, setNoteFocusInfo] = useState(focusInfo);
   useEffect(() => {
@@ -172,13 +181,10 @@ function NoteContainer({
         style.note__cornerButtons,
         style.note__buttons,
         style.note__info,
+        listItemStyle.listItem__checkbox,
       ].map((s) => `.${s}`);
       if (nonFocusingElementsSelectors.every((s) => !target.closest(s))) {
         onNoteFocus(index);
-      } else {
-        setNoteFocusInfo({
-          fieldName: note.type === 'list' ? 'add-list-item' : 'textfield',
-        });
       }
     };
   }
@@ -206,7 +212,11 @@ function NoteContainer({
       eventHandlers={{
         onClick,
         onClose: () => {
+          if (onClose && note.isFocused) {
+            onClose();
+          }
           onNoteBlur(index);
+
           if (index === 0) {
             onNoteAdd();
           }
@@ -214,24 +224,33 @@ function NoteContainer({
         onHeaderChange: ({ target: { value: headerText } }) => {
           onHeaderChange(index, headerText);
         },
-        onHeaderFocus: () => {
-          setNoteFocusInfo({ fieldName: 'header' });
+        onHeaderFocus: ({ target }) => {
+          setNoteFocusInfo({
+            fieldName: 'header',
+            caret: target.selectionStart,
+          });
         },
         onTextFieldChange: ({ target: { value: text } }) => {
           onTextFieldChange(index, text);
         },
-        onTextFieldFocus: () => {
-          setNoteFocusInfo({ fieldName: 'textfield' });
+        onTextFieldFocus: ({ target }) => {
+          setNoteFocusInfo({
+            fieldName: 'textfield',
+            caret: target.selectionStart,
+          });
         },
         onListItemAdd: ({ target: { value: itemText } }) => {
           if (itemText !== '') {
             onListItemAdd(index, itemText);
           }
         },
-        listItemFocusHandlerCreator: (isMarked, itemIndex) => () => {
+        listItemMouseUpHandlerCreator: (isMarked, itemIndex) => ({
+          target,
+        }) => {
           setNoteFocusInfo({
             fieldName: isMarked ? 'marked-list-item' : 'unmarked-list-item',
             itemIndex,
+            caret: target.selectionStart,
           });
         },
         onMoreButtonClick() {
@@ -240,7 +259,8 @@ function NoteContainer({
             //   `*:nth-of-type(${index + 1}) > .note .popup-menu`
             // );
             // if (!closestPopup) {
-            setPopup(index, '');
+            setPopup(index, null);
+            setHavePopupBeenClosed(true);
             document.removeEventListener('click', popupDisappearanceHandler);
             // }
           }
@@ -252,7 +272,14 @@ function NoteContainer({
           }
         },
       }}
-      focusInfo={focusInfo}
+      focusInfo={
+        havePopupBeenClosed
+          ? // default focusInfo after popup's actions
+            {
+              fieldName: note.type === 'list' ? 'add-list-item' : 'textfield',
+            }
+          : focusInfo
+      }
       isSelected={isSelected}
     />
   );

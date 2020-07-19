@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 /* eslint-disable import/no-unresolved */
 import IconButton from '@components/IconButton/IconButton';
 /* eslint-enable import/no-unresolved */
@@ -24,11 +24,27 @@ const buttonsParams = [
 
 // КОМПОНЕНТ БЛОКА ДОБАВЛЕНИЯ ЗАМЕТКИ / ADD-NOTE
 // *
-export default function AddNote({ onClick }) {
+export default function AddNote({ onClick, onInput }) {
+  const inputRef = useRef(null);
+  useEffect(() => {
+    inputRef.current.focus();
+  }, []);
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
     <div className={style.addNote} onClick={onClick}>
-      Заметка...
+      <input
+        className={style.addNote__input}
+        type="text"
+        placeholder="Заметка..."
+        onInput={onInput}
+        onKeyDown={(e) => {
+          // Enter
+          if (e.keyCode === 13) {
+            onInput(e);
+          }
+        }}
+        ref={inputRef}
+      />
       <div className={style.addNote__buttons}>
         {buttonsParams.map((params) => (
           <IconButton

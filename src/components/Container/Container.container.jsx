@@ -1,22 +1,56 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
 import AddNote from '@components/AddNote/AddNote.container';
 import Note from '@components/Note/Note.container';
 
-import { blurNote } from '@store/mainReducer';
+import { focusNote, blurNote } from '@store/mainReducer';
 import { readyModal } from '@store/modalReducer';
 /* eslint-enable import/no-unresolved */
 import Container from './Container';
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ CONTAINER
 // *
-function ContainerContainer({ notes, modalRef, onModalReady, onNoteBlur }) {
+function ContainerContainer({
+  notes,
+  modalRef,
+  onModalReady,
+  onNoteFocus,
+  onNoteBlur,
+}) {
   const [containerFocusInfo, setContainerFocusInfo] = useState({});
+  // index of a currently focused container item
+  const [focusedItemIndex, setFocusedItemIndex] = useState();
+  // index of a container item that is needed to be focused
+  const [itemToFocusIndex, setItemToFocusIndex] = useState(null);
+  // checking modal for being closed
+  const [haveModalBeenClosed, setHaveModalBeenClosed] = useState(false);
+  useEffect(() => {
+    if (haveModalBeenClosed) {
+      setContainerFocusInfo((prevFocusInfo) => ({
+        ...prevFocusInfo,
+        noteFocusInfo: {},
+      }));
+      setItemToFocusIndex(containerFocusInfo.noteIndex);
+      setHaveModalBeenClosed(false);
+    } else {
+      setItemToFocusIndex(null);
+    }
+  }, [haveModalBeenClosed]);
 
   const add = {
     key: 'add',
-    node: notes[0].isFocused ? <Note index={0} /> : <AddNote />,
+    node: notes[0].isFocused ? (
+      <Note
+        index={0}
+        focusInfo={{
+          fieldName: notes[0].type === 'list' ? 'add-list-item' : 'textfield',
+        }}
+      />
+    ) : (
+      <AddNote />
+    ),
+    isItemFocused: true,
   };
   let focusedNoteIndex;
   // заметка с индексом 0 используется для добавления
@@ -33,6 +67,9 @@ function ContainerContainer({ notes, modalRef, onModalReady, onNoteBlur }) {
       node: (
         <Note
           index={index}
+          onClose={() => {
+            setHaveModalBeenClosed(true);
+          }}
           onFocusInfoChange={(noteFocusInfo) => {
             setContainerFocusInfo({
               noteIndex: index,
@@ -41,18 +78,29 @@ function ContainerContainer({ notes, modalRef, onModalReady, onNoteBlur }) {
           }}
           focusInfo={
             focusedNoteIndex === index
-              ? {
+              ? // fallback to default focusInfo if field wasn't specified
+                {
                   fieldName:
                     note.type === 'list' ? 'add-list-item' : 'textfield',
                   ...containerFocusInfo.noteFocusInfo,
                 }
               : undefined
           }
-          isSelected={index === containerFocusInfo.noteIndex}
+          isSelected={!focusedNoteIndex && index === focusedItemIndex}
         />
       ),
+      isFocusable: true,
       onItemFocus: () => {
-        setContainerFocusInfo({ noteIndex: index });
+        setFocusedItemIndex(index);
+      },
+      onItemBlur: () => {
+        setFocusedItemIndex(null);
+      },
+      onItemKeyDown: (e) => {
+        // Enter
+        if (e.keyCode === 13) {
+          onNoteFocus(index);
+        }
       },
     };
   });
@@ -63,10 +111,12 @@ function ContainerContainer({ notes, modalRef, onModalReady, onNoteBlur }) {
         focusedNoteIndex,
         () => {
           onNoteBlur(focusedNoteIndex);
+          setHaveModalBeenClosed(true);
         },
         modalRef.current,
       ]}
       onModalReady={onModalReady}
+      itemToFocusIndex={itemToFocusIndex}
     >
       {[add, ...noteElements]}
     </Container>
@@ -80,6 +130,7 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps, {
+  onNoteFocus: focusNote,
   onNoteBlur: blurNote,
   onModalReady: readyModal,
 })(ContainerContainer);
