@@ -90,18 +90,27 @@ function ContainerContainer({
         />
       ),
       isFocusable: true,
-      onItemFocus: () => {
+      onItemFocus: (e) => {
+        // triggers for an unknown reason when something get focus inside
+        // seems like bubbling
+        if (e.target !== e.currentTarget) return;
         setFocusedItemIndex(index);
       },
-      onItemBlur: () => {
+      onItemBlur: (e) => {
+        // triggers for an unknown reason when something lose focus inside
+        // seems like bubbling
+        if (e.target !== e.currentTarget) return;
         setFocusedItemIndex(null);
       },
-      onItemKeyDown: (e) => {
-        // Enter
-        if (e.keyCode === 13) {
-          onNoteFocus(index);
-        }
-      },
+      onItemKeyDown:
+        index === focusedItemIndex
+          ? (e) => {
+              // Enter
+              if (e.keyCode === 13) {
+                onNoteFocus(index);
+              }
+            }
+          : null,
     };
   });
   return (

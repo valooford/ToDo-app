@@ -14,7 +14,7 @@ import style from './Note-cfg.module.scss';
 export { style as listItemStyle } from '@components/ListItem/ListItem';
 export { style };
 
-export default function Note({
+function Note({
   noteData: {
     type,
     headerText,
@@ -58,17 +58,19 @@ export default function Note({
 
   const noteRef = useRef(null);
   const [isInteracting, setIsInteracting] = useState(isSelected);
+  // is any focused element inside this note
+  const [isFocusing, setIsFocusing] = useState(false);
   useEffect(() => {
     noteRef.current.addEventListener('focusin', () => {
-      setIsInteracting(true);
+      setIsFocusing(true);
     });
     noteRef.current.addEventListener('focusout', () => {
-      setIsInteracting(false || isSelected);
+      setIsFocusing(false);
     });
   }, [noteRef.current]);
   useEffect(() => {
-    setIsInteracting(isSelected);
-  }, [isSelected]);
+    setIsInteracting(isSelected || isFocusing);
+  }, [isSelected, isFocusing]);
 
   const buttons = [
     {
@@ -269,3 +271,5 @@ export default function Note({
 
   return isFocused ? <KeyboardTrap>{note}</KeyboardTrap> : note;
 }
+
+export default React.memo(Note);
