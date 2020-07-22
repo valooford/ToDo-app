@@ -25,11 +25,19 @@
     cursor: default;
 
     &__item {
-      padding: $base-unit/2 $base-unit;
       display: block;
+      width: 100%;
+      padding: $base-unit/2 $base-unit;
+      color: inherit;
+      font: inherit;
+      text-align: left;
+      background-color: #fff;
+      border: 0;
+      outline: 0;
       cursor: pointer;
 
-      &:hover {
+      &:hover,
+      &:focus {
         background-color: #f1f1f1;
       }
     }

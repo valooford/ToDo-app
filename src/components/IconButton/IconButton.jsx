@@ -7,13 +7,10 @@ import style from './IconButton-cfg.module.scss';
 
 // КОМПОНЕНТ КНОПКИ С ИКОНКОЙ / ICON-BUTTON
 // *
-export default function IconButton({
-  iconSymbol = '',
-  titleText = '',
-  modificators = [],
-  disabled,
-  onClick,
-}) {
+function IconButton(
+  { iconSymbol = '', titleText = '', modificators = [], disabled, onClick },
+  ref
+) {
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
     <button
@@ -26,6 +23,7 @@ export default function IconButton({
       )}
       onClick={onClick}
       disabled={disabled}
+      ref={ref}
     >
       <span className={style['icon-button__icon']}>{iconSymbol}</span>
       <br />
@@ -35,3 +33,5 @@ export default function IconButton({
     </button>
   );
 }
+
+export default React.forwardRef(IconButton);

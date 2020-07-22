@@ -10,10 +10,11 @@
     <div id="todo-app"></div>
 
     <!-- polyfill.io default + dataset(data-* attr) + Array#flat()-->
+    <!-- Array.from()-->
     <!-- FOR PROD -->
     <!-- <script
       crossorigin="anonymous"
-      src="https://polyfill.io/v3/polyfill.min.js?features=default%2CElement.prototype.dataset%2CArray.prototype.flat"
+      src="https://polyfill.io/v3/polyfill.min.js?features=default%2CElement.prototype.dataset%2CArray.prototype.flat%2CArray.from"
     ></script> -->
 
     <!-- FOR DEV -->
@@ -21,7 +22,7 @@
       <script>
         document.write(
           '<' +
-            'script src="https://polyfill.io/v3/polyfill.min.js?features=default%2CElement.prototype.dataset%2CArray.prototype.flat&ua=ie/' +
+            'script src="https://polyfill.io/v3/polyfill.min.js?features=default%2CElement.prototype.dataset%2CArray.prototype.flat%2CArray.from&ua=ie/' +
             document.documentMode +
             '"></' +
             'script>'
@@ -29,7 +30,7 @@
       </script>
     <![endif]-->
     <!--[if !IE]>-->
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=default%2CElement.prototype.dataset%2CArray.prototype.flat"></script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=default%2CElement.prototype.dataset%2CArray.prototype.flat%2CArray.from"></script>
     <!--<![endif]-->
   </body>
 </html>

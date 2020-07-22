@@ -37,6 +37,7 @@ function Note({
     listItemMouseUpHandlerCreator,
     onMoreButtonClick,
   },
+  refs: { moreButton: moreButtonRef } = {},
   focusInfo = {},
   isSelected,
 }) {
@@ -104,6 +105,7 @@ function Note({
       modificators: 'icon-button_smaller',
       onClick: onMoreButtonClick,
       append: popup.menu,
+      ref: moreButtonRef,
     },
     {
       iconSymbol: '\ue807',
@@ -125,6 +127,7 @@ function Note({
         modificators={params.modificators}
         onClick={params.onClick}
         disabled={params.disabled}
+        ref={params.ref || null}
       />
       {params.append}
     </span>

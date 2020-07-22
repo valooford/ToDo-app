@@ -93,8 +93,15 @@ function getMenuItems({
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ POPUP-MENU
 // *
-function PopupMenuContainer({ notes, index, hasMarkedItems, ...props }) {
+function PopupMenuContainer({
+  notes,
+  index,
+  hasMarkedItems,
+  callerRef,
+  ...props
+}) {
   const {
+    onClose,
     onRemove,
     onCopy,
     onUncheckAll,
@@ -103,6 +110,14 @@ function PopupMenuContainer({ notes, index, hasMarkedItems, ...props }) {
     onListToText,
     setPopup,
   } = props;
+  const keyDownHandler = (e) => {
+    // Tab or Esc
+    if (e.keyCode === 9 || e.keyCode === 27) {
+      e.preventDefault();
+      callerRef.current.focus();
+      onClose();
+    }
+  };
   const { type, headerText, text, items } = notes[index];
   let isFieldsFilled = false;
   if (
@@ -127,6 +142,7 @@ function PopupMenuContainer({ notes, index, hasMarkedItems, ...props }) {
         onListToText,
         setPopup,
       })}
+      onKeyDown={keyDownHandler}
     />
   );
 }

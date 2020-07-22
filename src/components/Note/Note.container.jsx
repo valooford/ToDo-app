@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 /* eslint-disable import/no-unresolved */
@@ -189,6 +189,18 @@ function NoteContainer({
     };
   }
 
+  const moreButtonRef = useRef(null);
+  function popupDisappearanceHandler() {
+    // const closestPopup = e.target.closest(
+    //   `*:nth-of-type(${index + 1}) > .note .popup-menu`
+    // );
+    // if (!closestPopup) {
+    setPopup(index, null);
+    // setHavePopupBeenClosed(true);
+    document.removeEventListener('click', popupDisappearanceHandler);
+    // }
+  }
+
   return (
     <Note
       noteData={{
@@ -206,8 +218,13 @@ function NoteContainer({
           <PopupMenu
             index={index}
             hasMarkedItems={markedItems && !!markedItems.length}
+            callerRef={moreButtonRef}
+            onClose={popupDisappearanceHandler}
           />
         ),
+      }}
+      refs={{
+        moreButton: moreButtonRef,
       }}
       eventHandlers={{
         onClick,
@@ -254,16 +271,6 @@ function NoteContainer({
           });
         },
         onMoreButtonClick() {
-          function popupDisappearanceHandler() {
-            // const closestPopup = e.target.closest(
-            //   `*:nth-of-type(${index + 1}) > .note .popup-menu`
-            // );
-            // if (!closestPopup) {
-            setPopup(index, null);
-            setHavePopupBeenClosed(true);
-            document.removeEventListener('click', popupDisappearanceHandler);
-            // }
-          }
           setPopup(index, 'menu');
           if (popup !== 'menu') {
             setTimeout(() => {
