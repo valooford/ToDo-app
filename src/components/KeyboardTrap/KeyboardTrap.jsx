@@ -42,6 +42,7 @@ export default function KeyboardTrap({
           e.preventDefault();
           last.focus();
         } else if (usingArrows) {
+          e.preventDefault(); // exclude scrolling
           const index = focusableElements.indexOf(document.activeElement);
           focusableElements[index - 1].focus();
         }
@@ -50,6 +51,7 @@ export default function KeyboardTrap({
           e.preventDefault();
           first.focus();
         } else if (usingArrows) {
+          e.preventDefault(); // exclude scrolling
           const index = focusableElements.indexOf(document.activeElement);
           focusableElements[index + 1].focus();
         }
@@ -58,16 +60,6 @@ export default function KeyboardTrap({
     [first, last]
   );
 
-  // const [edgeElements, setEdgeElements] = useState({});
-  // useEffect(() => {
-  //   console.log('wee-wee');
-  //   if (first !== edgeElements.first || last !== edgeElements.last) {
-  //     setEdgeElements({
-  //       first,
-  //       last,
-  //     });
-  //   }
-  // }, [focusableElements.length, first, last]);
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <div

@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 /* eslint-disable import/no-unresolved */
 import PopupMenu from '@components/PopupMenu/PopupMenu';
 
@@ -10,8 +11,8 @@ import {
   removeCheckedListItems,
   textNoteToList,
   listNoteToText,
-  setNotePopup,
 } from '@store/mainReducer';
+import { closeModal } from '@store/modalReducer';
 /* eslint-enable import/no-unresolved */
 
 // функция получения элементов всплывающего меню
@@ -26,7 +27,7 @@ function getMenuItems({
   onRemoveChecked,
   onTextToList,
   onListToText,
-  setPopup,
+  closePopup,
 } = {}) {
   const menuItems = [
     { text: 'Добавить ярлык', key: 'tag' },
@@ -44,7 +45,6 @@ function getMenuItems({
       text: 'Создать копию',
       key: 'copy',
       onClick() {
-        setPopup(index, '');
         onCopy(index);
       },
     });
@@ -88,7 +88,13 @@ function getMenuItems({
     menuItems.push({ text: 'Скопировать в Google Документы', key: 'docs' });
   }
 
-  return menuItems;
+  return menuItems.map((i) => ({
+    ...i,
+    onClick: (e) => {
+      closePopup();
+      if (i.onClick) i.onClick(e);
+    },
+  }));
 }
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ POPUP-MENU
@@ -101,21 +107,21 @@ function PopupMenuContainer({
   ...props
 }) {
   const {
-    onClose,
+    handleClose,
     onRemove,
     onCopy,
     onUncheckAll,
     onRemoveChecked,
     onTextToList,
     onListToText,
-    setPopup,
   } = props;
   const keyDownHandler = (e) => {
     // Tab or Esc
     if (e.keyCode === 9 || e.keyCode === 27) {
       e.preventDefault();
+      e.stopPropagation(); // prevent a focused note from blurring
       callerRef.current.focus();
-      onClose();
+      handleClose(true);
     }
   };
   const { type, headerText, text, items } = notes[index];
@@ -140,7 +146,9 @@ function PopupMenuContainer({
         onRemoveChecked,
         onTextToList,
         onListToText,
-        setPopup,
+        closePopup: () => {
+          handleClose();
+        },
       })}
       onKeyDown={keyDownHandler}
     />
@@ -151,12 +159,22 @@ function mapStateToProps(state) {
   return { notes: state.main.notes };
 }
 
-export default connect(mapStateToProps, {
-  onRemove: removeNote,
-  onCopy: copyNote,
-  onUncheckAll: uncheckAllListItems,
-  onRemoveChecked: removeCheckedListItems,
-  onTextToList: textNoteToList,
-  onListToText: listNoteToText,
-  setPopup: setNotePopup,
-})(PopupMenuContainer);
+function mapDispatchToProps(dispatch) {
+  return {
+    onRemove(index) {
+      dispatch(removeNote(index));
+      dispatch(closeModal());
+    },
+  };
+}
+
+export default compose(
+  connect(mapStateToProps, mapDispatchToProps),
+  connect(null, {
+    onCopy: copyNote,
+    onUncheckAll: uncheckAllListItems,
+    onRemoveChecked: removeCheckedListItems,
+    onTextToList: textNoteToList,
+    onListToText: listNoteToText,
+  })
+)(PopupMenuContainer);

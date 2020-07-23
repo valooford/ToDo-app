@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 /* eslint-disable import/no-unresolved */
@@ -93,6 +93,13 @@ function NoteContainer({
     };
   }, [note.isFocused]);
   // *
+
+  // defined once as a method
+  const popupDisappearanceHandler = useCallback(() => {
+    document.removeEventListener('click', popupDisappearanceHandler);
+    setPopup(index, null);
+    setHavePopupBeenClosed(true);
+  }, []);
 
   let itemsCopy;
   let unmarkedItems;
@@ -190,16 +197,6 @@ function NoteContainer({
   }
 
   const moreButtonRef = useRef(null);
-  function popupDisappearanceHandler() {
-    // const closestPopup = e.target.closest(
-    //   `*:nth-of-type(${index + 1}) > .note .popup-menu`
-    // );
-    // if (!closestPopup) {
-    setPopup(index, null);
-    // setHavePopupBeenClosed(true);
-    document.removeEventListener('click', popupDisappearanceHandler);
-    // }
-  }
 
   return (
     <Note
@@ -219,7 +216,13 @@ function NoteContainer({
             index={index}
             hasMarkedItems={markedItems && !!markedItems.length}
             callerRef={moreButtonRef}
-            onClose={popupDisappearanceHandler}
+            handleClose={(isSilent) => {
+              document.removeEventListener('click', popupDisappearanceHandler);
+              setPopup(index, null);
+              if (!isSilent) {
+                setHavePopupBeenClosed(true);
+              }
+            }}
           />
         ),
       }}
@@ -270,7 +273,7 @@ function NoteContainer({
             caret: target.selectionStart,
           });
         },
-        onMoreButtonClick() {
+        onMoreButtonClick: () => {
           setPopup(index, 'menu');
           if (popup !== 'menu') {
             setTimeout(() => {

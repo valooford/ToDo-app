@@ -144,9 +144,9 @@ function Note({
       )}
       onSubmit={(e) => e.preventDefault()}
       onClick={onClick}
-      onKeyDown={({ keyCode }) => {
+      onKeyDown={(e) => {
         // Esc
-        if (keyCode === 27) {
+        if (e.keyCode === 27) {
           onClose();
         }
       }}
