@@ -36,8 +36,10 @@ function Note({
     onListItemAdd,
     listItemMouseUpHandlerCreator,
     onMoreButtonClick,
+    onColorsButtonClick,
+    onColorsButtonMouseLeave,
   },
-  refs: { moreButton: moreButtonRef } = {},
+  refs: { moreButton: moreButtonRef, colorsButton: colorsButtonRef } = {},
   focusInfo = {},
   isSelected,
 }) {
@@ -88,6 +90,11 @@ function Note({
       iconSymbol: '\ue804',
       titleText: 'Изменить цвет',
       modificators: 'icon-button_smaller',
+      onClick: onColorsButtonClick,
+      onHover: onColorsButtonClick,
+      onMouseLeave: onColorsButtonMouseLeave,
+      append: popup.colors,
+      ref: colorsButtonRef,
     },
     {
       iconSymbol: '\ue802',
@@ -126,6 +133,8 @@ function Note({
         titleText={params.titleText}
         modificators={params.modificators}
         onClick={params.onClick}
+        onHover={params.onHover}
+        onMouseLeave={params.onMouseLeave}
         disabled={params.disabled}
         ref={params.ref || null}
       />

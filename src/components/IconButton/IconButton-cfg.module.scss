@@ -50,3 +50,11 @@
   $font-size: 12px,
   $hover-color: rgba(210, 210, 210, 0.5)
 );
+
+@include extendIconButtonStylesheet(
+  $class-name: $iconButtonClassName,
+  $modificator-name: 'colored',
+  $base-unit: $smaller-base-unit,
+  $icon-size: 14px,
+  $font-size: 12px
+);

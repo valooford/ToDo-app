@@ -4,6 +4,7 @@ import { compose } from 'redux';
 /* eslint-disable import/no-unresolved */
 import Note, { style, listItemStyle } from '@components/Note/Note';
 import PopupMenu from '@components/PopupMenu/PopupMenu.container';
+import PopupColors from '@components/PopupColors/PopupColors.container';
 
 import {
   focusNote,
@@ -58,7 +59,6 @@ function NoteContainer({
     if (noteFocusInfo && noteFocusInfo.fieldName && onFocusInfoChange) {
       onFocusInfoChange(noteFocusInfo);
     }
-    // console.log(noteFocusInfo);
   }, [noteFocusInfo]);
 
   // logic below are used to detect click inside note[0]
@@ -99,6 +99,7 @@ function NoteContainer({
     document.removeEventListener('click', popupDisappearanceHandler);
     setPopup(index, null);
     setHavePopupBeenClosed(true);
+    // popup закрывается при ЛЮБОМ клике
   }, []);
 
   let itemsCopy;
@@ -197,6 +198,9 @@ function NoteContainer({
   }
 
   const moreButtonRef = useRef(null);
+  const colorsButtonRef = useRef(null);
+
+  let colorsButtonMouseLeaveTimerId;
 
   return (
     <Note
@@ -225,9 +229,26 @@ function NoteContainer({
             }}
           />
         ),
+        colors: popup === 'colors' && (
+          <PopupColors
+            index={index}
+            callerRef={colorsButtonRef}
+            handleClose={(isSilent) => {
+              // document.removeEventListener('click', popupDisappearanceHandler);
+              setPopup(index, null);
+              if (!isSilent) {
+                setHavePopupBeenClosed(true);
+              }
+            }}
+            onHover={() => {
+              clearTimeout(colorsButtonMouseLeaveTimerId);
+            }}
+          />
+        ),
       }}
       refs={{
         moreButton: moreButtonRef,
+        colorsButton: colorsButtonRef,
       }}
       eventHandlers={{
         onClick,
@@ -280,6 +301,15 @@ function NoteContainer({
               document.addEventListener('click', popupDisappearanceHandler);
             }, 0);
           }
+        },
+        onColorsButtonClick: () => {
+          clearTimeout(colorsButtonMouseLeaveTimerId);
+          setPopup(index, 'colors');
+        },
+        onColorsButtonMouseLeave: () => {
+          colorsButtonMouseLeaveTimerId = setTimeout(() => {
+            setPopup(index, null);
+          }, 1000);
         },
       }}
       focusInfo={

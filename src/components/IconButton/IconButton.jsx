@@ -8,11 +8,19 @@ import style from './IconButton-cfg.module.scss';
 // КОМПОНЕНТ КНОПКИ С ИКОНКОЙ / ICON-BUTTON
 // *
 function IconButton(
-  { iconSymbol = '', titleText = '', modificators = [], disabled, onClick },
+  {
+    iconSymbol = '',
+    titleText = '',
+    modificators = [],
+    disabled,
+    onClick,
+    onHover,
+    onMouseLeave,
+  },
   ref
 ) {
   return (
-    // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
+    // eslint-disable-next-line jsx-a11y/mouse-events-have-key-events
     <button
       type="button"
       className={cn(
@@ -22,6 +30,8 @@ function IconButton(
           : style[modificators]
       )}
       onClick={onClick}
+      onMouseEnter={onHover}
+      onMouseLeave={onMouseLeave}
       disabled={disabled}
       ref={ref}
     >
