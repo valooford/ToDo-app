@@ -40,6 +40,10 @@ export default function Container({
               },
               {
                 [style.container__item_hidden]: index === focusedIndex,
+              },
+              {
+                [style[`container__item_style-${element.color}`]]:
+                  element.color,
               }
             )}
             onFocus={element.onItemFocus}
@@ -57,7 +61,10 @@ export default function Container({
       {focusedIndex &&
         ReactDOM.createPortal(
           <div
-            className={cn(style.container__item, style.container__item_modal)}
+            className={cn(style.container__item, style.container__item_modal, {
+              [style[`container__item_style-${elements[focusedIndex].color}`]]:
+                elements[focusedIndex].color,
+            })}
           >
             {elements[focusedIndex].node}
           </div>,

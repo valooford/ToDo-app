@@ -46,6 +46,7 @@
       font-family: inherit;
       font-size: 16px;
       font-weight: bold;
+      background-color: transparent;
       &:focus {
         outline: none;
       }
@@ -55,7 +56,8 @@
     }
     &__markedList {
       padding-top: $base-unit;
-      border-top: 1px solid #ddd;
+      border-top: 1px solid rgba(0, 0, 0, 0.13);
+      color: rgba(0, 0, 0, 0.46);
       font-size: 14px;
       font-weight: normal;
       vertical-align: middle;
@@ -73,6 +75,7 @@
       }
     }
     &__markedList &__list textarea {
+      color: rgba(0, 0, 0, 0.3);
       text-decoration: line-through;
     }
     &__info {
@@ -98,19 +101,19 @@
       padding: 0.6 * $base-unit 1.4 * $base-unit;
       border: none;
       border-radius: $base-unit / 3;
-      color: #444;
-      background-color: #fff;
+      color: rgba(0, 0, 0, 0.69);
+      background-color: transparent;
       font-family: $font-family;
       font-weight: bold;
       font-size: 14px;
       cursor: pointer;
 
       &:hover {
-        background-color: #f9f9f9;
+        background-color: rgba(0, 0, 0, 0.023);
       }
       &:focus {
         outline: none;
-        background-color: #eee;
+        background-color: rgba(0, 0, 0, 0.066);
       }
     }
     & &__button {

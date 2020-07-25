@@ -40,6 +40,7 @@ function ContainerContainer({
 
   const add = {
     key: 'add',
+    color: notes[0].isFocused && notes[0].color,
     node: notes[0].isFocused ? (
       <Note
         index={0}
@@ -64,6 +65,7 @@ function ContainerContainer({
     return {
       // assume that creationDate is unique for every note
       key: note.creationDate.getTime(),
+      color: note.color,
       node: (
         <Note
           index={index}

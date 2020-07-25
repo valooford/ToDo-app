@@ -1,5 +1,6 @@
 @mixin creationTimeStylesheet($class-name: 'creation-time') {
   .#{$class-name} {
+    color: rgba(0, 0, 0, 0.46);
     font-size: 13px;
     font-weight: normal;
 

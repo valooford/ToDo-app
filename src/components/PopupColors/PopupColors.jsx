@@ -3,10 +3,62 @@ import React from 'react';
 import IconButton from '@components/IconButton/IconButton';
 /* eslint-enable import/no-unresolved */
 
-import style from './PopupColors.module.scss';
+import style from './PopupColors-cfg.module.scss';
+
+const buttonsParams = [
+  {
+    color: 'default',
+    title: 'По умолчанию',
+  },
+  {
+    color: 'red',
+    title: 'Красный',
+  },
+  {
+    color: 'orange',
+    title: 'Оранжевый',
+  },
+  {
+    color: 'yellow',
+    title: 'Желтый',
+  },
+  {
+    color: 'green',
+    title: 'Зеленый',
+  },
+  {
+    color: 'aquamarine',
+    title: 'Сине-зеленый',
+  },
+  {
+    color: 'blue',
+    title: 'Синий',
+  },
+  {
+    color: 'darkblue',
+    title: 'Темно-синий',
+  },
+  {
+    color: 'purple',
+    title: 'Фиолетовый',
+  },
+  {
+    color: 'pink',
+    title: 'Розовый',
+  },
+  {
+    color: 'brown',
+    title: 'Коричневый',
+  },
+  {
+    color: 'grey',
+    title: 'Серый',
+  },
+];
 
 export default function PopupColors({
-  buttonsParams = [1],
+  onColorSelection,
+  selectedColor,
   firstButtonRef,
   lastButtonRef,
   onKeyDown,
@@ -32,11 +84,17 @@ export default function PopupColors({
         }
         return (
           <IconButton
-            iconSymbol="K"
-            titleText="По умолчанию"
-            modificators="icon-button_colored"
-            onClick={params.onClick}
+            iconSymbol={selectedColor === params.color && '\ue800'}
+            titleText={params.title}
+            modificators={[
+              'icon-button_colored',
+              `icon-button_style-${params.color}`,
+            ]}
+            onClick={() => {
+              onColorSelection(params.color);
+            }}
             ref={buttonRef}
+            key={params.color}
           />
         );
       })}

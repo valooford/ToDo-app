@@ -5,3 +5,24 @@
   $class-name: $containerClassName,
   $base-unit: $base-unit
 );
+
+@mixin addContainerItemStyle($style-name, $style-color) {
+  @include extendContainerItemStylesheet(
+    $class-name: $containerClassName,
+    $modificator-name: 'style-#{$style-name}',
+    $background-color: $style-color,
+    $border-color: $style-color
+  );
+}
+
+@include addContainerItemStyle('red', $color-red);
+@include addContainerItemStyle('orange', $color-orange);
+@include addContainerItemStyle('yellow', $color-yellow);
+@include addContainerItemStyle('green', $color-green);
+@include addContainerItemStyle('aquamarine', $color-aquamarine);
+@include addContainerItemStyle('blue', $color-blue);
+@include addContainerItemStyle('darkblue', $color-darkblue);
+@include addContainerItemStyle('purple', $color-purple);
+@include addContainerItemStyle('pink', $color-pink);
+@include addContainerItemStyle('brown', $color-brown);
+@include addContainerItemStyle('grey', $color-grey);

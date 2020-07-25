@@ -11,16 +11,18 @@ const REMOVE_CHECKED_LIST_ITEMS = 'main/remove-checked-list-items';
 const TEXT_NOTE_TO_LIST = 'main/text-note-to-list';
 const LIST_NOTE_TO_TEXT = 'main/list-note-to-text';
 const SET_NOTE_POPUP = 'main/set-note-popup';
+const SET_NOTE_COLOR = 'main/set-note-color';
 
 const initialState = {
   notes: [
-    { type: 'default', headerText: '', text: '' },
+    { type: 'default', headerText: '', text: '', color: 'default' },
     {
       type: 'default',
       headerText: 'Мой заголовок',
       text: 'Привет\nПока',
       creationDate: new Date(2020, 5, 29, 10),
       editingDate: new Date(2020, 6, 1, 1, 12),
+      color: 'default',
     },
     {
       type: 'list',
@@ -50,6 +52,7 @@ const initialState = {
       ],
       creationDate: new Date(2020, 5, 30, 10),
       editingDate: new Date(2020, 6, 1, 1, 12),
+      color: 'blue',
     },
   ],
   removedNotes: [],
@@ -121,6 +124,7 @@ export default function mainReducer(state = initialState, action) {
           items: note.items,
           creationDate: note.creationDate,
           editingDate: note.editingDate,
+          color: note.color,
         };
         notes = [notes[0], note, ...notes.slice(1)];
       }
@@ -361,6 +365,18 @@ export default function mainReducer(state = initialState, action) {
         ...state,
         notes,
       };
+    case SET_NOTE_COLOR:
+      if (state.notes[action.index].color === action.color) {
+        return state;
+      }
+      notes = [...state.notes];
+      note = { ...notes[action.index] };
+      note.color = action.color;
+      notes[action.index] = note;
+      return {
+        ...state,
+        notes,
+      };
     default:
       return state;
   }
@@ -518,5 +534,14 @@ export function setNotePopup(index, popup = null) {
     type: SET_NOTE_POPUP,
     index,
     popup,
+  };
+}
+
+// SET_NOTE_COLOR
+export function setNoteColor(index, color) {
+  return {
+    type: SET_NOTE_COLOR,
+    index,
+    color,
   };
 }

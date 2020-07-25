@@ -1,4 +1,9 @@
-@mixin containerStylesheet($class-name: 'container', $base-unit: 15px) {
+@mixin containerStylesheet(
+  $class-name: 'container',
+  $base-unit: 15px,
+  $background-color: #fff,
+  $border-color: rgba(0, 0, 0, 0.133)
+) {
   .#{$class-name} {
     width: 600px;
     margin: 0 auto;
@@ -7,8 +12,8 @@
       width: 600px;
       margin-top: 2 * $base-unit;
       padding: 0 $base-unit;
-      background-color: #fff;
-      border: 1px solid #ddd;
+      background-color: $background-color;
+      border: 1px solid $border-color;
       border-radius: 10px;
       outline: none;
 
@@ -25,7 +30,10 @@
       &_focused,
       &_modal,
       &:hover {
-        box-shadow: (0 1px 5px #ddd, inset 0 -1px 2px #bbb);
+        box-shadow: (
+          0 1px 5px rgba(0, 0, 0, 0.133),
+          inset 0 -1px 2px rgba(0, 0, 0, 0.266)
+        );
       }
       > * {
         position: relative;
@@ -34,5 +42,19 @@
         font-weight: bold;
       }
     }
+  }
+}
+
+@mixin extendContainerItemStylesheet(
+  $class-name: 'container',
+  $modificator-name: 'modificator',
+  $background-color: null,
+  $border-color: null
+) {
+  .#{$class-name}__item_#{$modificator-name} {
+    background-color: $background-color;
+    border-color: $border-color;
+
+    @content;
   }
 }

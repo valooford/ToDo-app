@@ -2,12 +2,13 @@
   $class-name: 'iconed-menu-item',
   $base-unit: 15px,
   $bigger-base-unit: 16px,
-  $icon-font-name: IconFont
+  $icon-font-name: IconFont,
+  $selected-color: #bef2ff
 ) {
   .#{$class-name} {
     margin-left: -0.7 * $base-unit;
     line-height: 3 * $bigger-base-unit;
-    color: #555;
+    color: rgba(0, 0, 0, 0.664);
     font-size: 14px;
     font-weight: bold;
     border-top-right-radius: 1.5 * $bigger-base-unit;
@@ -19,11 +20,9 @@
     // &:focus {
     //   border: 1px solid #555;
     // }
-    &_selected {
-      background-color: rgb(190, 242, 255);
-      &:hover {
-        background-color: rgb(190, 242, 255);
-      }
+    &_selected,
+    &_selected:hover {
+      background-color: $selected-color;
     }
     &_selected &__icon {
       color: #000;

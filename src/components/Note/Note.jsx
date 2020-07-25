@@ -37,6 +37,7 @@ function Note({
     listItemMouseUpHandlerCreator,
     onMoreButtonClick,
     onColorsButtonClick,
+    onColorsButtonHover,
     onColorsButtonMouseLeave,
   },
   refs: { moreButton: moreButtonRef, colorsButton: colorsButtonRef } = {},
@@ -91,7 +92,7 @@ function Note({
       titleText: 'Изменить цвет',
       modificators: 'icon-button_smaller',
       onClick: onColorsButtonClick,
-      onHover: onColorsButtonClick,
+      onHover: onColorsButtonHover,
       onMouseLeave: onColorsButtonMouseLeave,
       append: popup.colors,
       ref: colorsButtonRef,
@@ -126,21 +127,23 @@ function Note({
       modificators: 'icon-button_smaller',
       disabled: true,
     },
-  ].map((params) => (
-    <span key={params.titleText}>
-      <IconButton
-        iconSymbol={params.iconSymbol}
-        titleText={params.titleText}
-        modificators={params.modificators}
-        onClick={params.onClick}
-        onHover={params.onHover}
-        onMouseLeave={params.onMouseLeave}
-        disabled={params.disabled}
-        ref={params.ref || null}
-      />
-      {params.append}
-    </span>
-  ));
+  ]
+    .filter((params) => isFocused || !params.disabled)
+    .map((params) => (
+      <span key={params.titleText}>
+        <IconButton
+          iconSymbol={params.iconSymbol}
+          titleText={params.titleText}
+          modificators={params.modificators}
+          onClick={params.onClick}
+          onHover={params.onHover}
+          onMouseLeave={params.onMouseLeave}
+          disabled={params.disabled}
+          ref={params.ref || null}
+        />
+        {params.append}
+      </span>
+    ));
   const note = (
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
     <form

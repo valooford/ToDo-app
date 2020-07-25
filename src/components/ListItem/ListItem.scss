@@ -21,10 +21,12 @@
     &__drag {
       display: none;
       left: 0.5 * $base-unit;
+      color: rgba(0, 0, 0, 0.465);
       cursor: all-scroll;
     }
     &__add {
       left: 1.8 * $base-unit + 1px;
+      color: rgba(0, 0, 0, 0.465);
       font-size: 14px;
     }
     &__checkbox {
@@ -33,15 +35,17 @@
       width: 14px;
       height: 14px;
       padding: 0;
-      color: #888;
+      color: rgba(0, 0, 0, 0.465);
       font-size: 10px;
-      background: #fff;
-      border: 2px solid #888;
+      background: transparent;
+      outline: none;
+      border: 2px solid rgba(0, 0, 0, 0.465);
       border-radius: 3px;
       cursor: pointer;
-      &:hover {
-        color: #555;
-        border-color: #555;
+      &:hover,
+      &:focus {
+        color: rgba(0, 0, 0, 0.664);
+        border-color: rgba(0, 0, 0, 0.664);
       }
     }
     &:hover &__remove,
@@ -53,15 +57,18 @@
       position: absolute;
       top: $tiny-base-unit / 3;
       right: $base-unit;
-      color: #888;
+      color: rgba(0, 0, 0, 0.465);
     }
-    &__text * {
+    &__text > * {
       min-height: 34px;
       padding: 6px 3.5 * $base-unit;
-      &:focus {
-        border-top: 1px solid #ddd;
-        border-bottom: 1px solid #ddd;
-      }
+      border-top: 1px solid transparent;
+      border-bottom: 1px solid transparent;
+    }
+    &__text > *:focus,
+    &__checkbox:focus ~ &__text > * {
+      border-top-color: rgba(0, 0, 0, 0.133);
+      border-bottom-color: rgba(0, 0, 0, 0.133);
     }
   }
 }

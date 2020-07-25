@@ -199,6 +199,7 @@ function NoteContainer({
 
   const moreButtonRef = useRef(null);
   const colorsButtonRef = useRef(null);
+  const popupColorsItemToFocusRef = useRef(null);
 
   let colorsButtonMouseLeaveTimerId;
 
@@ -233,6 +234,7 @@ function NoteContainer({
           <PopupColors
             index={index}
             callerRef={colorsButtonRef}
+            itemToFocusRef={popupColorsItemToFocusRef}
             handleClose={(isSilent) => {
               // document.removeEventListener('click', popupDisappearanceHandler);
               setPopup(index, null);
@@ -305,6 +307,13 @@ function NoteContainer({
         onColorsButtonClick: () => {
           clearTimeout(colorsButtonMouseLeaveTimerId);
           setPopup(index, 'colors');
+          setTimeout(() => {
+            popupColorsItemToFocusRef.current.focus();
+          }, 0);
+        },
+        onColorsButtonHover: () => {
+          clearTimeout(colorsButtonMouseLeaveTimerId);
+          setPopup(index, 'colors');
         },
         onColorsButtonMouseLeave: () => {
           colorsButtonMouseLeaveTimerId = setTimeout(() => {
@@ -353,5 +362,6 @@ export default compose(
     onListItemCheck: checkNoteListItem,
     onListItemUncheck: uncheckNoteListItem,
     setPopup: setNotePopup,
-  })
+  }),
+  React.memo
 )(NoteContainer);

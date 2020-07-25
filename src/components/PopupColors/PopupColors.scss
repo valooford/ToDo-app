@@ -1,22 +1,22 @@
-@mixin popupColorsStylesheet($base-unit: 11px) {
+@mixin popupColorsStylesheet($base-unit: 9px) {
   .popup-colors {
     display: inline-block;
     position: absolute;
-    top: -(9 + 1 + 1.5) * $base-unit;
+    top: -13.5 * $base-unit;
     left: 0;
-    width: (12 + 0.75) * $base-unit;
-    height: (9 + 1) * $base-unit;
-    padding: 0.5 * $base-unit;
+    width: 13.5 * $base-unit;
+    height: 11 * $base-unit;
+    padding: $base-unit;
 
     background-color: #fff;
     border-radius: 2px;
     box-shadow: (0 1px 5px #ddd, inset 0 -1px 2px #bbb);
 
-    z-index: 15;
+    z-index: 10;
 
     > * {
-      margin-right: 0.25 * $base-unit;
-      margin-bottom: 0.5 * $base-unit;
+      margin-right: 0.5 * $base-unit;
+      margin-bottom: $base-unit;
 
       &:nth-child(4n) {
         margin-right: 0;

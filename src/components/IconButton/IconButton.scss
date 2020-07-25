@@ -6,7 +6,12 @@
   $icon-size: $base-unit,
   $font-size: 0.8 * $base-unit,
   $no-padding: false,
-  $hover-color: rgba(231, 231, 231, 0.5)
+  $background-color: transparent,
+  $hover-color: rgba(0, 0, 0, 0.066),
+  $border-width: 1px,
+  $border-color: transparent,
+  $hover-border-color: null,
+  $focused-border-color: rgba(0, 0, 0, 0.266)
 ) {
   .#{$class-name} {
     display: inline-block;
@@ -15,16 +20,16 @@
       width: 3 * $base-unit;
       height: 3 * $base-unit;
     } @else {
-      width: $icon-size;
-      height: $icon-size;
+      width: $icon-size - 3px;
+      height: $icon-size - 3px;
     }
     text-align: center;
     vertical-align: middle;
-    background-color: transparent;
-    border: none;
+    background-color: $background-color;
     outline: none;
+    border: $border-width solid $border-color;
     border-radius: 2 * $base-unit;
-    color: #777;
+    color: rgba(0, 0, 0, 0.5);
     font-family: $icon-font-name;
     font-size: $icon-size;
     font-weight: normal;
@@ -34,10 +39,10 @@
     &:hover {
       color: #000;
       background-color: $hover-color;
+      border-color: $hover-border-color;
 
       .#{$class-name}__title {
         display: block;
-        z-index: 10;
         &:hover,
         &:focus {
           display: none;
@@ -46,18 +51,18 @@
     }
     &:focus {
       color: #000;
-      border: 1px solid #bbb;
+      border-color: $focused-border-color;
 
       .#{$class-name}__title {
         display: block;
       }
     }
     &:disabled {
-      color: #ccc;
+      color: rgba(0, 0, 0, 0.19);
       cursor: not-allowed;
 
       &:hover {
-        background-color: #fff;
+        background-color: transparent;
       }
     }
 
@@ -86,7 +91,12 @@
   $icon-size: $base-unit,
   $font-size: $base-unit,
   $no-padding: false,
-  $hover-color: null
+  $background-color: null,
+  $hover-color: null,
+  $border-width: null,
+  $border-color: null,
+  $hover-border-color: null,
+  $focused-border-color: null
 ) {
   @if $base-unit and $font-size == $base-unit {
     $font-size: 0.8 * $base-unit;
@@ -97,23 +107,34 @@
 
   .#{$class-name}_#{$modificator-name} {
     @if $base-unit {
-      width: 3 * $base-unit;
-      height: 3 * $base-unit;
+      @if not $no-padding {
+        width: 3 * $base-unit;
+        height: 3 * $base-unit;
+      } @else {
+        width: $icon-size - 3px;
+        height: $icon-size - 3px;
+      }
       border-radius: 2 * $base-unit;
     }
     @if $no-padding {
-      width: $icon-size;
-      height: $icon-size;
       color: #000;
       &:focus {
-        border: none;
+        border-color: transparent;
       }
     }
+    background-color: $background-color;
+    border-width: $border-width;
+    border-color: $border-color;
     font-family: $icon-font-name;
     font-size: $icon-size;
 
     &:hover {
       background-color: $hover-color;
+      border-color: $hover-border-color;
+    }
+
+    &:focus {
+      border-color: $focused-border-color;
     }
 
     .#{$class-name}__icon {
