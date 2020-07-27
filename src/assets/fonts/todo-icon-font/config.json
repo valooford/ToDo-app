@@ -206,7 +206,7 @@
     },
     {
       "uid": "399ef63b1e23ab1b761dfbb5591fa4da",
-      "css": "right-open",
+      "css": "right",
       "code": 59398,
       "src": "fontawesome"
     },
@@ -220,6 +220,12 @@
       "uid": "a73c5deb486c8d66249811642e5d719a",
       "css": "repeat",
       "code": 59424,
+      "src": "fontawesome"
+    },
+    {
+      "uid": "d870630ff8f81e6de3958ecaeac532f2",
+      "css": "left",
+      "code": 59425,
       "src": "fontawesome"
     }
   ]
