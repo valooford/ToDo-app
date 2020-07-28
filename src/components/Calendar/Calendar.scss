@@ -1,0 +1,72 @@
+@mixin calendarStylesheet(
+  $font-family: 'Arial, sans-serif',
+  $icon-font-name: null
+) {
+  .calendar {
+    font-family: $font-family;
+    font-size: 13px;
+    line-height: 20px;
+    &__caption {
+      text-align: center;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+    }
+    &__prev-button,
+    &__next-button {
+      font-family: $icon-font-name;
+      font-size: 8px;
+      line-height: inherit;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+    &__prev-button {
+      float: left;
+      padding-right: 20px;
+    }
+    &__next-button {
+      float: right;
+      padding-left: 20px;
+    }
+    &__days {
+      text-align: center;
+      font-size: 0.9em;
+      thead {
+        border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+      }
+      th {
+        font-size: 0.85em;
+        line-height: 14px;
+      }
+      td > * {
+        position: relative;
+        width: 100%;
+        padding: 20px 8px 4px;
+        font-size: 0.85em;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+
+        // &:hover,
+        &:focus {
+          background-color: rgba(0, 0, 0, 0.1);
+        }
+        &:focus {
+          font-weight: bold;
+
+          &:before {
+            position: absolute;
+            top: 0.5em;
+            left: 50%;
+            width: 1em;
+            margin-left: -0.5em;
+
+            content: '\e809';
+            font-family: $icon-font-name;
+            font-weight: normal;
+            font-size: 1em;
+          }
+        }
+      }
+    }
+  }
+}

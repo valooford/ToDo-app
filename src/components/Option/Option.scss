@@ -1,0 +1,48 @@
+@mixin optionStylesheet(
+  $font-family: 'Arial, sans-serif',
+  $icon-font-name: null
+) {
+  .option {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    padding: $base-unit/1.5 $base-unit;
+    color: inherit;
+    $font-family: $font-family;
+    text-align: left;
+    background-color: transparent;
+    border: 0;
+    outline: 0;
+    cursor: pointer;
+
+    &:hover,
+    &:focus {
+      background-color: rgba(0, 0, 0, 0.055);
+    }
+    &:disabled {
+      color: #ccc;
+      // background-color: transparent;
+      cursor: default;
+    }
+    &:disabled ~ & &__details {
+      color: inherit;
+    }
+    &:disabled &__icon,
+    &:disabled &__details {
+      color: #ccc;
+    }
+
+    &__icon {
+      display: inline-block;
+      width: 13px;
+      color: #000;
+      text-align: center;
+      font-family: $icon-font-name;
+      margin-right: 10px;
+    }
+    &__details {
+      float: right;
+      color: rgba(0, 0, 0, 0.4);
+    }
+  }
+}

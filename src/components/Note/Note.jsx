@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import cn from 'classnames';
 /* eslint-disable import/no-unresolved */
+import Button from '@components/Button/Button';
 import IconButton from '@components/IconButton/IconButton';
 import Textarea from '@components/Textarea/Textarea';
 import Notification from '@components/Notification/Notification';
@@ -271,13 +272,9 @@ function Note({
       </div>
       <div className={style.note__buttons}>
         {isFocused && (
-          <button
-            className={style.note__button}
-            type="button"
-            onClick={onClose}
-          >
-            Закрыть
-          </button>
+          <span className={style.note__button}>
+            <Button onClick={onClose}>Закрыть</Button>
+          </span>
         )}
         {buttons}
       </div>

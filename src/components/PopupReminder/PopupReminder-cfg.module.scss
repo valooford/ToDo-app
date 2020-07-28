@@ -1,0 +1,9 @@
+@import 'PopupReminder';
+@import '@styles/variables';
+
+@include popupReminderStylesheet(
+  $class-name: $popupReminderClassName,
+  $base-unit: $base-unit,
+  $smaller-base-unit: $smaller-base-unit,
+  $font-family: $font-family
+);

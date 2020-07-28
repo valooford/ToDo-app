@@ -1,0 +1,7 @@
+@import 'Calendar';
+@import '@styles/variables';
+
+@include calendarStylesheet(
+  $font-family: $font-family,
+  $icon-font-name: $icon-font-name
+);

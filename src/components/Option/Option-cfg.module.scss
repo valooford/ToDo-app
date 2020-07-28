@@ -1,0 +1,7 @@
+@import 'Option';
+@import '@styles/variables';
+
+@include optionStylesheet(
+  $font-family: $font-family,
+  $icon-font-name: $icon-font-name
+);

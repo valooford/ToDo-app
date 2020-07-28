@@ -1,0 +1,71 @@
+@mixin popupReminderStylesheet(
+  $class-name: 'popup-reminder',
+  $base-unit: 15px,
+  $smaller-base-unit: 11px,
+  $font-family: serif
+) {
+  .#{$class-name} {
+    // position: absolute;
+    // top: $smaller-base-unit * 3;
+    // left: 0;
+    display: inline-block;
+
+    min-width: 300px;
+    padding-bottom: 8px;
+    // padding-top: $base-unit / 3;
+    // padding-bottom: $base-unit / 2;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-top: none;
+    border-radius: 5px;
+    box-shadow: (
+      0 1px 5px rgba(0, 0, 0, 0.133),
+      inset 0 -1px 2px rgba(0, 0, 0, 0.266)
+    );
+    color: #555;
+    font-family: $font-family;
+    font-size: 14px;
+    font-weight: normal;
+    text-align: left;
+    // white-space: nowrap;
+    z-index: 5;
+    // cursor: default;
+
+    &__date {
+      .#{$class-name}__fields {
+        padding: 16px 35px 5px 16px;
+        & > * {
+          margin-bottom: 16px;
+        }
+      }
+    }
+
+    &__legend {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 0 16px;
+      line-height: 60px;
+
+      &_sub {
+        line-height: 45px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      }
+    }
+
+    &__back-button {
+      position: relative;
+      top: -2px;
+      margin-right: 5px;
+      margin-left: -5px;
+    }
+
+    &__fields > * {
+      margin-bottom: 5px;
+    }
+
+    &__ready-button {
+      float: right;
+      margin-right: 6px;
+    }
+  }
+}
