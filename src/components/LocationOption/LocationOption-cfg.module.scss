@@ -1,0 +1,7 @@
+@import 'LocationOption';
+@import '@styles/variables';
+
+@include locationOptionStylesheet(
+  $font-family: $font-family,
+  $icon-font-name: $icon-font-name
+);

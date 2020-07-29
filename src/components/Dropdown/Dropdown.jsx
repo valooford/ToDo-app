@@ -8,9 +8,11 @@ import style from './Dropdown-cfg.module.scss';
 
 export default function Dropdown({
   value,
+  placeholder,
   titleText,
   children,
   noInput,
+  useAsSearch,
   keepChildWidth,
 }) {
   return (
@@ -23,15 +25,18 @@ export default function Dropdown({
         className={style.dropdown__input}
         type="text"
         defaultValue={value}
+        placeholder={placeholder}
         disabled={noInput}
       />
-      <i className={style['dropdown__drop-button']}>
-        <IconButton
-          iconSymbol="&#xe81a;"
-          titleText={titleText}
-          modificators={['icon-button_tiny']}
-        />
-      </i>
+      {!useAsSearch && (
+        <i className={style['dropdown__drop-button']}>
+          <IconButton
+            iconSymbol="&#xe81a;"
+            titleText={titleText}
+            modificators={['icon-button_tiny']}
+          />
+        </i>
+      )}
       {children && <div className={style.dropdown__options}>{children}</div>}
     </span>
   );

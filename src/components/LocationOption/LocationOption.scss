@@ -1,0 +1,46 @@
+@mixin locationOptionStylesheet(
+  $font-family: 'Arial, sans-serif',
+  $icon-font-name: null
+) {
+  .location-option {
+    position: relative;
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    color: #000;
+    $font-family: $font-family;
+    line-height: 2em;
+    text-align: left;
+    white-space: nowrap;
+    overflow-x: hidden;
+    background-color: transparent;
+    border: none;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+    outline: 0;
+    &:last-child {
+      border-bottom: none;
+    }
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.055);
+    }
+    &:focus {
+      background-color: rgba(162, 210, 255, 0.3);
+    }
+    &:focus &__icon {
+      color: #ff6c6c;
+    }
+
+    &__icon {
+      display: inline-block;
+      width: 13px;
+      color: rgba(0, 0, 0, 0.3);
+      text-align: center;
+      font-family: $icon-font-name;
+      margin-right: 0.5em;
+    }
+    &__region {
+      color: rgba(0, 0, 0, 0.5);
+      font-size: 0.8em;
+    }
+  }
+}

@@ -5,8 +5,6 @@ import Header from '@components/Header/Header';
 import Aside from '@components/Aside/Aside';
 import Container from '@components/Container/Container.container';
 import Modal from '@components/Modal/Modal.container';
-
-// import PopupReminder from '@components/PopupReminder/PopupReminder.container';
 /* eslint-enable import/no-unresolved */
 
 function App() {
@@ -21,7 +19,6 @@ function App() {
         <Aside />
       </aside>
       <main>
-        {/* <PopupReminder /> */}
         <Container modalRef={modalRef} />
       </main>
     </div>

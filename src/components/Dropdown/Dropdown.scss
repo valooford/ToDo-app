@@ -1,8 +1,9 @@
 @mixin dropdownStylesheet($font-family: 'Arial, sans-serif') {
   .dropdown {
-    position: relative;
-    display: block;
     box-sizing: border-box;
+    position: relative;
+    // display: block;
+    display: inline-block;
     &_keep-width &__options {
       width: auto;
       padding: 0;
@@ -14,10 +15,14 @@
       padding: 0.4em 0;
       border: none;
       outline: none;
-      border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+      &:focus {
+        box-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
+      }
     }
     &__drop-button {
       position: absolute;
+      top: 0;
       right: 0;
     }
     &__options {
