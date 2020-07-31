@@ -1,0 +1,8 @@
+@import 'Reminder';
+@import '@styles/variables';
+
+@include reminderStylesheet(
+  $class-name: $reminderClassName,
+  $base-unit: $reminder-base-unit,
+  $icon-font-name: $icon-font-name
+);

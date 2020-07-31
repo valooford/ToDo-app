@@ -2,33 +2,105 @@ import React from 'react';
 import cn from 'classnames';
 
 /* eslint-disable import/no-unresolved */
-import Button from '@components/Button/Button';
-import IconButton from '@components/IconButton/IconButton';
+// import Button from '@components/Button/Button';
+// import IconButton from '@components/IconButton/IconButton';
 import Option from '@components/Option/Option';
-import LocationOption from '@components/LocationOption/LocationOption';
-import Dropdown from '@components/Dropdown/Dropdown';
-import Calendar from '@components/Calendar/Calendar';
+// import LocationOption from '@components/LocationOption/LocationOption';
+// import Dropdown from '@components/Dropdown/Dropdown';
+// import Calendar from '@components/Calendar/Calendar';
 /* eslint-enable import/no-unresolved */
 import style from './PopupReminder-cfg.module.scss';
 
 // КОМПОНЕНТ ВСПЛЫВАЮЩЕГО МЕНЮ НАСТРОЙКИ НАПОМИНАНИЙ / POPUP-REMINDER
 // *
-export default function PopupReminder() {
+export default function PopupReminder({
+  onClick,
+  onClose,
+  onKeyDown,
+  setDate,
+  // setPlace,
+}) {
+  const now = new Date();
+  const optionParams = [
+    {
+      details: '20:00',
+      text: 'Сегодня',
+      disabled: now.getHours() >= 20,
+      onClick() {
+        const today = new Date();
+        const date = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate(),
+          20
+        );
+        setDate(date);
+        onClose();
+      },
+    },
+    {
+      details: '08:00',
+      text: 'Завтра',
+      onClick() {
+        const today = new Date();
+        const date = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate() + 1,
+          8
+        );
+        setDate(date);
+        onClose();
+      },
+    },
+    // monday of the next week
+    {
+      details: 'пн, 08:00',
+      text: 'На следующей неделе',
+      onClick() {
+        const today = new Date();
+        let day = today.getDay() - 1;
+        if (day === -1) day = 6;
+        // now 0 - monday, 6 - sunday
+        const date = new Date(
+          today.getFullYear(),
+          today.getMonth(),
+          today.getDate() + 7 - day,
+          8
+        );
+        setDate(date);
+        onClose();
+      },
+    },
+    { iconSymbol: '\ue809', text: 'Выбрать дату и время' },
+    { iconSymbol: '\ue80a', text: 'Выбрать место' },
+  ];
   return (
-    <form className={style['popup-reminder']}>
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+    <fieldset
+      className={style['popup-reminder']}
+      onClick={onClick}
+      onKeyDown={onKeyDown}
+    >
       <fieldset className={style['popup-reminder__main']}>
         <legend className={cn(style['popup-reminder__legend'])}>
           Напоминание:
         </legend>
         <div className={style['popup-reminder__fields']}>
-          <Option details="20:00">Сегодня</Option>
-          <Option details="08:00">Завтра</Option>
-          <Option details="пн, 08.00">На следующей неделе</Option>
-          <Option iconSymbol="&#xe809;">Выбрать дату и время</Option>
-          <Option iconSymbol="&#xe80a;">Выбрать место</Option>
+          {optionParams.map((params) => (
+            <Option
+              details={params.details}
+              iconSymbol={params.iconSymbol}
+              disabled={params.disabled}
+              onClick={params.onClick}
+              key={params.text}
+            >
+              {params.text}
+            </Option>
+          ))}
         </div>
       </fieldset>
-    </form>
+    </fieldset>
   );
 }
 

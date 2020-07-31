@@ -25,7 +25,14 @@ export default function KeyboardTrap({
 
   useEffect(() => {
     if (autofocus) {
-      first.focus();
+      // focus is asynchronous because sometimes
+      // events can propagate through KeyboardTrap elements
+      // and trigger event handlers on focused element
+      // (ex. pressing Enter on Reminder triggers pressing
+      //  first button of PopupReminder; stopPropagation didn't work)
+      setTimeout(() => {
+        first.focus();
+      });
     }
   }, []);
 

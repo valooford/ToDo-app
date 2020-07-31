@@ -2,6 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 /* eslint-disable import/no-unresolved */
+import { handleClickOutside } from '@/utils';
+
 import PopupMenu from '@components/PopupMenu/PopupMenu';
 
 import {
@@ -115,6 +117,11 @@ function PopupMenuContainer({
     onTextToList,
     onListToText,
   } = props;
+  // detecting click inside popupMenu
+  const setIsTouched = handleClickOutside(() => {
+    handleClose();
+  }, []);
+
   const keyDownHandler = (e) => {
     // Tab or Esc
     if (e.keyCode === 9 || e.keyCode === 27) {
@@ -150,6 +157,9 @@ function PopupMenuContainer({
           handleClose();
         },
       })}
+      onClick={() => {
+        setIsTouched();
+      }}
       onKeyDown={keyDownHandler}
     />
   );

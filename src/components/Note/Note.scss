@@ -4,7 +4,7 @@
   $no-padding-icon-size: 22px,
   $smaller-base-unit: 11px,
   $icon-font-name: IconFont,
-  $notification-base-unit: 7px
+  $reminder-base-unit: 7px
 ) {
   .#{$class-name} {
     padding-top: $base-unit;
@@ -80,8 +80,8 @@
     }
     &__info {
       position: relative;
-      height: 3 * $notification-base-unit + 4px;
-      line-height: 3 * $notification-base-unit;
+      height: 3 * $reminder-base-unit + 4px;
+      line-height: 3 * $reminder-base-unit;
       vertical-align: middle;
     }
     &__creationTime {

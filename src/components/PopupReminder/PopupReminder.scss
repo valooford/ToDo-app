@@ -5,15 +5,13 @@
   $font-family: serif
 ) {
   .#{$class-name} {
-    // position: absolute;
-    // top: $smaller-base-unit * 3;
-    // left: 0;
+    position: absolute;
+    top: $smaller-base-unit * 3;
+    left: 0;
     display: inline-block;
 
     min-width: 320px;
     padding-bottom: 8px;
-    // padding-top: $base-unit / 3;
-    // padding-bottom: $base-unit / 2;
     background-color: #fff;
     border: 1px solid #ddd;
     border-top: none;
@@ -27,9 +25,7 @@
     font-size: 14px;
     font-weight: normal;
     text-align: left;
-    // white-space: nowrap;
     z-index: 5;
-    // cursor: default;
 
     input {
       margin: 0 0.4em;
@@ -37,7 +33,6 @@
     &__input {
       box-sizing: border-box;
       width: 2em;
-      // margin: 0 0.4em;
       padding: 0.4em 0;
       text-align: center;
       border: none;

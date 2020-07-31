@@ -1,10 +1,14 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 /* eslint-disable import/no-unresolved */
+import { handleClickOutside } from '@/utils';
+
 import Note, { style, listItemStyle } from '@components/Note/Note';
 import PopupMenu from '@components/PopupMenu/PopupMenu.container';
 import PopupColors from '@components/PopupColors/PopupColors.container';
+import PopupReminder from '@components/PopupReminder/PopupReminder.container';
+import Reminder from '@components/Reminder/Reminder.container';
 
 import {
   focusNote,
@@ -61,46 +65,13 @@ function NoteContainer({
     }
   }, [noteFocusInfo]);
 
-  // logic below are used to detect click inside note[0]
-  // popup is a part of note, but when clicked it is removed and
-  // not considered as a part of note anymore
-  // *
-  // click inside note
-  const [isTouched, setIsTouched] = useState(false);
-  // handled by global handler
-  const [globalClick, setGlobalClick] = useState(null);
-
-  const globalClickListener = () => {
-    setGlobalClick((prev) => !prev);
-  };
-  useEffect(() => {
-    if (globalClick === null) return;
-    if (!isTouched) {
-      onNoteBlur(index);
-      if (index === 0) {
-        onNoteAdd();
-      }
-      document.removeEventListener('click', globalClickListener);
-    } else {
-      setIsTouched(false);
+  // detecting click inside note[0]
+  const setIsTouched = handleClickOutside(() => {
+    onNoteBlur(index);
+    if (index === 0) {
+      onNoteAdd();
     }
-  }, [globalClick]);
-  useEffect(() => {
-    if (index !== 0 || !note.isFocused) return undefined;
-    document.addEventListener('click', globalClickListener);
-    return () => {
-      document.removeEventListener('click', globalClickListener);
-    };
-  }, [note.isFocused]);
-  // *
-
-  // defined once as a method
-  const popupDisappearanceHandler = useCallback(() => {
-    document.removeEventListener('click', popupDisappearanceHandler);
-    setPopup(index, null);
-    setHavePopupBeenClosed(true);
-    // popup закрывается при ЛЮБОМ клике
-  }, []);
+  }, [index === 0 && note.isFocused]);
 
   let itemsCopy;
   let unmarkedItems;
@@ -180,7 +151,7 @@ function NoteContainer({
   let onClick = null;
   if (index === 0) {
     onClick = () => {
-      setIsTouched(true); // клик был осуществлен в пределах note
+      setIsTouched(); // клик был осуществлен в пределах note
     };
   } else {
     onClick = ({ target }) => {
@@ -200,12 +171,14 @@ function NoteContainer({
   const moreButtonRef = useRef(null);
   const colorsButtonRef = useRef(null);
   const popupColorsItemToFocusRef = useRef(null);
+  const reminderButtonRef = useRef(null);
 
   let colorsButtonMouseLeaveTimerId;
 
   return (
     <Note
       noteData={{
+        isAdd: index === 0, //-
         type: note.type,
         headerText: note.headerText,
         text: note.text,
@@ -222,7 +195,6 @@ function NoteContainer({
             hasMarkedItems={markedItems && !!markedItems.length}
             callerRef={moreButtonRef}
             handleClose={(isSilent) => {
-              document.removeEventListener('click', popupDisappearanceHandler);
               setPopup(index, null);
               if (!isSilent) {
                 setHavePopupBeenClosed(true);
@@ -236,7 +208,6 @@ function NoteContainer({
             callerRef={colorsButtonRef}
             itemToFocusRef={popupColorsItemToFocusRef}
             handleClose={(isSilent) => {
-              // document.removeEventListener('click', popupDisappearanceHandler);
               setPopup(index, null);
               if (!isSilent) {
                 setHavePopupBeenClosed(true);
@@ -247,10 +218,24 @@ function NoteContainer({
             }}
           />
         ),
+        reminder: popup === 'reminder' && (
+          <PopupReminder
+            index={index}
+            callerRef={reminderButtonRef}
+            handleClose={(isSilent) => {
+              setPopup(index, null);
+              if (!isSilent) {
+                setHavePopupBeenClosed(true);
+              }
+            }}
+          />
+        ),
       }}
+      extra={index !== 0 ? <Reminder index={index} /> : null}
       refs={{
         moreButton: moreButtonRef,
         colorsButton: colorsButtonRef,
+        reminderButton: reminderButtonRef,
       }}
       eventHandlers={{
         onClick,
@@ -297,12 +282,8 @@ function NoteContainer({
           });
         },
         onMoreButtonClick: () => {
+          clearTimeout(colorsButtonMouseLeaveTimerId);
           setPopup(index, 'menu');
-          if (popup !== 'menu') {
-            setTimeout(() => {
-              document.addEventListener('click', popupDisappearanceHandler);
-            }, 0);
-          }
         },
         onColorsButtonClick: () => {
           clearTimeout(colorsButtonMouseLeaveTimerId);
@@ -311,14 +292,24 @@ function NoteContainer({
             popupColorsItemToFocusRef.current.focus();
           }, 0);
         },
-        onColorsButtonHover: () => {
+        onColorsButtonHover:
+          popup === null || popup === 'colors'
+            ? () => {
+                clearTimeout(colorsButtonMouseLeaveTimerId);
+                setPopup(index, 'colors');
+              }
+            : null,
+        onColorsButtonMouseLeave:
+          popup === 'colors'
+            ? () => {
+                colorsButtonMouseLeaveTimerId = setTimeout(() => {
+                  setPopup(index, null);
+                }, 1000);
+              }
+            : null,
+        onReminderButtonClick: () => {
           clearTimeout(colorsButtonMouseLeaveTimerId);
-          setPopup(index, 'colors');
-        },
-        onColorsButtonMouseLeave: () => {
-          colorsButtonMouseLeaveTimerId = setTimeout(() => {
-            setPopup(index, null);
-          }, 1000);
+          setPopup(index, 'reminder');
         },
       }}
       focusInfo={

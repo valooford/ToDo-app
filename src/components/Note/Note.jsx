@@ -4,7 +4,6 @@ import cn from 'classnames';
 import Button from '@components/Button/Button';
 import IconButton from '@components/IconButton/IconButton';
 import Textarea from '@components/Textarea/Textarea';
-import Notification from '@components/Notification/Notification';
 import CreationTime from '@components/CreationTime/CreationTime';
 import ListItem from '@components/ListItem/ListItem';
 import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
@@ -17,6 +16,7 @@ export { style };
 
 function Note({
   noteData: {
+    isAdd, //-
     type,
     headerText,
     text,
@@ -27,6 +27,7 @@ function Note({
     editingDate,
   },
   popup = {},
+  extra,
   eventHandlers: {
     onClick,
     onClose,
@@ -40,8 +41,13 @@ function Note({
     onColorsButtonClick,
     onColorsButtonHover,
     onColorsButtonMouseLeave,
+    onReminderButtonClick,
   },
-  refs: { moreButton: moreButtonRef, colorsButton: colorsButtonRef } = {},
+  refs: {
+    moreButton: moreButtonRef,
+    colorsButton: colorsButtonRef,
+    reminderButton: reminderButtonRef,
+  } = {},
   focusInfo = {},
   isSelected,
 }) {
@@ -82,6 +88,10 @@ function Note({
       iconSymbol: '\uf0f3',
       titleText: 'Сохранить напоминание',
       modificators: 'icon-button_smaller',
+      onClick: onReminderButtonClick,
+      append: popup.reminder,
+      ref: reminderButtonRef,
+      removeIfAdd: isAdd, //-
     },
     {
       iconSymbol: '\ue803',
@@ -129,7 +139,7 @@ function Note({
       disabled: true,
     },
   ]
-    .filter((params) => isFocused || !params.disabled)
+    .filter((params) => (isFocused || !params.disabled) && !params.removeIfAdd)
     .map((params) => (
       <span key={params.titleText}>
         <IconButton
@@ -268,7 +278,7 @@ function Note({
             />
           </span>
         )}
-        <Notification />
+        {extra}
       </div>
       <div className={style.note__buttons}>
         {isFocused && (
