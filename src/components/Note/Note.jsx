@@ -72,6 +72,7 @@ function Note({
   // is any focused element inside this note
   const [isFocusing, setIsFocusing] = useState(false);
   useEffect(() => {
+    if (!noteRef.current) return;
     noteRef.current.addEventListener('focusin', () => {
       setIsFocusing(true);
     });

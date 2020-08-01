@@ -6,7 +6,7 @@ export default function KeyboardTrap({
   usingArrows,
   autofocus,
 }) {
-  const trapRef = useRef();
+  const trapRef = useRef(null);
   // handle modal focus
   let focusableElements = [];
   let first;
@@ -32,7 +32,7 @@ export default function KeyboardTrap({
       //  first button of PopupReminder; stopPropagation didn't work)
       setTimeout(() => {
         first.focus();
-      });
+      }, 0);
     }
   }, []);
 

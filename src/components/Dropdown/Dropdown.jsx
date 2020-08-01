@@ -6,15 +6,18 @@ import IconButton from '@components/IconButton/IconButton';
 /* eslint-enable import/no-unresolved */
 import style from './Dropdown-cfg.module.scss';
 
-export default function Dropdown({
-  value,
-  placeholder,
-  titleText,
-  children,
-  noInput,
-  useAsSearch,
-  keepChildWidth,
-}) {
+function Dropdown(
+  {
+    value,
+    placeholder,
+    titleText,
+    children,
+    noInput,
+    useAsSearch,
+    keepChildWidth,
+  },
+  ref
+) {
   return (
     <span
       className={cn(style.dropdown, {
@@ -27,6 +30,7 @@ export default function Dropdown({
         defaultValue={value}
         placeholder={placeholder}
         disabled={noInput}
+        ref={ref}
       />
       {!useAsSearch && (
         <i className={style['dropdown__drop-button']}>
@@ -41,3 +45,5 @@ export default function Dropdown({
     </span>
   );
 }
+
+export default React.forwardRef(Dropdown);

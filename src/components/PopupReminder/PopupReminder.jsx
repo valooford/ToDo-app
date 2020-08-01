@@ -1,15 +1,22 @@
-import React from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import cn from 'classnames';
 
 /* eslint-disable import/no-unresolved */
-// import Button from '@components/Button/Button';
-// import IconButton from '@components/IconButton/IconButton';
+import Button from '@components/Button/Button';
+import IconButton from '@components/IconButton/IconButton';
 import Option from '@components/Option/Option';
 // import LocationOption from '@components/LocationOption/LocationOption';
-// import Dropdown from '@components/Dropdown/Dropdown';
+import Dropdown from '@components/Dropdown/Dropdown';
+import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
 // import Calendar from '@components/Calendar/Calendar';
 /* eslint-enable import/no-unresolved */
 import style from './PopupReminder-cfg.module.scss';
+
+function handleEscWith(cb) {
+  return (e) => {
+    if (e.keyCode === 27) cb();
+  };
+}
 
 // КОМПОНЕНТ ВСПЛЫВАЮЩЕГО МЕНЮ НАСТРОЙКИ НАПОМИНАНИЙ / POPUP-REMINDER
 // *
@@ -20,204 +27,255 @@ export default function PopupReminder({
   setDate,
   // setPlace,
 }) {
+  const [currentFieldset, setCurrentFieldset] = useState('main');
+
+  const switchToMainOnEsc = handleEscWith(() => setCurrentFieldset('main'));
+  // autofocus
+  // *
+  const autofocusRef = useRef(null);
+  useEffect(() => {
+    if (autofocusRef.current) {
+      autofocusRef.current.focus();
+    }
+  }, [currentFieldset]);
+  // *
+
   const now = new Date();
-  const optionParams = [
-    {
-      details: '20:00',
-      text: 'Сегодня',
-      disabled: now.getHours() >= 20,
-      onClick() {
-        const today = new Date();
-        const date = new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate(),
-          20
-        );
-        setDate(date);
-        onClose();
-      },
-    },
-    {
-      details: '08:00',
-      text: 'Завтра',
-      onClick() {
-        const today = new Date();
-        const date = new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate() + 1,
-          8
-        );
-        setDate(date);
-        onClose();
-      },
-    },
-    // monday of the next week
-    {
-      details: 'пн, 08:00',
-      text: 'На следующей неделе',
-      onClick() {
-        const today = new Date();
-        let day = today.getDay() - 1;
-        if (day === -1) day = 6;
-        // now 0 - monday, 6 - sunday
-        const date = new Date(
-          today.getFullYear(),
-          today.getMonth(),
-          today.getDate() + 7 - day,
-          8
-        );
-        setDate(date);
-        onClose();
-      },
-    },
-    { iconSymbol: '\ue809', text: 'Выбрать дату и время' },
-    { iconSymbol: '\ue80a', text: 'Выбрать место' },
-  ];
+  let optionParams;
+  const fieldset = {};
+
+  switch (currentFieldset) {
+    case 'main':
+      optionParams = [
+        {
+          details: '20:00',
+          text: 'Сегодня',
+          disabled: now.getHours() >= 20,
+          onClick() {
+            const today = new Date();
+            const date = new Date(
+              today.getFullYear(),
+              today.getMonth(),
+              today.getDate(),
+              20
+            );
+            setDate(date);
+            onClose();
+          },
+        },
+        {
+          details: '08:00',
+          text: 'Завтра',
+          onClick() {
+            const today = new Date();
+            const date = new Date(
+              today.getFullYear(),
+              today.getMonth(),
+              today.getDate() + 1,
+              8
+            );
+            setDate(date);
+            onClose();
+          },
+        },
+        // monday of the next week
+        {
+          details: 'пн, 08:00',
+          text: 'На следующей неделе',
+          onClick() {
+            const today = new Date();
+            let day = today.getDay() - 1;
+            if (day === -1) day = 6;
+            // now 0 - monday, 6 - sunday
+            const date = new Date(
+              today.getFullYear(),
+              today.getMonth(),
+              today.getDate() + 7 - day,
+              8
+            );
+            setDate(date);
+            onClose();
+          },
+        },
+        {
+          iconSymbol: '\ue809',
+          text: 'Выбрать дату и время',
+          onClick() {
+            setCurrentFieldset('date');
+          },
+        },
+        {
+          iconSymbol: '\ue80a',
+          text: 'Выбрать место',
+          onClick() {
+            setCurrentFieldset('place');
+          },
+        },
+      ];
+      fieldset.content = (
+        <KeyboardTrap autofocus usingArrows key="main">
+          <fieldset className={style['popup-reminder__main']}>
+            <legend className={cn(style['popup-reminder__legend'])}>
+              Напоминание:
+            </legend>
+            <div className={style['popup-reminder__fields']}>
+              {optionParams.map((params) => (
+                <Option
+                  details={params.details}
+                  iconSymbol={params.iconSymbol}
+                  disabled={params.disabled}
+                  onClick={params.onClick}
+                  key={params.text}
+                >
+                  {params.text}
+                </Option>
+              ))}
+            </div>
+          </fieldset>
+        </KeyboardTrap>
+      );
+      fieldset.onKeyDown = onKeyDown;
+      break;
+    case 'date':
+      fieldset.content = (
+        <KeyboardTrap key="date">
+          <fieldset className={style['popup-reminder__date']}>
+            <legend
+              className={cn(
+                style['popup-reminder__legend'],
+                style['popup-reminder__legend_sub']
+              )}
+            >
+              <span className={style['popup-reminder__back-button']}>
+                <IconButton
+                  iconSymbol="&#xe813;"
+                  titleText="Назад"
+                  modificators={['icon-button_tiny']}
+                  onClick={() => {
+                    setCurrentFieldset('main');
+                  }}
+                />
+              </span>
+              Выбрать дату и время
+            </legend>
+            <div className={style['popup-reminder__fields']}>
+              <Dropdown
+                value="28 июл. 2020 г."
+                titleText="Выбрать дату"
+                keepChildWidth
+                ref={autofocusRef}
+              >
+                {/* <Calendar /> */}
+              </Dropdown>
+              <Dropdown value="18:00" titleText="Выбрать время">
+                {/* <Option details="08:00" disabled>
+                Утро
+              </Option>
+              <Option details="13:00" disabled>
+                День
+              </Option>
+              <Option details="18:00">Вечер</Option>
+              <Option details="20:00">Ночь</Option>
+              <Option>Другое</Option> */}
+              </Dropdown>
+              <Dropdown
+                noInput
+                value="Не повторять"
+                titleText="Выбрать частоту"
+              >
+                {/* <Option>Не повторять</Option>
+              <Option>Каждый день</Option>
+              <Option>Каждую неделю</Option>
+              <Option>Каждый месяц</Option>
+              <Option>Каждый год</Option>
+              <Option>Другое</Option> */}
+              </Dropdown>
+            </div>
+            <span className={style['popup-reminder__ready-button']}>
+              <Button disabled>Сохранить</Button>
+            </span>
+          </fieldset>
+        </KeyboardTrap>
+      );
+      fieldset.onKeyDown = switchToMainOnEsc;
+      break;
+    case 'place':
+      fieldset.content = (
+        <KeyboardTrap key="place">
+          <fieldset className={style['popup-reminder__place']}>
+            <legend
+              className={cn(
+                style['popup-reminder__legend'],
+                style['popup-reminder__legend_sub']
+              )}
+            >
+              <span className={style['popup-reminder__back-button']}>
+                {' '}
+                <IconButton
+                  iconSymbol="&#xe813;"
+                  modificators={['icon-button_tiny']}
+                  onClick={() => {
+                    setCurrentFieldset('main');
+                  }}
+                />
+              </span>
+              Выбрать место
+            </legend>
+            <div className={style['popup-reminder__fields']}>
+              <Dropdown
+                useAsSearch
+                placeholder="Укажите место"
+                ref={autofocusRef}
+              >
+                {/* <LocationOption
+                  postcode={1}
+                  street="Апл-Парк-уэй"
+                  region="Купертино, Калифорния, США"
+                />
+                <LocationOption
+                  postcode={124}
+                  street="Conch Street"
+                  region="Холден Бич, Северная Каролина, США"
+                />
+                <LocationOption
+                  postcode={1600}
+                  street="Пенсильвания-авеню Северо-Запад"
+                  region="Вашингтон, округ Колумбия, США"
+                />
+                <LocationOption
+                  postcode={1261}
+                  street="West 79th Street"
+                  region="Лос-Анджелес, Калифорния, США"
+                />
+                <LocationOption
+                  postcode={1750}
+                  street="Вайн-стрит"
+                  region="Лос-Анджелес, Калифорния, США"
+                /> */}
+              </Dropdown>
+            </div>
+            <span className={style['popup-reminder__ready-button']}>
+              <Button>Сохранить</Button>
+            </span>
+          </fieldset>
+        </KeyboardTrap>
+      );
+      fieldset.onKeyDown = switchToMainOnEsc;
+      break;
+    default:
+      return null;
+  }
   return (
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <fieldset
       className={style['popup-reminder']}
       onClick={onClick}
-      onKeyDown={onKeyDown}
+      onKeyDown={fieldset.onKeyDown}
     >
-      <fieldset className={style['popup-reminder__main']}>
-        <legend className={cn(style['popup-reminder__legend'])}>
-          Напоминание:
-        </legend>
-        <div className={style['popup-reminder__fields']}>
-          {optionParams.map((params) => (
-            <Option
-              details={params.details}
-              iconSymbol={params.iconSymbol}
-              disabled={params.disabled}
-              onClick={params.onClick}
-              key={params.text}
-            >
-              {params.text}
-            </Option>
-          ))}
-        </div>
-      </fieldset>
+      {fieldset.content}
     </fieldset>
   );
 }
-
-// MAIN
-// *
-/* <fieldset className={style['popup-reminder__main']}>
-  <legend className={cn(style['popup-reminder__legend'])}>
-    Напоминание:
-  </legend>
-  <div className={style['popup-reminder__fields']}>
-    <Option details="20:00">Сегодня</Option>
-    <Option details="08:00">Завтра</Option>
-    <Option details="пн, 08.00">На следующей неделе</Option>
-    <Option iconSymbol="&#xe809;">Выбрать дату и время</Option>
-    <Option iconSymbol="&#xe80a;">Выбрать место</Option>
-  </div>
-</fieldset> */
-
-// DATE
-// *
-/* <fieldset className={style['popup-reminder__date']}>
-  <legend
-    className={cn(
-      style['popup-reminder__legend'],
-      style['popup-reminder__legend_sub']
-    )}
-  >
-    <span className={style['popup-reminder__back-button']}>
-      <IconButton
-        iconSymbol="&#xe813;"
-        titleText="Назад"
-        modificators={['icon-button_tiny']}
-      />
-    </span>
-    Выбрать дату и время
-  </legend>
-  <div className={style['popup-reminder__fields']}>
-    <Dropdown
-      value="28 июл. 2020 г."
-      titleText="Выбрать дату"
-      keepChildWidth
-    >
-      <Calendar />
-    </Dropdown>
-    <Dropdown value="18:00" titleText="Выбрать время">
-      <Option details="08:00" disabled>
-        Утро
-      </Option>
-      <Option details="13:00" disabled>
-        День
-      </Option>
-      <Option details="18:00">Вечер</Option>
-      <Option details="20:00">Ночь</Option>
-      <Option>Другое</Option>
-    </Dropdown>
-    <Dropdown noInput value="Не повторять" titleText="Выбрать частоту">
-      <Option>Не повторять</Option>
-      <Option>Каждый день</Option>
-      <Option>Каждую неделю</Option>
-      <Option>Каждый месяц</Option>
-      <Option>Каждый год</Option>
-      <Option>Другое</Option>
-    </Dropdown>
-  </div>
-  <span className={style['popup-reminder__ready-button']}>
-    <Button disabled>Сохранить</Button>
-  </span>
-</fieldset> */
-
-// PLACE
-// *
-/* <fieldset className={style['popup-reminder__place']}>
-  <legend
-    className={cn(
-      style['popup-reminder__legend'],
-      style['popup-reminder__legend_sub']
-    )}
-  >
-    <span className={style['popup-reminder__back-button']}>
-      {' '}
-      <IconButton iconSymbol="&#xe813;" modificators={['icon-button_tiny']} />
-    </span>
-    Выбрать место
-  </legend>
-  <div className={style['popup-reminder__fields']}>
-    <Dropdown useAsSearch placeholder="Укажите место">
-      <LocationOption
-        postcode={1}
-        street="Апл-Парк-уэй"
-        region="Купертино, Калифорния, США"
-      />
-      <LocationOption
-        postcode={124}
-        street="Conch Street"
-        region="Холден Бич, Северная Каролина, США"
-      />
-      <LocationOption
-        postcode={1600}
-        street="Пенсильвания-авеню Северо-Запад"
-        region="Вашингтон, округ Колумбия, США"
-      />
-      <LocationOption
-        postcode={1261}
-        street="West 79th Street"
-        region="Лос-Анджелес, Калифорния, США"
-      />
-      <LocationOption
-        postcode={1750}
-        street="Вайн-стрит"
-        region="Лос-Анджелес, Калифорния, США"
-      />
-    </Dropdown>
-  </div>
-  <span className={style['popup-reminder__ready-button']}>
-    <Button>Сохранить</Button>
-  </span>
-</fieldset> */
 
 // PERIOD
 // *

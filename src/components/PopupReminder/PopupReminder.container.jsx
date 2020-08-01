@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { handleClickOutside } from '@/utils';
 
 import PopupReminder from '@components/PopupReminder/PopupReminder';
-import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
 // import {} from '@store/mainReducer';
 import {
   // AC - action creator
@@ -44,23 +43,21 @@ function PopupReminderContainer({
     }
   };
   return (
-    <KeyboardTrap inline autofocus usingArrows>
-      <PopupReminder
-        onClick={() => {
-          setIsTouched();
-        }}
-        onClose={() => {
-          handleClose(true);
-        }}
-        onKeyDown={keyDownHandler}
-        setDate={(date, period) => {
-          setDateReminder(noteId, date, period);
-        }}
-        setPlace={(place) => {
-          setPlaceReminder(noteId, place);
-        }}
-      />
-    </KeyboardTrap>
+    <PopupReminder
+      onClick={() => {
+        setIsTouched();
+      }}
+      onClose={() => {
+        handleClose(true);
+      }}
+      onKeyDown={keyDownHandler}
+      setDate={(date, period) => {
+        setDateReminder(noteId, date, period);
+      }}
+      setPlace={(place) => {
+        setPlaceReminder(noteId, place);
+      }}
+    />
   );
 }
 
