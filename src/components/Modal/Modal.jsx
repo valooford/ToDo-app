@@ -30,8 +30,10 @@ function Modal({ callback, onModalClose }, ref) {
       ref={modalRef}
       onClick={({ target, currentTarget }) => {
         if (target === currentTarget) {
-          callback();
-          onModalClose();
+          setTimeout(() => {
+            callback();
+            onModalClose();
+          });
         }
       }}
     />

@@ -66,28 +66,17 @@ function ContainerContainer({
       // assume that creationDate is unique for every note
       key: note.creationDate.getTime(),
       color: note.color,
+      isFiller: focusedNoteIndex === index,
       node: (
         <Note
           index={index}
-          onClose={() => {
-            setHaveModalBeenClosed(true);
-          }}
+          isFiller={focusedNoteIndex === index}
           onFocusInfoChange={(noteFocusInfo) => {
             setContainerFocusInfo({
               noteIndex: index,
               noteFocusInfo,
             });
           }}
-          focusInfo={
-            focusedNoteIndex === index
-              ? // fallback to default focusInfo if field wasn't specified
-                {
-                  fieldName:
-                    note.type === 'list' ? 'add-list-item' : 'textfield',
-                  ...containerFocusInfo.noteFocusInfo,
-                }
-              : undefined
-          }
           isSelected={!focusedNoteIndex && index === focusedItemIndex}
         />
       ),
@@ -120,6 +109,24 @@ function ContainerContainer({
       elements={[add, ...noteElements]}
       portal={[
         focusedNoteIndex,
+        focusedNoteIndex && (
+          <Note
+            index={focusedNoteIndex}
+            onClose={() => {
+              setHaveModalBeenClosed(true);
+            }}
+            focusInfo={
+              // fallback to default focusInfo if field wasn't specified
+              {
+                fieldName:
+                  notes[focusedNoteIndex].type === 'list'
+                    ? 'add-list-item'
+                    : 'textfield',
+                ...containerFocusInfo.noteFocusInfo,
+              }
+            }
+          />
+        ),
         () => {
           onNoteBlur(focusedNoteIndex);
           setHaveModalBeenClosed(true);

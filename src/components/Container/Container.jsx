@@ -9,15 +9,15 @@ import style from './Container-cfg.module.scss';
 // *
 export default function Container({
   elements = [],
-  portal: [focusedIndex, modalCallback, modal],
+  portal: [focusedIndex, portalNode, modalCallback, modal],
   onModalReady,
   itemToFocusIndex,
 }) {
   useEffect(() => {
-    if (focusedIndex) {
+    if (portalNode) {
       onModalReady(modalCallback);
     }
-  });
+  }, [portalNode]);
   const containerItemToFocusRef = useRef(null);
   useEffect(() => {
     if (typeof itemToFocusIndex === 'number') {
@@ -39,7 +39,7 @@ export default function Container({
                 [style.container__item_focused]: element.isItemFocused,
               },
               {
-                [style.container__item_hidden]: index === focusedIndex,
+                [style.container__item_hidden]: element.isFiller,
               },
               {
                 [style[`container__item_style-${element.color}`]]:
@@ -58,7 +58,7 @@ export default function Container({
           </div>
         );
       })}
-      {focusedIndex &&
+      {portalNode &&
         ReactDOM.createPortal(
           <div
             className={cn(style.container__item, style.container__item_modal, {
@@ -66,7 +66,7 @@ export default function Container({
                 elements[focusedIndex].color,
             })}
           >
-            {elements[focusedIndex].node}
+            {portalNode}
           </div>,
           modal
         )}

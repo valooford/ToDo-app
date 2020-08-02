@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 /* eslint-disable import/no-unresolved */
-import { handleClickOutside } from '@/utils';
+import { useEffectOnClickOutside } from '@/utils';
 
 import Note, { style, listItemStyle } from '@components/Note/Note';
 import PopupMenu from '@components/PopupMenu/PopupMenu.container';
@@ -30,6 +30,7 @@ import { closeModal } from '@store/modalReducer';
 // *
 function NoteContainer({
   index,
+  isFiller,
   focusInfo = {},
   isSelected,
   onFocusInfoChange,
@@ -66,7 +67,7 @@ function NoteContainer({
   }, [noteFocusInfo]);
 
   // detecting click inside note[0]
-  const setIsTouched = handleClickOutside(() => {
+  const setIsTouched = useEffectOnClickOutside(() => {
     onNoteBlur(index);
     if (index === 0) {
       onNoteAdd();
@@ -188,49 +189,51 @@ function NoteContainer({
         creationDate: note.creationDate,
         editingDate: note.editingDate,
       }}
-      popup={{
-        menu: popup === 'menu' && (
-          <PopupMenu
-            index={index}
-            hasMarkedItems={markedItems && !!markedItems.length}
-            callerRef={moreButtonRef}
-            handleClose={(isSilent) => {
-              setPopup(index, null);
-              if (!isSilent) {
-                setHavePopupBeenClosed(true);
-              }
-            }}
-          />
-        ),
-        colors: popup === 'colors' && (
-          <PopupColors
-            index={index}
-            callerRef={colorsButtonRef}
-            itemToFocusRef={popupColorsItemToFocusRef}
-            handleClose={(isSilent) => {
-              setPopup(index, null);
-              if (!isSilent) {
-                setHavePopupBeenClosed(true);
-              }
-            }}
-            onHover={() => {
-              clearTimeout(colorsButtonMouseLeaveTimerId);
-            }}
-          />
-        ),
-        reminder: popup === 'reminder' && (
-          <PopupReminder
-            index={index}
-            callerRef={reminderButtonRef}
-            handleClose={(isSilent) => {
-              setPopup(index, null);
-              if (!isSilent) {
-                setHavePopupBeenClosed(true);
-              }
-            }}
-          />
-        ),
-      }}
+      popup={
+        !isFiller && {
+          menu: popup === 'menu' && (
+            <PopupMenu
+              index={index}
+              hasMarkedItems={markedItems && !!markedItems.length}
+              callerRef={moreButtonRef}
+              handleClose={(isSilent) => {
+                setPopup(index, null);
+                if (!isSilent) {
+                  setHavePopupBeenClosed(true);
+                }
+              }}
+            />
+          ),
+          colors: popup === 'colors' && (
+            <PopupColors
+              index={index}
+              callerRef={colorsButtonRef}
+              itemToFocusRef={popupColorsItemToFocusRef}
+              handleClose={(isSilent) => {
+                setPopup(index, null);
+                if (!isSilent) {
+                  setHavePopupBeenClosed(true);
+                }
+              }}
+              onHover={() => {
+                clearTimeout(colorsButtonMouseLeaveTimerId);
+              }}
+            />
+          ),
+          reminder: popup === 'reminder' && (
+            <PopupReminder
+              index={index}
+              callerRef={reminderButtonRef}
+              handleClose={(isSilent) => {
+                setPopup(index, null);
+                if (!isSilent) {
+                  setHavePopupBeenClosed(true);
+                }
+              }}
+            />
+          ),
+        }
+      }
       extra={index !== 0 ? <Reminder index={index} /> : null}
       refs={{
         moreButton: moreButtonRef,

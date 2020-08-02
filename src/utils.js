@@ -1,22 +1,22 @@
 /* eslint-disable import/prefer-default-export */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 
 /* handleClickOutside function are used to detect click inside an element
  * when its child is clicked and then removed
  * it's not considered as a part of element anymore
  * so using Element.closest() or Node.contains() makes no sense
  */
-export function handleClickOutside(onClickOutside, dependencies) {
+export function useEffectOnClickOutside(onClickOutside, dependencies) {
   const [startCondition = true] = dependencies;
   // click inside
-  const [isTouched, setIsTouched] = useState(false);
+  const [isTouched, setIsTouched] = useState(null);
   // handled by global handler
   const [globalClick, setGlobalClick] = useState(null);
   // function negates globalClick value
-  const globalClickListener = () => {
+  const globalClickListener = useCallback(() => {
     setGlobalClick((prev) => !prev);
-  };
+  }, []);
   // catching clicks outside
   useEffect(() => {
     if (globalClick === null) return; // return if globalClick is initial

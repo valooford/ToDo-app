@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
-import { handleClickOutside } from '@/utils';
+import { useEffectOnClickOutside } from '@/utils';
 
 import PopupReminder from '@components/PopupReminder/PopupReminder';
 // import {} from '@store/mainReducer';
@@ -28,8 +28,9 @@ function PopupReminderContainer({
   const { creationDate } = notes[index];
   const noteId = creationDate.getTime();
   // const noteReminder = getReminderById(reminders, noteId);
+
   // detecting click inside popupMenu
-  const setIsTouched = handleClickOutside(() => {
+  const setIsTouched = useEffectOnClickOutside(() => {
     handleClose();
   }, []);
 

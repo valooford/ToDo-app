@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 /* eslint-disable import/no-unresolved */
-import { handleClickOutside } from '@/utils';
+import { useEffectOnClickOutside } from '@/utils';
 
 import PopupMenu from '@components/PopupMenu/PopupMenu';
 
@@ -118,7 +118,7 @@ function PopupMenuContainer({
     onListToText,
   } = props;
   // detecting click inside popupMenu
-  const setIsTouched = handleClickOutside(() => {
+  const setIsTouched = useEffectOnClickOutside(() => {
     handleClose();
   }, []);
 

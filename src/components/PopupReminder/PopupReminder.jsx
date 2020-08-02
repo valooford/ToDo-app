@@ -14,6 +14,7 @@ import style from './PopupReminder-cfg.module.scss';
 
 function handleEscWith(cb) {
   return (e) => {
+    e.stopPropagation(); // prevent other event listeners from triggering
     if (e.keyCode === 27) cb();
   };
 }
