@@ -5,7 +5,7 @@ import cn from 'classnames';
 import Button from '@components/Button/Button';
 import IconButton from '@components/IconButton/IconButton';
 import Option from '@components/Option/Option';
-// import LocationOption from '@components/LocationOption/LocationOption';
+import LocationOption from '@components/LocationOption/LocationOption';
 import Dropdown from '@components/Dropdown/Dropdown';
 import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
 // import Calendar from '@components/Calendar/Calendar';
@@ -25,8 +25,13 @@ export default function PopupReminder({
   onClick,
   onClose,
   onKeyDown,
+  // reminderDate,
   setDate,
-  // setPlace,
+  reminderPlace,
+  setPlace,
+  getPlacesByQuery,
+  foundPlaces = [],
+  resetFoundPlaces,
 }) {
   const [currentFieldset, setCurrentFieldset] = useState('main');
 
@@ -40,6 +45,8 @@ export default function PopupReminder({
     }
   }, [currentFieldset]);
   // *
+
+  const [fieldsetData, setFieldsetData] = useState({});
 
   const now = new Date();
   let optionParams;
@@ -217,6 +224,7 @@ export default function PopupReminder({
                   modificators={['icon-button_tiny']}
                   onClick={() => {
                     setCurrentFieldset('main');
+                    resetFoundPlaces();
                   }}
                 />
               </span>
@@ -225,38 +233,30 @@ export default function PopupReminder({
             <div className={style['popup-reminder__fields']}>
               <Dropdown
                 useAsSearch
+                value={reminderPlace}
                 placeholder="Укажите место"
+                onInput={(place) => {
+                  setFieldsetData({ place });
+                  getPlacesByQuery(place);
+                }}
                 ref={autofocusRef}
-              >
-                {/* <LocationOption
-                  postcode={1}
-                  street="Апл-Парк-уэй"
-                  region="Купертино, Калифорния, США"
-                />
-                <LocationOption
-                  postcode={124}
-                  street="Conch Street"
-                  region="Холден Бич, Северная Каролина, США"
-                />
-                <LocationOption
-                  postcode={1600}
-                  street="Пенсильвания-авеню Северо-Запад"
-                  region="Вашингтон, округ Колумбия, США"
-                />
-                <LocationOption
-                  postcode={1261}
-                  street="West 79th Street"
-                  region="Лос-Анджелес, Калифорния, США"
-                />
-                <LocationOption
-                  postcode={1750}
-                  street="Вайн-стрит"
-                  region="Лос-Анджелес, Калифорния, США"
-                /> */}
-              </Dropdown>
+                component={LocationOption}
+                componentsParams={foundPlaces}
+              />
             </div>
             <span className={style['popup-reminder__ready-button']}>
-              <Button>Сохранить</Button>
+              <Button
+                disabled={
+                  fieldsetData.place == null || fieldsetData.place === ''
+                }
+                onClick={() => {
+                  setPlace(fieldsetData.place);
+                  onClose();
+                  resetFoundPlaces();
+                }}
+              >
+                Сохранить
+              </Button>
             </span>
           </fieldset>
         </KeyboardTrap>

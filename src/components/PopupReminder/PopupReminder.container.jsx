@@ -9,8 +9,9 @@ import {
   // AC - action creator
   setDateReminder as setDateReminderAC,
   setPlaceReminder as setPlaceReminderAC,
-
-  // getReminderById,
+  getPlaces,
+  setFoundPlaces as setFoundPlacesAC,
+  getReminderById,
 } from '@store/notificationReducer';
 /* eslint-enable import/no-unresolved */
 
@@ -21,13 +22,18 @@ function PopupReminderContainer({
   callerRef,
   handleClose,
   notes,
-  // reminders,
+  reminders,
+  foundPlaces,
   setDateReminder,
   setPlaceReminder,
+  getPlacesByQuery,
+  setFoundPlaces,
 }) {
   const { creationDate } = notes[index];
   const noteId = creationDate.getTime();
-  // const noteReminder = getReminderById(reminders, noteId);
+  const noteReminder = getReminderById(reminders, noteId);
+  const reminderDate = noteReminder && noteReminder.date;
+  const reminderPlace = noteReminder && noteReminder.place;
 
   // detecting click inside popupMenu
   const setIsTouched = useEffectOnClickOutside(() => {
@@ -52,11 +58,18 @@ function PopupReminderContainer({
         handleClose(true);
       }}
       onKeyDown={keyDownHandler}
+      reminderDate={reminderDate}
       setDate={(date, period) => {
         setDateReminder(noteId, date, period);
       }}
+      reminderPlace={reminderPlace}
       setPlace={(place) => {
         setPlaceReminder(noteId, place);
+      }}
+      getPlacesByQuery={getPlacesByQuery}
+      foundPlaces={foundPlaces}
+      resetFoundPlaces={() => {
+        setFoundPlaces([]);
       }}
     />
   );
@@ -66,10 +79,13 @@ function mapStateToProps(state) {
   return {
     notes: state.main.notes,
     reminders: state.notification.reminders,
+    foundPlaces: state.notification.foundPlaces,
   };
 }
 
 export default connect(mapStateToProps, {
   setDateReminder: setDateReminderAC,
   setPlaceReminder: setPlaceReminderAC,
+  getPlacesByQuery: getPlaces,
+  setFoundPlaces: setFoundPlacesAC,
 })(PopupReminderContainer);

@@ -1,5 +1,6 @@
 const SET_REMINDER = 'notification/set-reminder';
 const REMOVE_REMINDER = 'notification/remove-reminder';
+const SET_FOUND_PLACES = 'notification/set-found-places';
 
 const initialState = {
   reminders: {
@@ -17,6 +18,23 @@ const initialState = {
       },
     },
   },
+  foundPlaces: [
+    {
+      postcode: 1,
+      street: 'Апл-Парк-уэй',
+      region: 'Купертино, Калифорния, США',
+    },
+    {
+      postcode: 1261,
+      street: 'West 79th Street',
+      region: 'Лос-Анджелес, Калифорния, США',
+    },
+    {
+      postcode: 1750,
+      street: 'Вайн-стрит',
+      region: 'Лос-Анджелес, Калифорния, США',
+    },
+  ],
 };
 
 export default function notificationReducer(state = initialState, action) {
@@ -34,6 +52,8 @@ export default function notificationReducer(state = initialState, action) {
       reminders = { ...state.reminders };
       delete reminders[`note-${action.noteId}`];
       return { ...state, reminders };
+    case SET_FOUND_PLACES:
+      return { ...state, foundPlaces: action.foundPlaces };
     default:
       return state;
   }
@@ -55,4 +75,33 @@ export function removeReminder(noteId) {
 // REMINDER SELECTOR
 export function getReminderById(reminders, noteId) {
   return reminders[`note-${noteId}`];
+}
+
+// SET_FOUND_PLACES
+export function setFoundPlaces(foundPlaces) {
+  return { type: SET_FOUND_PLACES, foundPlaces };
+}
+
+export function getPlaces(query) {
+  return async (dispatch) => {
+    dispatch(
+      setFoundPlaces([
+        {
+          postcode: query,
+          street: 'Апл-Парк-уэй',
+          region: 'Купертино, Калифорния, США',
+        },
+        {
+          postcode: 124,
+          street: 'Conch Street',
+          region: 'Холден Бич, Северная Каролина, США',
+        },
+        {
+          postcode: 1600,
+          street: 'Пенсильвания-авеню Северо-Запад',
+          region: 'Вашингтон, округ Колумбия, США',
+        },
+      ])
+    );
+  };
 }

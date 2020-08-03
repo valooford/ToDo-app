@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import cn from 'classnames';
 
 /* eslint-disable import/no-unresolved */
@@ -11,13 +11,28 @@ function Dropdown(
     value,
     placeholder,
     titleText,
-    children,
+    onInput,
     noInput,
     useAsSearch,
     keepChildWidth,
+    component: Component,
+    componentsParams = [],
   },
   ref
 ) {
+  const inputRef = ref || React.createRef();
+  const optionsParams = componentsParams.map((params) => ({
+    ...params,
+    onClick() {
+      const place = Object.values(params).join(', ');
+      inputRef.current.value = place;
+      if (onInput) onInput(place);
+    },
+  }));
+  const inputHandler = ({ target: { value: place } }) => {
+    if (onInput) onInput(place);
+  };
+  const [isOptionsVisible, setIsOptionsVisible] = useState(false);
   return (
     <span
       className={cn(style.dropdown, {
@@ -30,6 +45,13 @@ function Dropdown(
         defaultValue={value}
         placeholder={placeholder}
         disabled={noInput}
+        onInput={inputHandler}
+        onFocus={() => {
+          setIsOptionsVisible(true);
+        }}
+        onBlur={() => {
+          setIsOptionsVisible(false);
+        }}
         ref={ref}
       />
       {!useAsSearch && (
@@ -41,7 +63,14 @@ function Dropdown(
           />
         </i>
       )}
-      {children && <div className={style.dropdown__options}>{children}</div>}
+      {isOptionsVisible && componentsParams.length > 0 && Component && (
+        <div className={style.dropdown__options}>
+          {optionsParams.map((params) => (
+            // eslint-disable-next-line react/jsx-props-no-spreading
+            <Component {...params} />
+          ))}
+        </div>
+      )}
     </span>
   );
 }

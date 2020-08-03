@@ -9,11 +9,12 @@ import style from './Reminder-cfg.module.scss';
 
 // КОМПОНЕНТ НАПОМИНАНИЯ / REMINDER
 // *
-export default function Reminder({ date, onRemove, onClick }) {
-  let formattedDate = date && getFormattedDate(date);
+export default function Reminder({ date, place, onRemove, onClick }) {
+  let text = (date && getFormattedDate(date)) || place;
+  const iconSymbol = date ? '\ue809' : '\ue80a';
   const [isFocused, setIsFocused] = useState(false);
   if (isFocused) {
-    formattedDate = `${formattedDate.slice(0, -3)}...`;
+    text = `${text.slice(0, -3)}...`;
   }
   const handleClick = (e) => {
     if (e.target.closest(`.${style.reminder__close}`)) return;
@@ -47,8 +48,8 @@ export default function Reminder({ date, onRemove, onClick }) {
         setIsFocused(false);
       }}
     >
-      <span className={style.reminder__icon}>&#xe809;</span>
-      {formattedDate}
+      <span className={style.reminder__icon}>{iconSymbol}</span>
+      {text}
       <span className={style.reminder__close}>
         <IconButton
           iconSymbol="&#xe80c;"
