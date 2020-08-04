@@ -46,11 +46,15 @@ export default function PopupReminder({
   }, [currentFieldset]);
   // *
 
-  const [fieldsetData, setFieldsetData] = useState({});
+  const [fieldsetData, setFieldsetData] = useState({
+    // date: reminderDate,
+    place: reminderPlace,
+  });
 
   const now = new Date();
   let optionParams;
   const fieldset = {};
+  const readyButtonRef = useRef(null);
 
   switch (currentFieldset) {
     case 'main':
@@ -233,7 +237,7 @@ export default function PopupReminder({
             <div className={style['popup-reminder__fields']}>
               <Dropdown
                 useAsSearch
-                value={reminderPlace}
+                value={fieldsetData.place}
                 placeholder="Укажите место"
                 onInput={(place) => {
                   setFieldsetData({ place });
@@ -242,6 +246,7 @@ export default function PopupReminder({
                 ref={autofocusRef}
                 component={LocationOption}
                 componentsParams={foundPlaces}
+                extraordinaryFocusRef={readyButtonRef}
               />
             </div>
             <span className={style['popup-reminder__ready-button']}>
@@ -254,6 +259,7 @@ export default function PopupReminder({
                   onClose();
                   resetFoundPlaces();
                 }}
+                ref={readyButtonRef}
               >
                 Сохранить
               </Button>

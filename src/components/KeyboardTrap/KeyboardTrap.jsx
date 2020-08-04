@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect, useCallback, useState } from 'react';
 
 export default function KeyboardTrap({
   children,
@@ -8,33 +8,43 @@ export default function KeyboardTrap({
 }) {
   const trapRef = useRef(null);
   // handle modal focus
-  let focusableElements = [];
-  let first;
-  let last;
-  useEffect(() => {
+  const [focusableElements, setFocusableElements] = useState([]);
+  const first = focusableElements[0];
+  const last = focusableElements[focusableElements.length - 1];
+
+  setTimeout(() => {
     if (trapRef.current) {
-      focusableElements = Array.from(
+      const elements = Array.from(
         trapRef.current.querySelectorAll(
           'input:not([disabled]), textarea:not([disabled]), button:not([disabled])'
         )
       );
-      [first] = focusableElements;
-      last = focusableElements[focusableElements.length - 1];
+      if (elements[0] !== first || elements[elements.length - 1] !== last) {
+        setFocusableElements(elements);
+      }
     }
-  }, [trapRef.current]);
+  }, 0);
+
+  useEffect(() => {}, [focusableElements]);
 
   useEffect(() => {
-    if (autofocus) {
+    if (!autofocus) return;
+    const elements = Array.from(
+      trapRef.current.querySelectorAll(
+        'input:not([disabled]), textarea:not([disabled]), button:not([disabled])'
+      )
+    );
+    if (elements[0]) {
       // focus is asynchronous because sometimes
       // events can propagate through KeyboardTrap elements
       // and trigger event handlers on focused element
       // (ex. pressing Enter on Reminder triggers pressing
       //  first button of PopupReminder; stopPropagation didn't work)
       setTimeout(() => {
-        first.focus();
+        elements[0].focus();
       }, 0);
     }
-  }, []);
+  }, [trapRef.current]);
 
   const keyDownHandler = useCallback(
     (e) => {

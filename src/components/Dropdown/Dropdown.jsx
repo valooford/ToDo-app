@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import cn from 'classnames';
 
 /* eslint-disable import/no-unresolved */
 import IconButton from '@components/IconButton/IconButton';
+import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
 /* eslint-enable import/no-unresolved */
 import style from './Dropdown-cfg.module.scss';
 
 function Dropdown(
   {
-    value,
+    value = '',
     placeholder,
     titleText,
     onInput,
@@ -17,22 +18,37 @@ function Dropdown(
     keepChildWidth,
     component: Component,
     componentsParams = [],
+    extraordinaryFocusRef,
   },
   ref
 ) {
+  const [isOptionsVisible, setIsOptionsVisible] = useState(false);
+
+  const firstOptionRef = useRef(null);
   const inputRef = ref || React.createRef();
-  const optionsParams = componentsParams.map((params) => ({
+  const optionsParams = componentsParams.map((params, i) => ({
     ...params,
+    ref: i === 0 ? firstOptionRef : null,
     onClick() {
       const place = Object.values(params).join(', ');
       inputRef.current.value = place;
       if (onInput) onInput(place);
+      setIsOptionsVisible(false);
+    },
+    onKeyDown(e) {
+      // Tab
+      if (e.keyCode === 9) {
+        e.preventDefault();
+        // ↓ to prevent outer KeyboardTrap from handling wrong element
+        e.stopPropagation();
+        if (extraordinaryFocusRef) extraordinaryFocusRef.current.focus();
+        setIsOptionsVisible(false);
+      }
     },
   }));
   const inputHandler = ({ target: { value: place } }) => {
     if (onInput) onInput(place);
   };
-  const [isOptionsVisible, setIsOptionsVisible] = useState(false);
   return (
     <span
       className={cn(style.dropdown, {
@@ -42,15 +58,34 @@ function Dropdown(
       <input
         className={style.dropdown__input}
         type="text"
-        defaultValue={value}
+        value={value}
         placeholder={placeholder}
         disabled={noInput}
-        onInput={inputHandler}
+        onChange={inputHandler}
         onFocus={() => {
           setIsOptionsVisible(true);
         }}
-        onBlur={() => {
-          setIsOptionsVisible(false);
+        onKeyDown={(e) => {
+          // Tab & NOT Shift
+          if (e.keyCode === 9) {
+            setIsOptionsVisible(false);
+            if (!e.shiftKey) {
+              if (e.target.value !== '') {
+                if (extraordinaryFocusRef) {
+                  e.preventDefault();
+                  // ↓ to prevent outer KeyboardTrap from handling wrong element
+                  e.stopPropagation();
+                  extraordinaryFocusRef.current.focus();
+                }
+              } else {
+                e.preventDefault();
+                e.target.focus();
+              }
+            }
+            // down arrow
+          } else if (e.keyCode === 40) {
+            if (firstOptionRef) firstOptionRef.current.focus();
+          }
         }}
         ref={ref}
       />
@@ -65,10 +100,12 @@ function Dropdown(
       )}
       {isOptionsVisible && componentsParams.length > 0 && Component && (
         <div className={style.dropdown__options}>
-          {optionsParams.map((params) => (
-            // eslint-disable-next-line react/jsx-props-no-spreading
-            <Component {...params} />
-          ))}
+          <KeyboardTrap usingArrows>
+            {optionsParams.map((params) => (
+              // eslint-disable-next-line react/jsx-props-no-spreading
+              <Component {...params} />
+            ))}
+          </KeyboardTrap>
         </div>
       )}
     </span>

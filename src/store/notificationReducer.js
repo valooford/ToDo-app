@@ -19,21 +19,11 @@ const initialState = {
     },
   },
   foundPlaces: [
-    {
-      postcode: 1,
-      street: 'Апл-Парк-уэй',
-      region: 'Купертино, Калифорния, США',
-    },
-    {
-      postcode: 1261,
-      street: 'West 79th Street',
-      region: 'Лос-Анджелес, Калифорния, США',
-    },
-    {
-      postcode: 1750,
-      street: 'Вайн-стрит',
-      region: 'Лос-Анджелес, Калифорния, США',
-    },
+    // {
+    //   postcode: 1,
+    //   street: 'Апл-Парк-уэй',
+    //   region: 'Купертино, Калифорния, США',
+    // },
   ],
 };
 
@@ -100,6 +90,16 @@ export function getPlaces(query) {
           postcode: 1600,
           street: 'Пенсильвания-авеню Северо-Запад',
           region: 'Вашингтон, округ Колумбия, США',
+        },
+        {
+          postcode: 1261,
+          street: 'West 79th Street',
+          region: 'Лос-Анджелес, Калифорния, США',
+        },
+        {
+          postcode: 1750,
+          street: 'Вайн-стрит',
+          region: 'Лос-Анджелес, Калифорния, США',
         },
       ])
     );

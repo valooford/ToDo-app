@@ -81,7 +81,9 @@ function Note({
     });
   }, [noteRef.current]);
   useEffect(() => {
-    setIsInteracting(isSelected || isFocusing);
+    // Object.keys(popup).length condition is temporary
+    // because of incorrect work with popup's dropdown options
+    setIsInteracting(isSelected || isFocusing || Object.keys(popup).length);
   }, [isSelected, isFocusing]);
 
   const buttons = [

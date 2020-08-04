@@ -2,12 +2,14 @@ import React from 'react';
 
 import style from './LocationOption-cfg.module.scss';
 
-export default function LocationOption({ postcode, street, region, onClick }) {
+function LocationOption({ postcode, street, region, onClick, onKeyDown }, ref) {
   return (
     <button
       className={style['location-option']}
       type="button"
       onClick={onClick}
+      onKeyDown={onKeyDown}
+      ref={ref}
     >
       <i className={style['location-option__icon']}>&#xe80a;</i>
       {`${postcode} `}
@@ -16,3 +18,5 @@ export default function LocationOption({ postcode, street, region, onClick }) {
     </button>
   );
 }
+
+export default React.forwardRef(LocationOption);
