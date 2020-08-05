@@ -1,3 +1,7 @@
+/* eslint-disable import/no-unresolved */
+import { getPlaces } from '@api/places';
+/* eslint-enable import/no-unresolved */
+
 const SET_REMINDER = 'notification/set-reminder';
 const REMOVE_REMINDER = 'notification/remove-reminder';
 const SET_FOUND_PLACES = 'notification/set-found-places';
@@ -20,9 +24,10 @@ const initialState = {
   },
   foundPlaces: [
     // {
-    //   postcode: 1,
-    //   street: 'Апл-Парк-уэй',
-    //   region: 'Купертино, Калифорния, США',
+    //   name: 1,
+    //   address: 'Апл-Парк-уэй',
+    //   location: 'Купертино, Калифорния, США',
+    //   key: 123456,
     // },
   ],
 };
@@ -72,36 +77,25 @@ export function setFoundPlaces(foundPlaces) {
   return { type: SET_FOUND_PLACES, foundPlaces };
 }
 
-export function getPlaces(query) {
+export function findPlaces(query) {
+  if (query == null || query === '') {
+    return setFoundPlaces([]);
+  }
   return async (dispatch) => {
+    const places = (await getPlaces(query)) || [];
     dispatch(
-      setFoundPlaces([
-        {
-          postcode: query,
-          street: 'Апл-Парк-уэй',
-          region: 'Купертино, Калифорния, США',
-        },
-        {
-          postcode: 124,
-          street: 'Conch Street',
-          region: 'Холден Бич, Северная Каролина, США',
-        },
-        {
-          postcode: 1600,
-          street: 'Пенсильвания-авеню Северо-Запад',
-          region: 'Вашингтон, округ Колумбия, США',
-        },
-        {
-          postcode: 1261,
-          street: 'West 79th Street',
-          region: 'Лос-Анджелес, Калифорния, США',
-        },
-        {
-          postcode: 1750,
-          street: 'Вайн-стрит',
-          region: 'Лос-Анджелес, Калифорния, США',
-        },
-      ])
+      setFoundPlaces(
+        places.map((place) => {
+          const { id, name, location } = place;
+          const { address, city, state, country } = location;
+          return {
+            name,
+            address,
+            location: `${city}, ${state}, ${country}`,
+            key: id,
+          };
+        })
+      )
     );
   };
 }

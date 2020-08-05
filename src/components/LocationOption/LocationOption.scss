@@ -19,6 +19,11 @@
     outline: 0;
     &:last-child {
       border-bottom: none;
+      padding-bottom: 10px;
+      background-image: url('~@assets/images/powered-by-foursquare-grey.png');
+      background-size: auto 8px;
+      background-repeat: no-repeat;
+      background-position: right bottom;
     }
     &:hover {
       background-color: rgba(0, 0, 0, 0.055);

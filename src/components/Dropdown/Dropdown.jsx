@@ -103,7 +103,7 @@ function Dropdown(
           <KeyboardTrap usingArrows>
             {optionsParams.map((params) => (
               // eslint-disable-next-line react/jsx-props-no-spreading
-              <Component {...params} />
+              <Component {...params} key={params.key} />
             ))}
           </KeyboardTrap>
         </div>

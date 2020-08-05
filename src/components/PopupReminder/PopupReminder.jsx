@@ -29,7 +29,7 @@ export default function PopupReminder({
   setDate,
   reminderPlace,
   setPlace,
-  getPlacesByQuery,
+  findPlacesByQuery,
   foundPlaces = [],
   resetFoundPlaces,
 }) {
@@ -241,7 +241,7 @@ export default function PopupReminder({
                 placeholder="Укажите место"
                 onInput={(place) => {
                   setFieldsetData({ place });
-                  getPlacesByQuery(place);
+                  findPlacesByQuery(place);
                 }}
                 ref={autofocusRef}
                 component={LocationOption}

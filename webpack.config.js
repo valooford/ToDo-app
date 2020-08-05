@@ -5,6 +5,7 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 
 const isDev = process.env.NODE_ENV === 'development';
+const imageFileRegexp = /\.(png|jpe?g|gif)$/i;
 const fontFileRegexp = /\.(eot|svg|ttf|woff|woff2)$/;
 const jsJsxRegexp = /\.(js|jsx)$/;
 const cssModuleRegexp = /\.module\.css$/;
@@ -19,6 +20,8 @@ const config = {
     alias: {
       'react-dom': '@hot-loader/react-dom',
       '@': path.resolve(__dirname, 'src'),
+      '@api': '@/api',
+      '@assets': '@/assets',
       '@components': '@/components',
       '@styles': '@/styles',
       '@store': '@/store',
@@ -30,6 +33,15 @@ const config = {
   },
   module: {
     rules: [
+      // Правило для файлов картинок
+      {
+        test: imageFileRegexp,
+        use: [
+          {
+            loader: 'file-loader',
+          },
+        ],
+      },
       {
         // Правило для файлов шрифтов
         test: fontFileRegexp,

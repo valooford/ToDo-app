@@ -9,7 +9,7 @@ import {
   // AC - action creator
   setDateReminder as setDateReminderAC,
   setPlaceReminder as setPlaceReminderAC,
-  getPlaces,
+  findPlaces,
   setFoundPlaces as setFoundPlacesAC,
   getReminderById,
 } from '@store/notificationReducer';
@@ -26,7 +26,7 @@ function PopupReminderContainer({
   foundPlaces,
   setDateReminder,
   setPlaceReminder,
-  getPlacesByQuery,
+  findPlacesByQuery,
   setFoundPlaces,
 }) {
   const { creationDate } = notes[index];
@@ -66,7 +66,7 @@ function PopupReminderContainer({
       setPlace={(place) => {
         setPlaceReminder(noteId, place);
       }}
-      getPlacesByQuery={getPlacesByQuery}
+      findPlacesByQuery={findPlacesByQuery}
       foundPlaces={foundPlaces}
       resetFoundPlaces={() => {
         setFoundPlaces([]);
@@ -86,6 +86,6 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   setDateReminder: setDateReminderAC,
   setPlaceReminder: setPlaceReminderAC,
-  getPlacesByQuery: getPlaces,
+  findPlacesByQuery: findPlaces,
   setFoundPlaces: setFoundPlacesAC,
 })(PopupReminderContainer);

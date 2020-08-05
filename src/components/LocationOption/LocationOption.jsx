@@ -2,7 +2,16 @@ import React from 'react';
 
 import style from './LocationOption-cfg.module.scss';
 
-function LocationOption({ postcode, street, region, onClick, onKeyDown }, ref) {
+function LocationOption(
+  {
+    name,
+    // address,
+    location,
+    onClick,
+    onKeyDown,
+  },
+  ref
+) {
   return (
     <button
       className={style['location-option']}
@@ -12,9 +21,8 @@ function LocationOption({ postcode, street, region, onClick, onKeyDown }, ref) {
       ref={ref}
     >
       <i className={style['location-option__icon']}>&#xe80a;</i>
-      {`${postcode} `}
-      {`${street} `}
-      <small className={style['location-option__region']}>{region}</small>
+      {`${name} `}
+      <small className={style['location-option__region']}>{location}</small>
     </button>
   );
 }
