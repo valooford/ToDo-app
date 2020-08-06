@@ -77,25 +77,35 @@ export function setFoundPlaces(foundPlaces) {
   return { type: SET_FOUND_PLACES, foundPlaces };
 }
 
+// promise for calling setFoundPlaces in order
+let setFoundPlacesPromise = Promise.resolve(1);
+
 export function findPlaces(query) {
-  if (query == null || query === '') {
-    return setFoundPlaces([]);
-  }
   return async (dispatch) => {
-    const places = (await getPlaces(query)) || [];
-    dispatch(
-      setFoundPlaces(
-        places.map((place) => {
-          const { id, name, location } = place;
-          const { address, city, state, country } = location;
-          return {
-            name,
-            address,
-            location: `${city}, ${state}, ${country}`,
-            key: id,
-          };
-        })
-      )
-    );
+    setFoundPlacesPromise = setFoundPlacesPromise.then(async () => {
+      if (query == null || query === '') {
+        dispatch(setFoundPlaces([]));
+        return;
+      }
+      const places = (await getPlaces(query)) || [];
+      dispatch(
+        setFoundPlaces(
+          places.map((place) => {
+            const {
+              id,
+              name,
+              location: { address, city, state, country },
+            } = place;
+            const location = [city, state, country].filter((v) => v).join(', ');
+            return {
+              name,
+              address,
+              location,
+              key: id,
+            };
+          })
+        )
+      );
+    });
   };
 }

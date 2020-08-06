@@ -5,8 +5,8 @@ const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const HTMLWebpackPlugin = require('html-webpack-plugin');
 
 const isDev = process.env.NODE_ENV === 'development';
-const imageFileRegexp = /\.(png|jpe?g|gif)$/i;
-const fontFileRegexp = /\.(eot|svg|ttf|woff|woff2)$/;
+const imageFileRegexp = /\.(png|svg|jpe?g|gif)$/i;
+const fontFileRegexp = /\.(eot|ttf|woff|woff2)$/;
 const jsJsxRegexp = /\.(js|jsx)$/;
 const cssModuleRegexp = /\.module\.css$/;
 const sassModuleRegexp = /\.module\.s[ac]ss$/i;
@@ -39,6 +39,7 @@ const config = {
         use: [
           {
             loader: 'file-loader',
+            options: { name: '[name].[ext]', outputPath: 'assets/images' },
           },
         ],
       },

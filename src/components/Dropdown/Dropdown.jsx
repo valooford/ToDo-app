@@ -4,6 +4,8 @@ import cn from 'classnames';
 /* eslint-disable import/no-unresolved */
 import IconButton from '@components/IconButton/IconButton';
 import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
+
+import { useEffectOnClickOutside } from '@/utils';
 /* eslint-enable import/no-unresolved */
 import style from './Dropdown-cfg.module.scss';
 
@@ -24,13 +26,22 @@ function Dropdown(
 ) {
   const [isOptionsVisible, setIsOptionsVisible] = useState(false);
 
+  const onDropdownClick = useEffectOnClickOutside(() => {
+    setTimeout(() => {
+      setIsOptionsVisible(false);
+    }, 0);
+  }, [isOptionsVisible]);
+
   const firstOptionRef = useRef(null);
   const inputRef = ref || React.createRef();
   const optionsParams = componentsParams.map((params, i) => ({
     ...params,
     ref: i === 0 ? firstOptionRef : null,
     onClick() {
-      const place = Object.values(params).join(', ');
+      const place = Object.values(params)
+        .filter((p) => p)
+        .slice(0, -1)
+        .join(', ');
       inputRef.current.value = place;
       if (onInput) onInput(place);
       setIsOptionsVisible(false);
@@ -50,10 +61,12 @@ function Dropdown(
     if (onInput) onInput(place);
   };
   return (
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
     <span
       className={cn(style.dropdown, {
         [style['dropdown_keep-width']]: keepChildWidth,
       })}
+      onClick={onDropdownClick}
     >
       <input
         className={style.dropdown__input}

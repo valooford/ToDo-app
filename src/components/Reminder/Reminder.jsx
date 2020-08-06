@@ -4,13 +4,19 @@ import cn from 'classnames';
 import { getFormattedDate } from '@/utils';
 
 import IconButton from '@components/IconButton/IconButton';
+import Title from '@components/Title/Title';
 /* eslint-enable import/no-unresolved */
 import style from './Reminder-cfg.module.scss';
 
 // КОМПОНЕНТ НАПОМИНАНИЯ / REMINDER
 // *
 export default function Reminder({ date, place, onRemove, onClick }) {
-  let text = (date && getFormattedDate(date)) || place;
+  const fullText = (date && getFormattedDate(date)) || place;
+  let text = fullText;
+  const commaIndex = text.indexOf(',');
+  if (!date && commaIndex !== -1) {
+    text = text.slice(0, commaIndex);
+  }
   const iconSymbol = date ? '\ue809' : '\ue80a';
   const [isFocused, setIsFocused] = useState(false);
   if (isFocused) {
@@ -58,6 +64,11 @@ export default function Reminder({ date, place, onRemove, onClick }) {
           onClick={onRemove}
         />
       </span>
+      {!date && commaIndex !== -1 && (
+        <span className={style.reminder__title}>
+          <Title text={fullText} />
+        </span>
+      )}
     </span>
   );
 }

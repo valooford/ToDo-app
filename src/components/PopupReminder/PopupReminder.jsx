@@ -25,7 +25,7 @@ export default function PopupReminder({
   onClick,
   onClose,
   onKeyDown,
-  // reminderDate,
+  reminderDate,
   setDate,
   reminderPlace,
   setPlace,
@@ -33,7 +33,21 @@ export default function PopupReminder({
   foundPlaces = [],
   resetFoundPlaces,
 }) {
-  const [currentFieldset, setCurrentFieldset] = useState('main');
+  useEffect(() => {
+    return () => {
+      resetFoundPlaces();
+    };
+  }, []);
+
+  let initialFieldset;
+  if (reminderDate) {
+    initialFieldset = 'date';
+  } else if (reminderPlace != null) {
+    initialFieldset = 'place';
+  } else {
+    initialFieldset = 'main';
+  }
+  const [currentFieldset, setCurrentFieldset] = useState(initialFieldset);
 
   const switchToMainOnEsc = handleEscWith(() => setCurrentFieldset('main'));
   // autofocus
