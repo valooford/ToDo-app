@@ -11,10 +11,11 @@ import style from './Dropdown-cfg.module.scss';
 
 function Dropdown(
   {
-    value = '',
+    defaultValue = '',
     placeholder,
     titleText,
     onInput,
+    validate,
     noInput,
     useAsSearch,
     keepChildWidth,
@@ -37,13 +38,9 @@ function Dropdown(
   const optionsParams = componentsParams.map((params, i) => ({
     ...params,
     ref: i === 0 ? firstOptionRef : null,
-    onClick() {
-      const place = Object.values(params)
-        .filter((p) => p)
-        .slice(0, -1)
-        .join(', ');
-      inputRef.current.value = place;
-      if (onInput) onInput(place);
+    onClick(optionValue) {
+      inputRef.current.value = optionValue;
+      if (onInput) onInput(optionValue);
       setIsOptionsVisible(false);
     },
     onKeyDown(e) {
@@ -60,6 +57,7 @@ function Dropdown(
   const inputHandler = ({ target: { value: place } }) => {
     if (onInput) onInput(place);
   };
+  const [isInvalid, setInvalid] = useState(false);
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
     <span
@@ -69,15 +67,28 @@ function Dropdown(
       onClick={onDropdownClick}
     >
       <input
-        className={style.dropdown__input}
+        className={cn(style.dropdown__input, {
+          [style.dropdown__input_invalid]: isInvalid,
+        })}
         type="text"
-        value={value}
+        defaultValue={defaultValue}
         placeholder={placeholder}
         disabled={noInput}
-        onChange={inputHandler}
-        onFocus={() => {
-          setIsOptionsVisible(true);
+        onChange={(e) => {
+          if (validate && !validate(e.target.value)) {
+            setInvalid(true);
+            return;
+          }
+          setInvalid(false);
+          inputHandler(e);
         }}
+        onFocus={
+          useAsSearch
+            ? () => {
+                setIsOptionsVisible(true);
+              }
+            : null
+        }
         onKeyDown={(e) => {
           // Tab & NOT Shift
           if (e.keyCode === 9) {
@@ -100,7 +111,7 @@ function Dropdown(
             if (firstOptionRef) firstOptionRef.current.focus();
           }
         }}
-        ref={ref}
+        ref={inputRef}
       />
       {!useAsSearch && (
         <i className={style['dropdown__drop-button']}>
@@ -108,6 +119,10 @@ function Dropdown(
             iconSymbol="&#xe81a;"
             titleText={titleText}
             modificators={['icon-button_tiny']}
+            onClick={() => {
+              setIsOptionsVisible(!isOptionsVisible);
+              inputRef.current.focus();
+            }}
           />
         </i>
       )}

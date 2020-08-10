@@ -60,10 +60,17 @@ export default function PopupReminder({
   }, [currentFieldset]);
   // *
 
-  const [fieldsetData, setFieldsetData] = useState({
-    // date: reminderDate,
-    place: reminderPlace,
-  });
+  const [fieldsetData, setFieldsetData] = useState({});
+  useEffect(() => {
+    setFieldsetData({
+      // date: reminderDate,
+      date: {
+        time: '20:30',
+        period: 'Не повторять',
+      },
+      place: reminderPlace,
+    });
+  }, [currentFieldset]);
 
   const now = new Date();
   let optionParams;
@@ -186,36 +193,55 @@ export default function PopupReminder({
             </legend>
             <div className={style['popup-reminder__fields']}>
               <Dropdown
-                value="28 июл. 2020 г."
+                defaultValue="28 июл. 2020 г."
                 titleText="Выбрать дату"
+                validate={(date) => {
+                  return date.match(/^\d?\d\s*[А-Яа-я]{3}\.\s*\d{4}\s*г\.$/u);
+                }}
                 keepChildWidth
                 ref={autofocusRef}
               >
                 {/* <Calendar /> */}
               </Dropdown>
-              <Dropdown value="18:00" titleText="Выбрать время">
-                {/* <Option details="08:00" disabled>
-                Утро
-              </Option>
-              <Option details="13:00" disabled>
-                День
-              </Option>
-              <Option details="18:00">Вечер</Option>
-              <Option details="20:00">Ночь</Option>
-              <Option>Другое</Option> */}
-              </Dropdown>
+              <Dropdown
+                defaultValue={fieldsetData.date && fieldsetData.date.time}
+                titleText="Выбрать время"
+                onInput={(time) => {
+                  setFieldsetData(({ date }) => ({
+                    date: { ...date, time },
+                  }));
+                }}
+                validate={(time) => {
+                  return time.match(/^([0,1]?\d|2[0-3]):[0-5]\d$/);
+                }}
+                component={Option}
+                componentsParams={[
+                  { details: '08:00', children: 'Утро', key: 'morning' },
+                  { details: '13:00', children: 'День', key: 'day' },
+                  { details: '18:00', children: 'Вечер', key: 'evening' },
+                  { details: '20:00', children: 'Ночь', key: 'night' },
+                  { children: 'Другое', key: 'other' },
+                ]}
+              />
               <Dropdown
                 noInput
-                value="Не повторять"
+                defaultValue={fieldsetData.date && fieldsetData.date.period}
                 titleText="Выбрать частоту"
-              >
-                {/* <Option>Не повторять</Option>
-              <Option>Каждый день</Option>
-              <Option>Каждую неделю</Option>
-              <Option>Каждый месяц</Option>
-              <Option>Каждый год</Option>
-              <Option>Другое</Option> */}
-              </Dropdown>
+                onInput={(period) => {
+                  setFieldsetData(({ date }) => ({
+                    date: { ...date, period },
+                  }));
+                }}
+                component={Option}
+                componentsParams={[
+                  { children: 'Не повторять', key: 'no period' },
+                  { children: 'Каждый день', key: 'daily' },
+                  { children: 'Каждую неделю', key: 'weekly' },
+                  { children: 'Каждый месяц', key: 'monthly' },
+                  { children: 'Каждый год', key: 'yearly' },
+                  { children: 'Другое', key: 'other' },
+                ]}
+              />
             </div>
             <span className={style['popup-reminder__ready-button']}>
               <Button disabled>Сохранить</Button>
@@ -251,7 +277,7 @@ export default function PopupReminder({
             <div className={style['popup-reminder__fields']}>
               <Dropdown
                 useAsSearch
-                value={fieldsetData.place}
+                defaultValue={fieldsetData.place}
                 placeholder="Укажите место"
                 onInput={(place) => {
                   setFieldsetData({ place });

@@ -2,19 +2,16 @@ import React from 'react';
 
 import style from './Option-cfg.module.scss';
 
-export default function Option({
-  children,
-  iconSymbol,
-  details,
-  disabled,
-  onClick,
-}) {
+function Option({ children, iconSymbol, details, disabled, onClick }, ref) {
   return (
     <button
       className={style.option}
       type="button"
       disabled={disabled}
-      onClick={onClick}
+      onClick={() => {
+        onClick(details || children);
+      }}
+      ref={ref}
     >
       {iconSymbol && <i className={style.option__icon}>{iconSymbol}</i>}
       {children}
@@ -22,3 +19,5 @@ export default function Option({
     </button>
   );
 }
+
+export default React.forwardRef(Option);

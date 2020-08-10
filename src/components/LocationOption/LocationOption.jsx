@@ -2,21 +2,15 @@ import React from 'react';
 
 import style from './LocationOption-cfg.module.scss';
 
-function LocationOption(
-  {
-    name,
-    // address,
-    location,
-    onClick,
-    onKeyDown,
-  },
-  ref
-) {
+function LocationOption({ name, address, location, onClick, onKeyDown }, ref) {
   return (
     <button
       className={style['location-option']}
       type="button"
-      onClick={onClick}
+      onClick={() => {
+        const place = `${name}, ${address}, ${location}`;
+        onClick(place);
+      }}
       onKeyDown={onKeyDown}
       ref={ref}
     >
