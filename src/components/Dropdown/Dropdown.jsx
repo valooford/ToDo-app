@@ -14,8 +14,8 @@ function Dropdown(
     defaultValue = '',
     placeholder,
     titleText,
-    onInput,
     validate,
+    onInput,
     noInput,
     useAsSearch,
     keepChildWidth,
@@ -40,7 +40,10 @@ function Dropdown(
     ref: i === 0 ? firstOptionRef : null,
     onClick(optionValue) {
       inputRef.current.value = optionValue;
-      if (onInput) onInput(optionValue);
+      const validationOutput = (validate && validate(optionValue)) || [
+        optionValue,
+      ];
+      if (onInput) onInput(...validationOutput);
       setIsOptionsVisible(false);
     },
     onKeyDown(e) {
@@ -54,9 +57,6 @@ function Dropdown(
       }
     },
   }));
-  const inputHandler = ({ target: { value: place } }) => {
-    if (onInput) onInput(place);
-  };
   const [isInvalid, setInvalid] = useState(false);
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
@@ -75,12 +75,17 @@ function Dropdown(
         placeholder={placeholder}
         disabled={noInput}
         onChange={(e) => {
-          if (validate && !validate(e.target.value)) {
+          if (!validate) {
+            onInput(e.target.value);
+            return;
+          }
+          const validationOutput = validate(e.target.value);
+          if (!validationOutput) {
             setInvalid(true);
             return;
           }
           setInvalid(false);
-          inputHandler(e);
+          if (onInput) onInput(...validationOutput);
         }}
         onFocus={
           useAsSearch

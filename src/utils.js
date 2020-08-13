@@ -61,21 +61,15 @@ const months = [
 export function getFormattedDate(
   date,
   {
+    timeOnly = false,
+    noDetails = false,
+    noTime = false,
+    includeYear = false,
     tomorrowText = 'Завтра, ',
     todayText = 'Сегодня, ',
     yesterdayText = 'Вчера, ',
-    timeAlways = true,
   } = {}
 ) {
-  const currentDate = new Date();
-  const today = new Date(
-    currentDate.getFullYear(),
-    currentDate.getMonth(),
-    currentDate.getDate()
-  );
-  const tomorrow = new Date(+today + oneDayMs);
-  const yesterday = new Date(today - oneDayMs);
-
   let formattedDate;
   let hours = date.getHours();
   hours = hours < 10 ? `0${hours}` : hours;
@@ -83,18 +77,94 @@ export function getFormattedDate(
   minutes = minutes < 10 ? `0${minutes}` : minutes;
 
   const time = `${hours}:${minutes}`;
-  if (date - tomorrow > 0 && date - tomorrow < oneDayMs) {
-    formattedDate = `${tomorrowText}${time}`;
-  } else if (date - today > 0 && date - today < oneDayMs) {
-    formattedDate = `${todayText}${time}`;
-  } else if (date - yesterday > 0 && date - yesterday < oneDayMs) {
-    formattedDate = `${yesterdayText}${time}`;
-  } else {
+  if (timeOnly) {
+    formattedDate = time;
+  } else if (noDetails) {
     formattedDate = `${date.getDate()} ${months[date.getMonth()]}`;
-    if (timeAlways) {
+    if (includeYear) {
+      formattedDate += ` ${date.getFullYear()} г.`;
+    }
+    if (!noTime) {
       formattedDate += ` ${time}`;
+    }
+  } else {
+    const currentDate = new Date();
+    const today = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth(),
+      currentDate.getDate()
+    );
+    const tomorrow = new Date(+today + oneDayMs);
+    const yesterday = new Date(today - oneDayMs);
+
+    if (date - tomorrow > 0 && date - tomorrow < oneDayMs) {
+      formattedDate = `${tomorrowText}${time}`;
+    } else if (date - today > 0 && date - today < oneDayMs) {
+      formattedDate = `${todayText}${time}`;
+    } else if (date - yesterday > 0 && date - yesterday < oneDayMs) {
+      formattedDate = `${yesterdayText}${time}`;
+    } else {
+      formattedDate = `${date.getDate()} ${months[date.getMonth()]}`;
+      if (includeYear) {
+        formattedDate += ` ${date.getFullYear()} г.`;
+      }
+      if (!noTime) {
+        formattedDate += ` ${time}`;
+      }
     }
   }
 
   return formattedDate;
+}
+
+export function getDateParamsFromString(str) {
+  const timeMatch = str.match(/^([0,1]?\d|2[0-3]):([0-5]\d)$/);
+  if (timeMatch) {
+    const [, hours, minutes] = timeMatch;
+    return { hours, minutes, type: 'time' };
+  }
+  const dateRegexp = new RegExp(
+    `^(\\d?\\d)\\s*(${months.join('|')})\\s*(\\d{4})\\s*г\\.$`,
+    'u'
+  );
+  const dateMatch = str.match(dateRegexp);
+  if (dateMatch) {
+    const [, date, monthName, year] = dateMatch;
+    const month = months.indexOf(monthName);
+
+    const testingDate = new Date(year, month, date);
+    // that date doesn't exist in that month (i.e. 30 feb.)
+    if (testingDate.getDate() !== +date) return null;
+
+    return { date, month, year, type: 'date', dateObj: testingDate };
+  }
+  return null;
+}
+
+/*
+period: {
+  every: 365,
+  end: {
+    count: 2,
+    // or
+    date: new Date(2022, 7, 1),
+  },
+}, 
+*/
+
+export function getFormattedPeriod(period) {
+  if (!period) return 'Не повторять';
+  switch (period.every) {
+    case 1:
+      return 'Каждый день';
+    case 7:
+      return 'Каждую неделю';
+    case 28:
+      return 'Каждый месяц';
+    case 365:
+      return 'Каждый год';
+    default:
+      return `Каждые ${period.every} дня`;
+    // return 'Другое';
+  }
 }

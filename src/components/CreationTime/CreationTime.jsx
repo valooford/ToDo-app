@@ -12,7 +12,7 @@ export default function CreationTime({ creationDate, editingDate }) {
   const dateFormanCfg = {
     todayText: '',
     yesterdayText: 'вчера в ',
-    timeAlways: false,
+    noTime: true,
   };
   const formattedCreationDate = getFormattedDate(creationDate, dateFormanCfg);
   const formattedEditingDate = getFormattedDate(editingDate, dateFormanCfg);

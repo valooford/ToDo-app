@@ -2,6 +2,12 @@ import React, { useState, useRef, useEffect } from 'react';
 import cn from 'classnames';
 
 /* eslint-disable import/no-unresolved */
+import {
+  getFormattedDate,
+  getFormattedPeriod,
+  getDateParamsFromString,
+} from '@/utils';
+
 import Button from '@components/Button/Button';
 import IconButton from '@components/IconButton/IconButton';
 import Option from '@components/Option/Option';
@@ -60,15 +66,28 @@ export default function PopupReminder({
   }, [currentFieldset]);
   // *
 
-  const [fieldsetData, setFieldsetData] = useState({});
+  const [fieldsetData, setFieldsetData] = useState({
+    date: reminderDate,
+    place: reminderPlace,
+    isValid: true,
+  });
   useEffect(() => {
+    let date;
+    if (!reminderDate) {
+      const currentDate = new Date();
+      let hours = Math.ceil(currentDate.getHours()) + 1;
+      if (currentDate.getMinutes() > 30) {
+        hours += 1;
+      }
+      date = new Date(currentDate);
+      date.setHours(hours, 0, 0, 0);
+    } else {
+      date = reminderDate;
+    }
     setFieldsetData({
-      // date: reminderDate,
-      date: {
-        time: '20:30',
-        period: 'Не повторять',
-      },
+      date,
       place: reminderPlace,
+      isValid: true,
     });
   }, [currentFieldset]);
 
@@ -193,10 +212,37 @@ export default function PopupReminder({
             </legend>
             <div className={style['popup-reminder__fields']}>
               <Dropdown
-                defaultValue="28 июл. 2020 г."
+                defaultValue={getFormattedDate(fieldsetData.date, {
+                  noDetails: true,
+                  includeYear: true,
+                  noTime: true,
+                })}
                 titleText="Выбрать дату"
                 validate={(date) => {
-                  return date.match(/^\d?\d\s*[А-Яа-я]{3}\.\s*\d{4}\s*г\.$/u);
+                  const dateParams = getDateParamsFromString(date);
+                  if (dateParams && dateParams.type === 'date') {
+                    const { type, dateObj, ...params } = dateParams;
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    // past days ↓
+                    if (dateObj - today >= 0) {
+                      setFieldsetData((prev) => ({ ...prev, isValid: true }));
+                      return Object.values(params);
+                    }
+                  }
+                  setFieldsetData((prev) => ({ ...prev, isValid: false }));
+                  return false;
+                }}
+                onInput={(date, month, year) => {
+                  setFieldsetData((prev) => {
+                    const { date: dateObj } = prev;
+                    const newDate = new Date(dateObj);
+                    newDate.setFullYear(year, month, date);
+                    return {
+                      ...prev,
+                      date: newDate,
+                    };
+                  });
                 }}
                 keepChildWidth
                 ref={autofocusRef}
@@ -204,15 +250,30 @@ export default function PopupReminder({
                 {/* <Calendar /> */}
               </Dropdown>
               <Dropdown
-                defaultValue={fieldsetData.date && fieldsetData.date.time}
+                defaultValue={getFormattedDate(fieldsetData.date, {
+                  timeOnly: true,
+                })}
                 titleText="Выбрать время"
-                onInput={(time) => {
-                  setFieldsetData(({ date }) => ({
-                    date: { ...date, time },
-                  }));
-                }}
                 validate={(time) => {
-                  return time.match(/^([0,1]?\d|2[0-3]):[0-5]\d$/);
+                  const dateParams = getDateParamsFromString(time);
+                  if (dateParams && dateParams.type === 'time') {
+                    const { type, ...params } = dateParams;
+                    setFieldsetData((prev) => ({ ...prev, isValid: true }));
+                    return Object.values(params);
+                  }
+                  setFieldsetData((prev) => ({ ...prev, isValid: false }));
+                  return false;
+                }}
+                onInput={(hours, minutes) => {
+                  setFieldsetData((prev) => {
+                    const { date } = prev;
+                    const newDate = new Date(date);
+                    newDate.setHours(hours, minutes);
+                    return {
+                      ...prev,
+                      date: newDate,
+                    };
+                  });
                 }}
                 component={Option}
                 componentsParams={[
@@ -225,11 +286,12 @@ export default function PopupReminder({
               />
               <Dropdown
                 noInput
-                defaultValue={fieldsetData.date && fieldsetData.date.period}
+                defaultValue={getFormattedPeriod(fieldsetData.period)}
                 titleText="Выбрать частоту"
                 onInput={(period) => {
-                  setFieldsetData(({ date }) => ({
-                    date: { ...date, period },
+                  setFieldsetData((prev) => ({
+                    ...prev,
+                    period,
                   }));
                 }}
                 component={Option}
@@ -244,7 +306,16 @@ export default function PopupReminder({
               />
             </div>
             <span className={style['popup-reminder__ready-button']}>
-              <Button disabled>Сохранить</Button>
+              <Button
+                disabled={!fieldsetData.isValid}
+                onClick={() => {
+                  setDate(fieldsetData.date, fieldsetData.period);
+                  onClose();
+                  resetFoundPlaces();
+                }}
+              >
+                Сохранить
+              </Button>
             </span>
           </fieldset>
         </KeyboardTrap>
@@ -291,9 +362,7 @@ export default function PopupReminder({
             </div>
             <span className={style['popup-reminder__ready-button']}>
               <Button
-                disabled={
-                  fieldsetData.place == null || fieldsetData.place === ''
-                }
+                disabled={!fieldsetData.place}
                 onClick={() => {
                   setPlace(fieldsetData.place);
                   onClose();
