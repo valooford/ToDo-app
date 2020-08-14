@@ -9,7 +9,7 @@ function Option({ children, iconSymbol, details, disabled, onClick }, ref) {
       type="button"
       disabled={disabled}
       onClick={() => {
-        onClick(details || children);
+        onClick(details || children); //! add internal property to pass to onClick
       }}
       ref={ref}
     >

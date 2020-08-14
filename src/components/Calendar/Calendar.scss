@@ -37,35 +37,43 @@
         font-size: 0.85em;
         line-height: 14px;
       }
-      td > * {
-        position: relative;
-        width: 100%;
-        padding: 20px 8px 4px;
-        font-size: 0.85em;
-        background: transparent;
-        border: none;
-        cursor: pointer;
+    }
+    &__date-button {
+      position: relative;
+      width: 100%;
+      padding: 20px 8px 4px;
+      font-size: 0.76em;
+      background: transparent;
+      border: none;
+      cursor: pointer;
 
-        // &:hover,
-        &:focus {
-          background-color: rgba(0, 0, 0, 0.1);
-        }
-        &:focus {
-          font-weight: bold;
+      &_today {
+        font-weight: bold;
+        background-color: rgba(0, 0, 0, 0.1);
+      }
+      &_selected,
+      &:focus {
+        font-weight: bold;
+      }
+      &_selected:before {
+        position: absolute;
+        top: 0.5em;
+        left: 50%;
+        width: 1em;
+        margin-left: -0.5em;
 
-          &:before {
-            position: absolute;
-            top: 0.5em;
-            left: 50%;
-            width: 1em;
-            margin-left: -0.5em;
-
-            content: '\e809';
-            font-family: $icon-font-name;
-            font-weight: normal;
-            font-size: 1em;
-          }
-        }
+        content: '\e809';
+        color: #000;
+        font-family: $icon-font-name;
+        font-weight: normal;
+        font-size: 1em;
+      }
+      &_next-month,
+      &_prev-month {
+        color: rgba(0, 0, 0, 0.5);
+      }
+      &:disabled {
+        color: rgba(0, 0, 0, 0.25);
       }
     }
   }

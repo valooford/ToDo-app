@@ -21,6 +21,7 @@ function Dropdown(
     keepChildWidth,
     component: Component,
     componentsParams = [],
+    componentActionPropertyName = 'onClick',
     extraordinaryFocusRef,
   },
   ref
@@ -33,17 +34,20 @@ function Dropdown(
     }, 0);
   }, [isOptionsVisible]);
 
+  const [isInvalid, setInvalid] = useState(false);
+
   const firstOptionRef = useRef(null);
   const inputRef = ref || React.createRef();
   const optionsParams = componentsParams.map((params, i) => ({
     ...params,
     ref: i === 0 ? firstOptionRef : null,
-    onClick(optionValue) {
+    [componentActionPropertyName](optionValue) {
       inputRef.current.value = optionValue;
       const validationOutput = (validate && validate(optionValue)) || [
         optionValue,
       ];
       if (onInput) onInput(...validationOutput);
+      setInvalid(false);
       setIsOptionsVisible(false);
     },
     onKeyDown(e) {
@@ -57,7 +61,6 @@ function Dropdown(
       }
     },
   }));
-  const [isInvalid, setInvalid] = useState(false);
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
     <span

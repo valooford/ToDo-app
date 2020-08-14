@@ -14,7 +14,7 @@ import Option from '@components/Option/Option';
 import LocationOption from '@components/LocationOption/LocationOption';
 import Dropdown from '@components/Dropdown/Dropdown';
 import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
-// import Calendar from '@components/Calendar/Calendar';
+import Calendar from '@components/Calendar/Calendar';
 /* eslint-enable import/no-unresolved */
 import style from './PopupReminder-cfg.module.scss';
 
@@ -244,11 +244,14 @@ export default function PopupReminder({
                     };
                   });
                 }}
+                component={Calendar}
+                componentsParams={[
+                  { date: fieldsetData.date, key: 'calendar' },
+                ]}
+                componentActionPropertyName="onSelect"
                 keepChildWidth
                 ref={autofocusRef}
-              >
-                {/* <Calendar /> */}
-              </Dropdown>
+              />
               <Dropdown
                 defaultValue={getFormattedDate(fieldsetData.date, {
                   timeOnly: true,

@@ -44,7 +44,21 @@ export function useEffectOnClickOutside(onClickOutside, dependencies) {
 }
 
 const oneDayMs = 8.64e7;
-const months = [
+export const months = [
+  'январь',
+  'февраль',
+  'март',
+  'апрель',
+  'май',
+  'июнь',
+  'июль',
+  'август',
+  'сентябрь',
+  'октябрь',
+  'ноябрь',
+  'декабрь',
+];
+const monthsAbbreviated = [
   'янв.',
   'фев.',
   'мар.',
@@ -80,7 +94,7 @@ export function getFormattedDate(
   if (timeOnly) {
     formattedDate = time;
   } else if (noDetails) {
-    formattedDate = `${date.getDate()} ${months[date.getMonth()]}`;
+    formattedDate = `${date.getDate()} ${monthsAbbreviated[date.getMonth()]}`;
     if (includeYear) {
       formattedDate += ` ${date.getFullYear()} г.`;
     }
@@ -104,7 +118,7 @@ export function getFormattedDate(
     } else if (date - yesterday > 0 && date - yesterday < oneDayMs) {
       formattedDate = `${yesterdayText}${time}`;
     } else {
-      formattedDate = `${date.getDate()} ${months[date.getMonth()]}`;
+      formattedDate = `${date.getDate()} ${monthsAbbreviated[date.getMonth()]}`;
       if (includeYear) {
         formattedDate += ` ${date.getFullYear()} г.`;
       }
@@ -124,13 +138,13 @@ export function getDateParamsFromString(str) {
     return { hours, minutes, type: 'time' };
   }
   const dateRegexp = new RegExp(
-    `^(\\d?\\d)\\s*(${months.join('|')})\\s*(\\d{4})\\s*г\\.$`,
+    `^(\\d?\\d)\\s*(${monthsAbbreviated.join('|')})\\s*(\\d{4})\\s*г\\.$`,
     'u'
   );
   const dateMatch = str.match(dateRegexp);
   if (dateMatch) {
     const [, date, monthName, year] = dateMatch;
-    const month = months.indexOf(monthName);
+    const month = monthsAbbreviated.indexOf(monthName);
 
     const testingDate = new Date(year, month, date);
     // that date doesn't exist in that month (i.e. 30 feb.)
