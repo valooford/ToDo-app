@@ -5,7 +5,7 @@ import cn from 'classnames';
 import IconButton from '@components/IconButton/IconButton';
 import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
 
-import { useEffectOnClickOutside } from '@/utils';
+import { useEffectOnMouseDownOutside } from '@/utils';
 /* eslint-enable import/no-unresolved */
 import style from './Dropdown-cfg.module.scss';
 
@@ -28,7 +28,7 @@ function Dropdown(
 ) {
   const [isOptionsVisible, setIsOptionsVisible] = useState(false);
 
-  const onDropdownClick = useEffectOnClickOutside(() => {
+  const onDropdownMouseDown = useEffectOnMouseDownOutside(() => {
     setTimeout(() => {
       setIsOptionsVisible(false);
     }, 0);
@@ -41,24 +41,22 @@ function Dropdown(
   const optionsParams = componentsParams.map((params, i) => ({
     ...params,
     ref: i === 0 ? firstOptionRef : null,
-    [componentActionPropertyName](optionValue) {
-      inputRef.current.value = optionValue;
-      const validationOutput = (validate && validate(optionValue)) || [
-        optionValue,
-      ];
-      if (onInput) onInput(...validationOutput);
-      setInvalid(false);
-      setIsOptionsVisible(false);
-    },
-    onKeyDown(e) {
-      // Tab
-      if (e.keyCode === 9) {
-        e.preventDefault();
-        // ↓ to prevent outer KeyboardTrap from handling wrong element
-        e.stopPropagation();
-        if (extraordinaryFocusRef) extraordinaryFocusRef.current.focus();
-        setIsOptionsVisible(false);
+    [componentActionPropertyName](optionValue, keepOptionsVisible) {
+      if (validate) {
+        const validationOutput = validate(optionValue);
+        if (validationOutput) {
+          inputRef.current.value = optionValue;
+          if (onInput) onInput(...validationOutput);
+          setInvalid(false);
+        } else {
+          setInvalid(true);
+        }
+      } else {
+        inputRef.current.value = optionValue;
+        if (onInput) onInput(optionValue);
+        setInvalid(false);
       }
+      setIsOptionsVisible(keepOptionsVisible);
     },
   }));
   return (
@@ -67,7 +65,14 @@ function Dropdown(
       className={cn(style.dropdown, {
         [style['dropdown_keep-width']]: keepChildWidth,
       })}
-      onClick={onDropdownClick}
+      onMouseDown={onDropdownMouseDown}
+      onClick={
+        noInput
+          ? () => {
+              setIsOptionsVisible(!isOptionsVisible);
+            }
+          : null
+      }
     >
       <input
         className={cn(style.dropdown__input, {
@@ -91,7 +96,7 @@ function Dropdown(
           if (onInput) onInput(...validationOutput);
         }}
         onFocus={
-          useAsSearch
+          useAsSearch && !isOptionsVisible
             ? () => {
                 setIsOptionsVisible(true);
               }
@@ -99,7 +104,7 @@ function Dropdown(
         }
         onKeyDown={(e) => {
           // Tab & NOT Shift
-          if (e.keyCode === 9) {
+          if (useAsSearch && e.keyCode === 9) {
             setIsOptionsVisible(false);
             if (!e.shiftKey) {
               if (e.target.value !== '') {
@@ -115,7 +120,7 @@ function Dropdown(
               }
             }
             // down arrow
-          } else if (e.keyCode === 40) {
+          } else if (isOptionsVisible && e.keyCode === 40) {
             if (firstOptionRef) firstOptionRef.current.focus();
           }
         }}
@@ -127,15 +132,37 @@ function Dropdown(
             iconSymbol="&#xe81a;"
             titleText={titleText}
             modificators={['icon-button_tiny']}
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation(); // to prevent from triggerring on dropdown-level
               setIsOptionsVisible(!isOptionsVisible);
-              inputRef.current.focus();
+              if (!noInput) {
+                inputRef.current.focus();
+              } else if (firstOptionRef && !isOptionsVisible) {
+                //! ?
+                setTimeout(() => {
+                  firstOptionRef.current.focus();
+                }, 0);
+              }
             }}
           />
         </i>
       )}
       {isOptionsVisible && componentsParams.length > 0 && Component && (
-        <div className={style.dropdown__options}>
+        // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+        <div
+          className={style.dropdown__options}
+          onKeyDown={(e) => {
+            // Tab or Esc
+            if (e.keyCode === 9 || e.keyCode === 27) {
+              e.preventDefault();
+              // ↓ to prevent outer KeyboardTrap from handling wrong element
+              e.stopPropagation();
+              if (extraordinaryFocusRef) extraordinaryFocusRef.current.focus();
+
+              setIsOptionsVisible(false);
+            }
+          }}
+        >
           <KeyboardTrap usingArrows>
             {optionsParams.map((params) => (
               // eslint-disable-next-line react/jsx-props-no-spreading

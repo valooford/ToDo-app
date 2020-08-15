@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
-import { useEffectOnClickOutside } from '@/utils';
+import { useEffectOnMouseDownOutside } from '@/utils';
 
 import PopupReminder from '@components/PopupReminder/PopupReminder';
-// import {} from '@store/mainReducer';
+
 import {
   // AC - action creator
   setDateReminder as setDateReminderAC,
@@ -36,7 +36,7 @@ function PopupReminderContainer({
   const reminderPlace = noteReminder && noteReminder.place;
 
   // detecting click inside popupMenu
-  const setIsTouched = useEffectOnClickOutside(() => {
+  const setIsTouched = useEffectOnMouseDownOutside(() => {
     handleClose();
   }, []);
 
@@ -51,7 +51,7 @@ function PopupReminderContainer({
   };
   return (
     <PopupReminder
-      onClick={() => {
+      onMouseDown={() => {
         setIsTouched();
       }}
       onClose={() => {

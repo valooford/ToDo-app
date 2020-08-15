@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import cn from 'classnames';
 
 /* eslint-disable import/no-unresolved */
@@ -11,6 +11,19 @@ const daysOfTheWeekNames = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'в�
 
 function Calendar({ date, onSelect }, ref) {
   const [displayedMonth, setDisplayedMonth] = useState(date);
+  useEffect(() => {
+    setDisplayedMonth(date);
+  }, [date]);
+
+  const selectedDateRef = useRef(null);
+  const [isSelectionModeOn, setIsSelectionModeOn] = useState(false);
+  useEffect(() => {
+    if (isSelectionModeOn) {
+      setTimeout(() => {
+        selectedDateRef.current.focus();
+      }, 0);
+    }
+  }, [date]);
 
   const lastDayOfTheMonth = new Date(displayedMonth);
   lastDayOfTheMonth.setMonth(displayedMonth.getMonth() + 1, 0);
@@ -42,6 +55,7 @@ function Calendar({ date, onSelect }, ref) {
   }
 
   const today = new Date();
+  today.setHours(0, 0, 0, 0);
   // interval between displayed and today in months
   const fromTodayMonthInterval =
     displayedMonth.getMonth() -
@@ -59,17 +73,93 @@ function Calendar({ date, onSelect }, ref) {
     fromTodayMonthInterval > 1 ||
     (fromTodayMonthInterval === 1 && today.getDate() < days[0][0]);
 
+  const tbodyRef = useRef(null);
+  const tbodyFocusHandler = useCallback(
+    (e) => {
+      if (!e.target.classList.contains(style['calendar__date-button'])) return;
+      if (!isSelectionModeOn) setIsSelectionModeOn(true);
+    },
+    [displayedMonth]
+  );
+  useEffect(() => {
+    tbodyRef.current.addEventListener('focusin', tbodyFocusHandler);
+    return () => {
+      tbodyRef.current.removeEventListener('focusin', tbodyFocusHandler);
+    };
+  }, [displayedMonth]);
+
+  const captionRef = ref || React.createRef();
+  const firstDayOfTheMonthRef = useRef(null);
+
   return (
     <span className={style.calendar}>
-      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
-      <table className={style.calendar__days} tabIndex={0} ref={ref}>
-        <caption className={style.calendar__caption}>
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+      <table
+        className={style.calendar__days}
+        // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+      >
+        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
+        <caption
+          className={style.calendar__caption}
+          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+          tabIndex={0}
+          onKeyDown={(e) => {
+            switch (e.keyCode) {
+              // arrow left
+              case 37:
+                e.stopPropagation();
+                setDisplayedMonth(
+                  (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1)
+                );
+                break;
+              // arrow right
+              case 39:
+                e.stopPropagation();
+                setDisplayedMonth(
+                  (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1)
+                );
+                break;
+              // arrow up or down
+              case 38:
+              case 40:
+                e.stopPropagation();
+                if (selectedDateRef.current) {
+                  selectedDateRef.current.focus();
+                  setIsSelectionModeOn(true);
+                } else if (fromTodayMonthInterval === 0) {
+                  onSelect(
+                    getFormattedDate(today, {
+                      noDetails: true,
+                      includeYear: true,
+                      noTime: true,
+                    }),
+                    true
+                  );
+                  setIsSelectionModeOn(true);
+                } else if (fromTodayMonthInterval > 0) {
+                  onSelect(
+                    getFormattedDate(displayedMonth, {
+                      noDetails: true,
+                      includeYear: true,
+                      noTime: true,
+                    }),
+                    true
+                  );
+                  setIsSelectionModeOn(true);
+                }
+                break;
+              default:
+                break;
+            }
+          }}
+          ref={captionRef}
+        >
           <button
             type="button"
             className={style['calendar__prev-button']}
             onClick={() => {
               setDisplayedMonth(
-                (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1, 1)
+                (prev) => new Date(prev.getFullYear(), prev.getMonth() - 1)
               );
             }}
           >
@@ -83,7 +173,7 @@ function Calendar({ date, onSelect }, ref) {
             className={style['calendar__next-button']}
             onClick={() => {
               setDisplayedMonth(
-                (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1, 1)
+                (prev) => new Date(prev.getFullYear(), prev.getMonth() + 1)
               );
             }}
           >
@@ -128,6 +218,51 @@ function Calendar({ date, onSelect }, ref) {
               })
             );
           }}
+          onKeyDown={(e) => {
+            switch (e.keyCode) {
+              // Tab
+              case 9:
+                e.preventDefault();
+                e.stopPropagation();
+                setIsSelectionModeOn(false);
+                captionRef.current.focus();
+                break;
+              default:
+                // arrows
+                if (e.keyCode >= 37 && e.keyCode <= 40) {
+                  e.stopPropagation();
+                  let shift;
+                  switch (e.keyCode) {
+                    case 37:
+                      shift = -1; // left
+                      break;
+                    case 38:
+                      shift = -7; // up
+                      break;
+                    case 39:
+                      shift = 1; // right
+                      break;
+                    case 40:
+                      shift = 7; // down
+                      break;
+                    default:
+                  }
+                  const newDate = new Date(date);
+                  newDate.setDate(date.getDate() + shift);
+                  if (newDate - today < 0) break;
+                  onSelect(
+                    getFormattedDate(newDate, {
+                      noDetails: true,
+                      includeYear: true,
+                      noTime: true,
+                    }),
+                    true
+                  );
+                }
+                break;
+            }
+          }}
+          ref={tbodyRef}
         >
           {days.map((week) => {
             return (
@@ -144,6 +279,15 @@ function Calendar({ date, onSelect }, ref) {
                     day === today.getDate()
                   ) {
                     presentFlag = true;
+                  }
+                  let buttonRef = null;
+                  if (
+                    monthCounter === -fromSelectedDateMonthInterval &&
+                    day === date.getDate()
+                  ) {
+                    buttonRef = selectedDateRef;
+                  } else if (day === 1 && monthCounter === 0) {
+                    buttonRef = firstDayOfTheMonthRef;
                   }
                   return (
                     <td key={day}>
@@ -162,6 +306,7 @@ function Calendar({ date, onSelect }, ref) {
                             day === date.getDate(),
                         })}
                         disabled={!presentFlag}
+                        ref={buttonRef}
                       >
                         {day}
                       </button>

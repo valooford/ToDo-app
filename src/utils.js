@@ -7,7 +7,7 @@ import { useEffect, useState, useCallback } from 'react';
  * it's not considered as a part of element anymore
  * so using Element.closest() or Node.contains() makes no sense
  */
-export function useEffectOnClickOutside(onClickOutside, dependencies) {
+export function useEffectOnMouseDownOutside(onClickOutside, dependencies) {
   const [startCondition = true] = dependencies;
   // click inside
   const [isTouched, setIsTouched] = useState(null);
@@ -22,7 +22,7 @@ export function useEffectOnClickOutside(onClickOutside, dependencies) {
     if (globalClick === null) return; // return if globalClick is initial
     if (!isTouched) {
       onClickOutside();
-      document.removeEventListener('click', globalClickListener);
+      document.removeEventListener('mousedown', globalClickListener);
     } else {
       setIsTouched(false); // isTouched reset
     }
@@ -31,10 +31,10 @@ export function useEffectOnClickOutside(onClickOutside, dependencies) {
   useEffect(() => {
     if (!startCondition) return undefined;
     setTimeout(() => {
-      document.addEventListener('click', globalClickListener);
+      document.addEventListener('mousedown', globalClickListener);
     }, 0);
     return () => {
-      document.removeEventListener('click', globalClickListener);
+      document.removeEventListener('mousedown', globalClickListener);
     };
   }, dependencies);
   // return callback to pass to the element

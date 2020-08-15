@@ -28,7 +28,7 @@ function handleEscWith(cb) {
 // КОМПОНЕНТ ВСПЛЫВАЮЩЕГО МЕНЮ НАСТРОЙКИ НАПОМИНАНИЙ / POPUP-REMINDER
 // *
 export default function PopupReminder({
-  onClick,
+  onMouseDown,
   onClose,
   onKeyDown,
   reminderDate,
@@ -94,6 +94,8 @@ export default function PopupReminder({
   const now = new Date();
   let optionParams;
   const fieldset = {};
+  const setTimeRef = useRef(null);
+  const setPeriodRef = useRef(null);
   const readyButtonRef = useRef(null);
 
   switch (currentFieldset) {
@@ -249,6 +251,7 @@ export default function PopupReminder({
                   { date: fieldsetData.date, key: 'calendar' },
                 ]}
                 componentActionPropertyName="onSelect"
+                extraordinaryFocusRef={autofocusRef}
                 keepChildWidth
                 ref={autofocusRef}
               />
@@ -286,6 +289,8 @@ export default function PopupReminder({
                   { details: '20:00', children: 'Ночь', key: 'night' },
                   { children: 'Другое', key: 'other' },
                 ]}
+                extraordinaryFocusRef={setTimeRef}
+                ref={setTimeRef}
               />
               <Dropdown
                 noInput
@@ -306,6 +311,8 @@ export default function PopupReminder({
                   { children: 'Каждый год', key: 'yearly' },
                   { children: 'Другое', key: 'other' },
                 ]}
+                extraordinaryFocusRef={setPeriodRef}
+                ref={setPeriodRef}
               />
             </div>
             <span className={style['popup-reminder__ready-button']}>
@@ -388,7 +395,7 @@ export default function PopupReminder({
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
     <fieldset
       className={style['popup-reminder']}
-      onClick={onClick}
+      onMouseDown={onMouseDown}
       onKeyDown={fieldset.onKeyDown}
     >
       {fieldset.content}

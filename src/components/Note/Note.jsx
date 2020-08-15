@@ -30,6 +30,7 @@ function Note({
   extra,
   eventHandlers: {
     onClick,
+    onMouseDown,
     onClose,
     onHeaderChange,
     onHeaderFocus,
@@ -170,6 +171,7 @@ function Note({
       )}
       onSubmit={(e) => e.preventDefault()}
       onClick={onClick}
+      onMouseDown={onMouseDown}
       onKeyDown={(e) => {
         // Esc
         if (e.keyCode === 27) {

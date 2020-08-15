@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 /* eslint-disable import/no-unresolved */
-import { useEffectOnClickOutside } from '@/utils';
+import { useEffectOnMouseDownOutside } from '@/utils';
 
 import Note, { style, listItemStyle } from '@components/Note/Note';
 import PopupMenu from '@components/PopupMenu/PopupMenu.container';
@@ -67,7 +67,7 @@ function NoteContainer({
   }, [noteFocusInfo]);
 
   // detecting click inside note[0]
-  const setIsTouched = useEffectOnClickOutside(() => {
+  const setIsTouched = useEffectOnMouseDownOutside(() => {
     onNoteBlur(index);
     if (index === 0) {
       onNoteAdd();
@@ -150,8 +150,9 @@ function NoteContainer({
   }
 
   let onClick = null;
+  let onMouseDown = null;
   if (index === 0) {
-    onClick = () => {
+    onMouseDown = () => {
       setIsTouched(); // клик был осуществлен в пределах note
     };
   } else {
@@ -242,6 +243,7 @@ function NoteContainer({
       }}
       eventHandlers={{
         onClick,
+        onMouseDown,
         onClose: () => {
           if (onClose && note.isFocused) {
             onClose();

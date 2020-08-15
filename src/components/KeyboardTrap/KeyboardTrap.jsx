@@ -16,7 +16,7 @@ export default function KeyboardTrap({
     if (trapRef.current) {
       const elements = Array.from(
         trapRef.current.querySelectorAll(
-          'input:not([disabled]), textarea:not([disabled]), button:not([disabled])'
+          "input:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabIndex='0']"
         )
       );
       if (elements[0] !== first || elements[elements.length - 1] !== last) {
@@ -31,7 +31,7 @@ export default function KeyboardTrap({
     if (!autofocus) return;
     const elements = Array.from(
       trapRef.current.querySelectorAll(
-        'input:not([disabled]), textarea:not([disabled]), button:not([disabled])'
+        "input:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabIndex='0']"
       )
     );
     if (elements[0]) {
