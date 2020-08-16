@@ -2,14 +2,17 @@ import React from 'react';
 
 import style from './Option-cfg.module.scss';
 
-function Option({ children, iconSymbol, details, disabled, onClick }, ref) {
+function Option(
+  { children, iconSymbol, details, value, disabled, onClick },
+  ref
+) {
   return (
     <button
       className={style.option}
       type="button"
       disabled={disabled}
       onClick={() => {
-        onClick(details || children); //! add internal property to pass to onClick
+        onClick(value); //! add internal property to pass to onClick
       }}
       ref={ref}
     >

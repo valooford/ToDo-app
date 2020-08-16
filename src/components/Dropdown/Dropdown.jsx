@@ -15,6 +15,7 @@ function Dropdown(
     placeholder,
     titleText,
     validate,
+    onFocus,
     onInput,
     noInput,
     useAsSearch,
@@ -22,6 +23,7 @@ function Dropdown(
     component: Component,
     componentsParams = [],
     componentActionPropertyName = 'onClick',
+    componentActionValueParser,
     extraordinaryFocusRef,
   },
   ref
@@ -38,27 +40,40 @@ function Dropdown(
 
   const firstOptionRef = useRef(null);
   const inputRef = ref || React.createRef();
-  const optionsParams = componentsParams.map((params, i) => ({
-    ...params,
-    ref: i === 0 ? firstOptionRef : null,
-    [componentActionPropertyName](optionValue, keepOptionsVisible) {
-      if (validate) {
-        const validationOutput = validate(optionValue);
-        if (validationOutput) {
-          inputRef.current.value = optionValue;
-          if (onInput) onInput(...validationOutput);
-          setInvalid(false);
-        } else {
-          setInvalid(true);
-        }
-      } else {
-        inputRef.current.value = optionValue;
-        if (onInput) onInput(optionValue);
-        setInvalid(false);
-      }
-      setIsOptionsVisible(keepOptionsVisible);
-    },
-  }));
+  const optionsParams = componentsParams.map((params, i) => {
+    const { focusOnClick, ...onwParams } = params;
+    return {
+      ref: i === 0 ? firstOptionRef : null,
+      [componentActionPropertyName]: focusOnClick
+        ? () => {
+            inputRef.current.focus();
+            inputRef.current.setSelectionRange(9999, 9999);
+            setIsOptionsVisible(false);
+          }
+        : (optionValue, keepOptionsVisible) => {
+            if (validate) {
+              const validationOutput = validate(optionValue);
+              if (validationOutput) {
+                inputRef.current.value = componentActionValueParser
+                  ? componentActionValueParser(optionValue)
+                  : optionValue;
+                if (onInput) onInput(...validationOutput);
+                setInvalid(false);
+              } else {
+                setInvalid(true);
+              }
+            } else {
+              inputRef.current.value = componentActionValueParser
+                ? componentActionValueParser(optionValue)
+                : optionValue;
+              if (onInput) onInput(optionValue);
+              setInvalid(false);
+            }
+            setIsOptionsVisible(keepOptionsVisible);
+          },
+      ...onwParams,
+    };
+  });
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
     <span
@@ -95,13 +110,12 @@ function Dropdown(
           setInvalid(false);
           if (onInput) onInput(...validationOutput);
         }}
-        onFocus={
-          useAsSearch && !isOptionsVisible
-            ? () => {
-                setIsOptionsVisible(true);
-              }
-            : null
-        }
+        onFocus={() => {
+          if (onFocus) onFocus();
+          if (useAsSearch && !isOptionsVisible) {
+            setIsOptionsVisible(true);
+          }
+        }}
         onKeyDown={(e) => {
           // Tab & NOT Shift
           if (useAsSearch && e.keyCode === 9) {
@@ -164,10 +178,13 @@ function Dropdown(
           }}
         >
           <KeyboardTrap usingArrows>
-            {optionsParams.map((params) => (
-              // eslint-disable-next-line react/jsx-props-no-spreading
-              <Component {...params} key={params.key} />
-            ))}
+            {optionsParams.map((params) => {
+              const { key, ...ownParams } = params;
+              return (
+                // eslint-disable-next-line react/jsx-props-no-spreading
+                <Component {...ownParams} key={key} />
+              );
+            })}
           </KeyboardTrap>
         </div>
       )}

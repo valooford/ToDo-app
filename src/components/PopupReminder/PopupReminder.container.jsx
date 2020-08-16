@@ -33,6 +33,7 @@ function PopupReminderContainer({
   const noteId = creationDate.getTime();
   const noteReminder = getReminderById(reminders, noteId);
   const reminderDate = noteReminder && noteReminder.date;
+  const reminderPeriod = noteReminder && noteReminder.period;
   const reminderPlace = noteReminder && noteReminder.place;
 
   // detecting click inside popupMenu
@@ -66,6 +67,7 @@ function PopupReminderContainer({
       setPlace={(place) => {
         setPlaceReminder(noteId, place);
       }}
+      reminderPeriod={reminderPeriod}
       findPlacesByQuery={findPlacesByQuery}
       foundPlaces={foundPlaces}
       resetFoundPlaces={() => {

@@ -155,9 +155,39 @@ export function getDateParamsFromString(str) {
   return null;
 }
 
+const daysOfTheWeek = [
+  'воскресенье',
+  'понедельник',
+  'вторник',
+  'среда',
+  'четверг',
+  'пятница',
+  'суббота',
+];
+
 /*
 period: {
-  every: 365,
+  every: 1,
+  or
+  every: 'day',
+  or
+  every: {
+    method: 'daily',
+    count: 1,
+    or
+    method: 'weekly',
+    count: 1,
+    days: [0..6],
+    or
+    method: 'monthly',
+    count: 1,
+    keep: 'date' or 'day',
+    or
+    method: 'yearly',
+    count: 1,
+  }
+  end: undefined,
+  or
   end: {
     count: 2,
     // or
@@ -167,18 +197,83 @@ period: {
 */
 
 export function getFormattedPeriod(period) {
-  if (!period) return 'Не повторять';
-  switch (period.every) {
-    case 1:
-      return 'Каждый день';
-    case 7:
-      return 'Каждую неделю';
-    case 28:
-      return 'Каждый месяц';
-    case 365:
-      return 'Каждый год';
+  let formattedPeriod;
+  if (!period || !period.every) return 'Не повторять';
+  const { every, end } = period;
+  switch (every) {
+    case 'day':
+      formattedPeriod = 'Каждый день';
+      break;
+    case 'week':
+      formattedPeriod = 'Каждую неделю';
+      break;
+    case 'month':
+      formattedPeriod = 'Каждый месяц';
+      break;
+    case 'year':
+      formattedPeriod = 'Каждый год';
+      break;
     default:
-      return `Каждые ${period.every} дня`;
-    // return 'Другое';
+      if (typeof every === 'number') {
+        if (every === 1) {
+          formattedPeriod = `Повторяется каждый день`;
+        } else {
+          formattedPeriod = `Повторяется раз в ${every} дня`;
+        }
+      } else {
+        const { method, count } = every;
+        if (method === 'daily') {
+          if (count === 1) {
+            formattedPeriod = `Повторяется каждый день`;
+          } else {
+            formattedPeriod = `Повторяется раз в ${count} дня`;
+          }
+        } else if (method === 'weekly') {
+          if (count === 1) {
+            formattedPeriod = `Повторяется каждую неделю`;
+          } else {
+            formattedPeriod = `Повторяется раз в ${count} недели`;
+          }
+          if (every.days.length) {
+            const days = [...every.days].sort().map((i) => daysOfTheWeek[i]);
+            if (days.length > 1)
+              days[days.length - 1] = ` и ${days[days.length - 1]}`;
+            formattedPeriod += ` (${
+              days.slice(0, -1).join(', ') + days.slice(-1)
+            })`;
+          }
+        } else if (method === 'monthly') {
+          if (count === 1) {
+            formattedPeriod = `Повторяется каждый месяц`;
+          } else {
+            formattedPeriod = `Повторяется раз в ${count} месяца`;
+          }
+          const { keep } = every;
+          if (keep === 'date') {
+            formattedPeriod += ` (в один и тот же день)`;
+          } else if (keep === 'day') {
+            formattedPeriod += ` (в тот же день недели месяца)`;
+          }
+        } else if (method === 'yearly') {
+          if (count === 1) {
+            formattedPeriod = `Повторяется ежегодно`;
+          } else {
+            formattedPeriod = `Повторяется раз в ${count} года`;
+          }
+        }
+
+        if (end) {
+          if (end.count) {
+            formattedPeriod += `. Повторов: ${end.count}.`;
+          } else if (end.date) {
+            formattedPeriod += `. Повтор до ${getFormattedDate(end.date, {
+              noDetails: true,
+              includeYear: true,
+              noTime: true,
+            })}.`;
+          }
+        }
+      }
   }
+  return formattedPeriod;
 }
