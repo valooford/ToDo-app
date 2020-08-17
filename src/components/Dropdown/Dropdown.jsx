@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import cn from 'classnames';
 
 /* eslint-disable import/no-unresolved */
@@ -15,6 +15,7 @@ function Dropdown(
     placeholder,
     titleText,
     validate,
+    initialValidationDependencies = [],
     onFocus,
     onInput,
     noInput,
@@ -39,7 +40,17 @@ function Dropdown(
   const [isInvalid, setInvalid] = useState(false);
 
   const firstOptionRef = useRef(null);
-  const inputRef = ref || React.createRef();
+  const inputRef = (!noInput && ref) || React.createRef();
+  const substituteOfInputRef = useRef(null);
+
+  useEffect(() => {
+    if (validate && !validate(inputRef.current.value)) {
+      setInvalid(true);
+    } else {
+      setInvalid(false);
+    }
+  }, initialValidationDependencies);
+
   const optionsParams = componentsParams.map((params, i) => {
     const { focusOnClick, ...onwParams } = params;
     return {
@@ -54,18 +65,36 @@ function Dropdown(
             if (validate) {
               const validationOutput = validate(optionValue);
               if (validationOutput) {
-                inputRef.current.value = componentActionValueParser
+                const value = componentActionValueParser
                   ? componentActionValueParser(optionValue)
                   : optionValue;
+                if (noInput) {
+                  substituteOfInputRef.current.innerText = value;
+                } else {
+                  inputRef.current.value = value;
+                }
                 if (onInput) onInput(...validationOutput);
                 setInvalid(false);
               } else {
                 setInvalid(true);
+                const value = componentActionValueParser
+                  ? componentActionValueParser(optionValue)
+                  : optionValue;
+                if (noInput) {
+                  substituteOfInputRef.current.innerText = value;
+                } else {
+                  inputRef.current.value = value;
+                }
               }
             } else {
-              inputRef.current.value = componentActionValueParser
+              const value = componentActionValueParser
                 ? componentActionValueParser(optionValue)
                 : optionValue;
+              if (noInput) {
+                substituteOfInputRef.current.innerText = value;
+              } else {
+                inputRef.current.value = value;
+              }
               if (onInput) onInput(optionValue);
               setInvalid(false);
             }
@@ -89,57 +118,66 @@ function Dropdown(
           : null
       }
     >
-      <input
-        className={cn(style.dropdown__input, {
-          [style.dropdown__input_invalid]: isInvalid,
-        })}
-        type="text"
-        defaultValue={defaultValue}
-        placeholder={placeholder}
-        disabled={noInput}
-        onChange={(e) => {
-          if (!validate) {
-            onInput(e.target.value);
-            return;
-          }
-          const validationOutput = validate(e.target.value);
-          if (!validationOutput) {
-            setInvalid(true);
-            return;
-          }
-          setInvalid(false);
-          if (onInput) onInput(...validationOutput);
-        }}
-        onFocus={() => {
-          if (onFocus) onFocus();
-          if (useAsSearch && !isOptionsVisible) {
-            setIsOptionsVisible(true);
-          }
-        }}
-        onKeyDown={(e) => {
-          // Tab & NOT Shift
-          if (useAsSearch && e.keyCode === 9) {
-            setIsOptionsVisible(false);
-            if (!e.shiftKey) {
-              if (e.target.value !== '') {
-                if (extraordinaryFocusRef) {
-                  e.preventDefault();
-                  // ↓ to prevent outer KeyboardTrap from handling wrong element
-                  e.stopPropagation();
-                  extraordinaryFocusRef.current.focus();
-                }
-              } else {
-                e.preventDefault();
-                e.target.focus();
-              }
+      {noInput ? (
+        <div
+          className={style['dropdown__substitute-of-input']}
+          ref={substituteOfInputRef}
+        >
+          {defaultValue}
+        </div>
+      ) : (
+        <input
+          className={cn(style.dropdown__input, {
+            [style.dropdown__input_invalid]: isInvalid,
+          })}
+          type="text"
+          defaultValue={defaultValue}
+          placeholder={placeholder}
+          disabled={noInput}
+          onChange={(e) => {
+            if (!validate) {
+              onInput(e.target.value);
+              return;
             }
-            // down arrow
-          } else if (isOptionsVisible && e.keyCode === 40) {
-            if (firstOptionRef) firstOptionRef.current.focus();
-          }
-        }}
-        ref={inputRef}
-      />
+            const validationOutput = validate(e.target.value);
+            if (!validationOutput) {
+              setInvalid(true);
+              return;
+            }
+            setInvalid(false);
+            if (onInput) onInput(...validationOutput);
+          }}
+          onFocus={() => {
+            if (onFocus) onFocus();
+            if (useAsSearch && !isOptionsVisible) {
+              setIsOptionsVisible(true);
+            }
+          }}
+          onKeyDown={(e) => {
+            // Tab & NOT Shift
+            if (useAsSearch && e.keyCode === 9) {
+              setIsOptionsVisible(false);
+              if (!e.shiftKey) {
+                if (e.target.value !== '') {
+                  if (extraordinaryFocusRef) {
+                    e.preventDefault();
+                    // ↓ to prevent outer KeyboardTrap from handling wrong element
+                    e.stopPropagation();
+                    extraordinaryFocusRef.current.focus();
+                  }
+                } else {
+                  e.preventDefault();
+                  e.target.focus();
+                }
+              }
+              // down arrow
+            } else if (isOptionsVisible && e.keyCode === 40) {
+              if (firstOptionRef) firstOptionRef.current.focus();
+            }
+          }}
+          ref={inputRef}
+        />
+      )}
       {!useAsSearch && (
         <i className={style['dropdown__drop-button']}>
           <IconButton
@@ -158,6 +196,7 @@ function Dropdown(
                 }, 0);
               }
             }}
+            ref={noInput ? ref : null}
           />
         </i>
       )}

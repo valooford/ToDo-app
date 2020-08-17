@@ -8,7 +8,7 @@ function LocationOption({ name, address, location, onClick }, ref) {
       className={style['location-option']}
       type="button"
       onClick={() => {
-        const place = `${name}, ${address}, ${location}`;
+        const place = [name, address, location].filter((p) => p).join(', ');
         onClick(place);
       }}
       ref={ref}

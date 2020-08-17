@@ -277,3 +277,9 @@ export function getFormattedPeriod(period) {
   }
   return formattedPeriod;
 }
+
+export function isTimePassed(date, hours, minutes = 0) {
+  const combinedDate = new Date(date);
+  combinedDate.setHours(hours, minutes);
+  return combinedDate - Date.now() < 0;
+}

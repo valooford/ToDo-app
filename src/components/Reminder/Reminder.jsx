@@ -10,14 +10,19 @@ import style from './Reminder-cfg.module.scss';
 
 // КОМПОНЕНТ НАПОМИНАНИЯ / REMINDER
 // *
-export default function Reminder({ date, place, onRemove, onClick }) {
+export default function Reminder({ date, period, place, onRemove, onClick }) {
   const fullText = (date && getFormattedDate(date)) || place;
   let text = fullText;
   const commaIndex = text.indexOf(',');
   if (!date && commaIndex !== -1) {
     text = text.slice(0, commaIndex);
   }
-  const iconSymbol = date ? '\ue809' : '\ue80a';
+  let iconSymbol;
+  if (date) {
+    iconSymbol = period ? '\ue820' : '\ue809';
+  } else {
+    iconSymbol = '\ue80a';
+  }
   const [isFocused, setIsFocused] = useState(false);
   if (isFocused) {
     text = `${text.slice(0, -3)}...`;

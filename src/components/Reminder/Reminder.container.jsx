@@ -24,6 +24,7 @@ function ReminderContainer({
   return noteReminder ? (
     <Reminder
       date={noteReminder.date}
+      period={noteReminder.period}
       place={noteReminder.place}
       onRemove={() => {
         removeReminder(noteId);

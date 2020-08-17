@@ -6,6 +6,7 @@ import {
   getFormattedDate,
   getFormattedPeriod,
   getDateParamsFromString,
+  isTimePassed,
 } from '@/utils';
 
 import Button from '@components/Button/Button';
@@ -191,7 +192,7 @@ export default function PopupReminder({
     } else if (keep === 'day') {
       keepDayRadioButtonRef.current.checked = true;
     }
-  }, [periodFieldsetData.every.method]);
+  }, [currentFieldset, periodFieldsetData.every.method]);
 
   const dateValidator = (date) => {
     const dateParams = getDateParamsFromString(date);
@@ -404,12 +405,19 @@ export default function PopupReminder({
                   const dateParams = getDateParamsFromString(time);
                   if (dateParams && dateParams.type === 'time') {
                     const { type, ...params } = dateParams;
+                    if (
+                      isTimePassed(fieldsetData.date, ...Object.values(params))
+                    ) {
+                      setFieldsetData((prev) => ({ ...prev, isValid: false }));
+                      return false;
+                    }
                     setFieldsetData((prev) => ({ ...prev, isValid: true }));
                     return Object.values(params);
                   }
                   setFieldsetData((prev) => ({ ...prev, isValid: false }));
                   return false;
                 }}
+                initialValidationDependencies={[fieldsetData.date]}
                 onInput={(hours, minutes) => {
                   setFieldsetData((prev) => {
                     const { date } = prev;
@@ -427,24 +435,28 @@ export default function PopupReminder({
                     details: '08:00',
                     value: '08:00',
                     children: 'Утро',
+                    disabled: isTimePassed(fieldsetData.date, 8),
                     key: 'morning',
                   },
                   {
                     details: '13:00',
                     value: '13:00',
                     children: 'День',
+                    disabled: isTimePassed(fieldsetData.date, 13),
                     key: 'day',
                   },
                   {
                     details: '18:00',
                     value: '18:00',
                     children: 'Вечер',
+                    disabled: isTimePassed(fieldsetData.date, 18),
                     key: 'evening',
                   },
                   {
                     details: '20:00',
                     value: '20:00',
                     children: 'Ночь',
+                    disabled: isTimePassed(fieldsetData.date, 20),
                     key: 'night',
                   },
                   { children: 'Другое', key: 'other', focusOnClick: true },
@@ -619,6 +631,7 @@ export default function PopupReminder({
                       setPeriodEveryCount(Number(e.target.value));
                     }
                   }}
+                  ref={autofocusRef}
                 />
                 <Dropdown
                   noInput

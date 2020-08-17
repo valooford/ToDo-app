@@ -12,6 +12,8 @@
       box-sizing: border-box;
       width: 100%;
       padding: 0.4em 0;
+      padding-right: 30px;
+      font-size: 0.95em;
       border: none;
       outline: none;
       box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
@@ -27,6 +29,14 @@
           box-shadow: 0 2px 0 #c4392d;
         }
       }
+    }
+    &__substitute-of-input {
+      min-width: 75px;
+      padding: 0.5em 0;
+      padding-right: 30px;
+      color: #000;
+      font-size: 0.95em;
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
     }
     &__drop-button {
       position: absolute;
