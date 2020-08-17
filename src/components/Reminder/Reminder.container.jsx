@@ -18,8 +18,7 @@ function ReminderContainer({
   setNotePopup,
   removeReminder,
 }) {
-  const { creationDate } = notes[index];
-  const noteId = creationDate.getTime();
+  const { id: noteId } = notes[index];
   const noteReminder = getReminderById(reminders, noteId);
   return noteReminder ? (
     <Reminder

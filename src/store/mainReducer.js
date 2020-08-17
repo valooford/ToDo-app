@@ -15,8 +15,9 @@ const SET_NOTE_COLOR = 'main/set-note-color';
 
 const initialState = {
   notes: [
-    { type: 'default', headerText: '', text: '', color: 'default' },
+    { id: '000', type: 'default', headerText: '', text: '', color: 'default' },
     {
+      id: '111',
       type: 'default',
       headerText: 'Мой заголовок',
       text: 'Привет\nПока',
@@ -25,6 +26,7 @@ const initialState = {
       color: 'default',
     },
     {
+      id: '222',
       type: 'list',
       headerText: 'Список',
       items: [
@@ -86,6 +88,7 @@ export default function mainReducer(state = initialState, action) {
     case ADD_NOTE:
       notes = [...state.notes];
       note = {
+        id: Date.now(),
         type: action.text ? 'default' : 'list',
         headerText: action.headerText,
         text: action.text,
@@ -118,6 +121,7 @@ export default function mainReducer(state = initialState, action) {
       } else {
         notes[action.index] = { ...notes[action.index] };
         note = {
+          id: Date.now(),
           type: note.type,
           headerText: note.headerText,
           text: note.text,

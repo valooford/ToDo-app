@@ -29,8 +29,7 @@ function PopupReminderContainer({
   findPlacesByQuery,
   setFoundPlaces,
 }) {
-  const { creationDate } = notes[index];
-  const noteId = creationDate.getTime();
+  const { id: noteId } = notes[index];
   const noteReminder = getReminderById(reminders, noteId);
   const reminderDate = noteReminder && noteReminder.date;
   const reminderPeriod = noteReminder && noteReminder.period;

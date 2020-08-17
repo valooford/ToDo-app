@@ -16,7 +16,6 @@ export { style };
 
 function Note({
   noteData: {
-    isAdd, //-
     type,
     headerText,
     text,
@@ -95,7 +94,6 @@ function Note({
       onClick: onReminderButtonClick,
       append: popup.reminder,
       ref: reminderButtonRef,
-      removeIfAdd: isAdd, //-
     },
     {
       iconSymbol: '\ue803',
@@ -143,7 +141,7 @@ function Note({
       disabled: true,
     },
   ]
-    .filter((params) => (isFocused || !params.disabled) && !params.removeIfAdd)
+    .filter((params) => isFocused || !params.disabled)
     .map((params) => (
       <span key={params.titleText}>
         <IconButton

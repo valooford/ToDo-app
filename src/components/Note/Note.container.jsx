@@ -180,7 +180,6 @@ function NoteContainer({
   return (
     <Note
       noteData={{
-        isAdd: index === 0, //-
         type: note.type,
         headerText: note.headerText,
         text: note.text,
@@ -235,7 +234,7 @@ function NoteContainer({
           ),
         }
       }
-      extra={index !== 0 ? <Reminder index={index} /> : null}
+      extra={<Reminder index={index} />}
       refs={{
         moreButton: moreButtonRef,
         colorsButton: colorsButtonRef,
