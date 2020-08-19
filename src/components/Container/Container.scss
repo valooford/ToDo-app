@@ -8,18 +8,26 @@
     width: 600px;
     margin: 0 auto;
 
+    &__group {
+      margin-top: 2 * $base-unit;
+      &-name {
+        color: rgba(0, 0, 0, 0.7);
+        line-height: 3em;
+        font-size: 0.7em;
+        font-weight: bold;
+        text-transform: uppercase;
+        text-indent: 1.5em;
+      }
+    }
+
     &__item {
       width: 600px;
-      margin-top: 2 * $base-unit;
+      margin-top: 0.5 * $base-unit;
       padding: 0 $base-unit;
       background-color: $background-color;
       border: 1px solid $border-color;
       border-radius: 10px;
       outline: none;
-
-      &:nth-child(n + 3) {
-        margin-top: 0.5 * $base-unit;
-      }
 
       &_hidden {
         visibility: hidden;

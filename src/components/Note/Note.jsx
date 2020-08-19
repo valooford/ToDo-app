@@ -22,6 +22,7 @@ function Note({
     items,
     markedItems,
     isFocused,
+    isPinned,
     creationDate,
     editingDate,
   },
@@ -31,6 +32,7 @@ function Note({
     onClick,
     onMouseDown,
     onClose,
+    onPin,
     onHeaderChange,
     onHeaderFocus,
     onTextFieldChange,
@@ -189,9 +191,10 @@ function Note({
       )}
       <div className={style.note__cornerButtons}>
         <IconButton
-          iconSymbol="&#xe812;"
-          titleText="Закрепить заметку"
+          iconSymbol={isPinned ? '\ue801' : '\ue812'}
+          titleText={isPinned ? 'Открепить заметку' : 'Закрепить заметку'}
           modificators="icon-button_smaller"
+          onClick={onPin}
         />
       </div>
       {(isFocused || headerText !== '') && (

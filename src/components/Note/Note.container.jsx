@@ -13,6 +13,8 @@ import Reminder from '@components/Reminder/Reminder.container';
 import {
   focusNote,
   blurNote,
+  pinNote,
+  unpinNote,
   addNewNote,
   updateNoteHeader,
   updateNoteText,
@@ -38,6 +40,8 @@ function NoteContainer({
   onClose,
   onNoteFocus,
   onNoteBlur,
+  onNotePin,
+  onNoteUnpin,
   onNoteAdd,
   onHeaderChange,
   onTextFieldChange,
@@ -186,6 +190,7 @@ function NoteContainer({
         items: unmarkedItems,
         markedItems,
         isFocused: note.isFocused,
+        isPinned: note.isPinned,
         creationDate: note.creationDate,
         editingDate: note.editingDate,
       }}
@@ -253,6 +258,13 @@ function NoteContainer({
             onNoteAdd();
           }
         },
+        onPin: note.isPinned
+          ? () => {
+              onNoteUnpin(index);
+            }
+          : () => {
+              onNotePin(index);
+            },
         onHeaderChange: ({ target: { value: headerText } }) => {
           onHeaderChange(index, headerText);
         },
@@ -348,6 +360,8 @@ export default compose(
   connect(mapStateToProps, mapDispatchToProps),
   connect(null, {
     onNoteFocus: focusNote,
+    onNotePin: pinNote,
+    onNoteUnpin: unpinNote,
     onNoteAdd: addNewNote,
     onHeaderChange: updateNoteHeader,
     onTextFieldChange: updateNoteText,

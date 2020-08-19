@@ -20,7 +20,7 @@ function ContainerContainer({
 }) {
   const [containerFocusInfo, setContainerFocusInfo] = useState({});
   // index of a currently focused container item
-  const [focusedItemIndex, setFocusedItemIndex] = useState();
+  const [focusedItemIndex, setFocusedItemIndex] = useState(null);
   // index of a container item that is needed to be focused
   const [itemToFocusIndex, setItemToFocusIndex] = useState(null);
   // checking modal for being closed
@@ -51,7 +51,7 @@ function ContainerContainer({
     ) : (
       <AddNote />
     ),
-    isItemFocused: true,
+    isItemFocused: true, // always focused
   };
   let focusedNoteIndex;
   // заметка с индексом 0 используется для добавления
@@ -81,6 +81,7 @@ function ContainerContainer({
         />
       ),
       isFocusable: true,
+      isItemFocusNeeded: index === itemToFocusIndex,
       onItemFocus: (e) => {
         // triggers for an unknown reason when something get focus inside
         // seems like bubbling
@@ -104,40 +105,49 @@ function ContainerContainer({
           : null,
     };
   });
+  const pinnedNotes = noteElements.filter((v, i) => notes[i + 1].isPinned);
+  const unpinnedNotes = noteElements.filter((v, i) => !notes[i + 1].isPinned);
   return (
     <Container
-      elements={[add, ...noteElements]}
+      elementGroups={[
+        [add],
+        { name: 'Закрепленные', elements: pinnedNotes },
+        {
+          name: pinnedNotes.length ? 'Другие заметки' : null,
+          elements: unpinnedNotes,
+        },
+      ]}
       portal={[
-        focusedNoteIndex,
-        focusedNoteIndex && (
-          <Note
-            index={focusedNoteIndex}
-            onClose={() => {
-              setHaveModalBeenClosed(true);
-            }}
-            focusInfo={
-              // fallback to default focusInfo if field wasn't specified
-              {
-                fieldName:
-                  notes[focusedNoteIndex].type === 'list'
-                    ? 'add-list-item'
-                    : 'textfield',
-                ...containerFocusInfo.noteFocusInfo,
+        {
+          node: focusedNoteIndex && (
+            <Note
+              index={focusedNoteIndex}
+              onClose={() => {
+                setHaveModalBeenClosed(true);
+              }}
+              focusInfo={
+                // fallback to default focusInfo if field wasn't specified
+                {
+                  fieldName:
+                    notes[focusedNoteIndex].type === 'list'
+                      ? 'add-list-item'
+                      : 'textfield',
+                  ...containerFocusInfo.noteFocusInfo,
+                }
               }
-            }
-          />
-        ),
+            />
+          ),
+          color: focusedNoteIndex && notes[focusedNoteIndex].color,
+        },
         () => {
-          onNoteBlur(focusedNoteIndex);
-          setHaveModalBeenClosed(true);
+          onModalReady(() => {
+            onNoteBlur(focusedNoteIndex);
+            setHaveModalBeenClosed(true);
+          });
         },
         modalRef.current,
       ]}
-      onModalReady={onModalReady}
-      itemToFocusIndex={itemToFocusIndex}
-    >
-      {[add, ...noteElements]}
-    </Container>
+    />
   );
 }
 

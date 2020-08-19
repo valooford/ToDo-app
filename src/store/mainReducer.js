@@ -1,4 +1,5 @@
 const SET_NOTE_FOCUS = 'main/set-note-focus';
+const SET_NOTE_PIN = 'main/set-note-pin';
 const ADD_NOTE = 'main/add-note';
 const COPY_NOTE = 'main/copy-note';
 const UPDATE_NOTE = 'main/update-note';
@@ -80,6 +81,18 @@ export default function mainReducer(state = initialState, action) {
       notes = [...state.notes];
       note = { ...notes[action.index] };
       note.isFocused = action.focus;
+      notes[action.index] = note;
+      return {
+        ...state,
+        notes,
+      };
+    case SET_NOTE_PIN:
+      if (state.notes[action.index].isPinned === action.isPinned) {
+        return state;
+      }
+      notes = [...state.notes];
+      note = { ...notes[action.index] };
+      note.isPinned = action.isPinned;
       notes[action.index] = note;
       return {
         ...state,
@@ -399,6 +412,22 @@ export function blurNote(index) {
     type: SET_NOTE_FOCUS,
     index,
     focus: false,
+  };
+}
+
+// SET_NOTE_PIN
+export function pinNote(index) {
+  return {
+    type: SET_NOTE_PIN,
+    index,
+    isPinned: true,
+  };
+}
+export function unpinNote(index) {
+  return {
+    type: SET_NOTE_PIN,
+    index,
+    isPinned: false,
   };
 }
 
