@@ -17,6 +17,10 @@ body {
   font-family: $font-family;
 }
 
+header {
+  height: 3 * $bigger-base-unit + 1.5 * $base-unit;
+}
+
 aside {
   float: left;
   width: 280px;

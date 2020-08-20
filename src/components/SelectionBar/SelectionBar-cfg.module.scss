@@ -1,0 +1,9 @@
+@import 'SelectionBar';
+@import '@styles/variables';
+
+@include selectionBarStylesheet(
+  $class-name: $selectionBarClassName,
+  $base-unit: $base-unit,
+  $bigger-base-unit: $bigger-base-unit,
+  $icon-font-name: $icon-font-name
+);

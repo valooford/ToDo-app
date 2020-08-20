@@ -1,12 +1,13 @@
 @mixin searchStylesheet($class-name: 'search', $bigger-base-unit: 16px) {
   .#{$class-name} {
     position: relative;
+    width: 100%;
     line-height: 3 * $bigger-base-unit;
     vertical-align: middle;
     input {
+      box-sizing: border-box;
+      width: 100%;
       padding: $bigger-base-unit 4 * $bigger-base-unit;
-      width: 50%;
-      max-width: 600px;
       background-color: rgba(231, 231, 231, 0.5);
       border: none;
       outline: none;

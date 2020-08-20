@@ -6,10 +6,15 @@
   $logo-color: #bef2ff
 ) {
   .#{$class-name} {
+    box-sizing: border-box;
+    position: fixed;
+    width: 100%;
     padding: 0.5 * $base-unit 0.7 * $base-unit;
     line-height: 3 * $bigger-base-unit;
     vertical-align: middle;
+    background-color: #fff;
     border-bottom: 1px solid #ddd;
+    z-index: 10;
     &__logo {
       margin-right: 5 * $bigger-base-unit;
       line-height: inherit;
@@ -29,6 +34,11 @@
         border-radius: 3px;
         border-bottom-right-radius: 12px;
       }
+    }
+    &__search {
+      display: inline-block;
+      width: 50%;
+      max-width: 720px;
     }
     &__buttons {
       float: right;

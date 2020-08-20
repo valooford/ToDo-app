@@ -83,3 +83,10 @@
 @include addIconButtonStyle('pink', $color-pink);
 @include addIconButtonStyle('brown', $color-brown);
 @include addIconButtonStyle('grey', $color-grey);
+
+@include extendIconButtonStylesheet(
+  $class-name: $iconButtonClassName,
+  $modificator-name: 'style-selection-bar',
+  $icon-color: #2f70dd,
+  $focused-icon-color: #2f70dd
+);

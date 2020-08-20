@@ -32,6 +32,7 @@ function Note({
     onClick,
     onMouseDown,
     onClose,
+    onSelection,
     onPin,
     onHeaderChange,
     onHeaderFocus,
@@ -84,7 +85,8 @@ function Note({
   }, [noteRef.current]);
   useEffect(() => {
     setIsInteracting(
-      isSelected || isFocusing || Object.values(popup).filter((v) => v).length
+      // isSelected || isFocusing || Object.values(popup).filter((v) => v).length
+      isSelected || isFocusing || Object.keys(popup).filter((v) => v).length
     );
   }, [isSelected, isFocusing]);
 
@@ -186,6 +188,7 @@ function Note({
             iconSymbol="&#xe80b;"
             titleText="Выбрать заметку"
             modificators="icon-button_no-padding"
+            onClick={onSelection}
           />
         </div>
       )}

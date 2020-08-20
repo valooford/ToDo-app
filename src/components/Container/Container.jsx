@@ -16,6 +16,9 @@ function getContainerItems(elements, itemToFocusRef) {
             [style.container__item_focused]: element.isItemFocused,
           },
           {
+            [style.container__item_selected]: element.isSelected,
+          },
+          {
             [style.container__item_hidden]: element.isFiller,
           },
           {

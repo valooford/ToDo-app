@@ -11,8 +11,9 @@ const UNCHECK_ALL_LIST_ITEMS = 'main/uncheck-all-list-items';
 const REMOVE_CHECKED_LIST_ITEMS = 'main/remove-checked-list-items';
 const TEXT_NOTE_TO_LIST = 'main/text-note-to-list';
 const LIST_NOTE_TO_TEXT = 'main/list-note-to-text';
-const SET_NOTE_POPUP = 'main/set-note-popup';
+const SET_NOTE_POPUP = 'main/set-note-popup'; //! no sense without mount
 const SET_NOTE_COLOR = 'main/set-note-color';
+const SET_SELECTED_NOTES = 'main/set-selected-notes';
 
 const initialState = {
   notes: [
@@ -58,6 +59,7 @@ const initialState = {
       color: 'blue',
     },
   ],
+  selectedNotes: [],
   removedNotes: [],
 };
 
@@ -68,6 +70,7 @@ export default function mainReducer(state = initialState, action) {
   let items;
   let sub;
   let subItem;
+  let selectedNotes;
   let removedNotes;
   let flag = false;
   let key;
@@ -394,6 +397,23 @@ export default function mainReducer(state = initialState, action) {
         ...state,
         notes,
       };
+    case SET_SELECTED_NOTES:
+      switch (action.effect) {
+        case 'add':
+          selectedNotes = [action.noteId, ...state.selectedNotes];
+          break;
+        case 'remove':
+          selectedNotes = state.selectedNotes.filter(
+            (id) => id !== action.noteId
+          );
+          break;
+        case 'remove-all':
+          selectedNotes = [];
+          break;
+        default:
+          return state;
+      }
+      return { ...state, selectedNotes };
     default:
       return state;
   }
@@ -576,5 +596,27 @@ export function setNoteColor(index, color) {
     type: SET_NOTE_COLOR,
     index,
     color,
+  };
+}
+
+// SET_SELECTED_NOTES
+export function selectNote(noteId) {
+  return {
+    type: SET_SELECTED_NOTES,
+    effect: 'add',
+    noteId,
+  };
+}
+export function cancelNoteSelection(noteId) {
+  return {
+    type: SET_SELECTED_NOTES,
+    effect: 'remove',
+    noteId,
+  };
+}
+export function clearSelectedNotes() {
+  return {
+    type: SET_SELECTED_NOTES,
+    effect: 'remove-all',
   };
 }

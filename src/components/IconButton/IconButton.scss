@@ -7,6 +7,8 @@
   $font-size: 0.8 * $base-unit,
   $no-padding: false,
   $background-color: transparent,
+  $icon-color: rgba(0, 0, 0, 0.5),
+  $focused-icon-color: #000,
   $hover-color: rgba(0, 0, 0, 0.066),
   $border-width: 1px,
   $border-color: transparent,
@@ -29,7 +31,7 @@
     outline: none;
     border: $border-width solid $border-color;
     border-radius: 2 * $base-unit;
-    color: rgba(0, 0, 0, 0.5);
+    color: $icon-color;
     font-family: $icon-font-name;
     font-size: $icon-size;
     font-weight: normal;
@@ -37,7 +39,7 @@
     cursor: pointer;
 
     &:hover {
-      color: #000;
+      color: $focused-icon-color;
       background-color: $hover-color;
       border-color: $hover-border-color;
 
@@ -50,7 +52,7 @@
       }
     }
     &:focus {
-      color: #000;
+      color: $focused-icon-color;
       border-color: $focused-border-color;
 
       .#{$class-name}__title {
@@ -92,6 +94,8 @@
   $font-size: $base-unit,
   $no-padding: false,
   $background-color: null,
+  $icon-color: null,
+  $focused-icon-color: null,
   $hover-color: null,
   $border-width: null,
   $border-color: null,
@@ -125,15 +129,18 @@
     background-color: $background-color;
     border-width: $border-width;
     border-color: $border-color;
+    color: $icon-color;
     font-family: $icon-font-name;
     font-size: $icon-size;
 
     &:hover {
+      color: $focused-icon-color;
       background-color: $hover-color;
       border-color: $hover-border-color;
     }
 
     &:focus {
+      color: $focused-icon-color;
       border-color: $focused-border-color;
     }
 

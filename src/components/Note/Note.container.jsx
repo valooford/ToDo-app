@@ -24,6 +24,8 @@ import {
   checkNoteListItem,
   uncheckNoteListItem,
   setNotePopup,
+  selectNote,
+  cancelNoteSelection,
 } from '@store/mainReducer';
 import { closeModal } from '@store/modalReducer';
 /* eslint-enable import/no-unresolved */
@@ -37,6 +39,7 @@ function NoteContainer({
   isSelected,
   onFocusInfoChange,
   notes,
+  selectedNotes,
   onClose,
   onNoteFocus,
   onNoteBlur,
@@ -51,6 +54,8 @@ function NoteContainer({
   onListItemCheck,
   onListItemUncheck,
   setPopup,
+  onNoteSelection,
+  onCancelNoteSelection,
 }) {
   const note = notes[index];
   const { items, popup } = note;
@@ -258,6 +263,13 @@ function NoteContainer({
             onNoteAdd();
           }
         },
+        onSelection: selectedNotes.includes(note.id)
+          ? () => {
+              onCancelNoteSelection(note.id);
+            }
+          : () => {
+              onNoteSelection(note.id);
+            },
         onPin: note.isPinned
           ? () => {
               onNoteUnpin(index);
@@ -344,6 +356,7 @@ function NoteContainer({
 function mapStateToProps(state) {
   return {
     notes: state.main.notes,
+    selectedNotes: state.main.selectedNotes,
   };
 }
 
@@ -371,6 +384,8 @@ export default compose(
     onListItemCheck: checkNoteListItem,
     onListItemUncheck: uncheckNoteListItem,
     setPopup: setNotePopup,
+    onNoteSelection: selectNote,
+    onCancelNoteSelection: cancelNoteSelection,
   }),
   React.memo
 )(NoteContainer);

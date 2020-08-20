@@ -13,6 +13,7 @@ import Container from './Container';
 // *
 function ContainerContainer({
   notes,
+  selectedNotes,
   modalRef,
   onModalReady,
   onNoteFocus,
@@ -82,6 +83,7 @@ function ContainerContainer({
       ),
       isFocusable: true,
       isItemFocusNeeded: index === itemToFocusIndex,
+      isSelected: selectedNotes.includes(note.id),
       onItemFocus: (e) => {
         // triggers for an unknown reason when something get focus inside
         // seems like bubbling
@@ -154,6 +156,7 @@ function ContainerContainer({
 function mapStateToProps(state) {
   return {
     notes: state.main.notes,
+    selectedNotes: state.main.selectedNotes,
   };
 }
 
