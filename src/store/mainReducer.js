@@ -1,20 +1,381 @@
-// 610 -> 510
-const SET_NOTE_FOCUS = 'main/set-note-focus';
-const SET_NOTE_PIN = 'main/set-note-pin';
-const ADD_NOTE = 'main/add-note';
-const COPY_NOTE = 'main/copy-note';
-const UPDATE_NOTE = 'main/update-note';
-const REMOVE_NOTE = 'main/remove-note';
-const ADD_NOTE_LIST_ITEM = 'main/add-note-list-item';
-const REMOVE_NOTE_LIST_ITEM = 'main/remove-note-list-item';
-const SET_CHECK_NOTE_LIST_ITEM = 'main/set-check-note-list-item';
-const UNCHECK_ALL_LIST_ITEMS = 'main/uncheck-all-list-items';
-const REMOVE_CHECKED_LIST_ITEMS = 'main/remove-checked-list-items';
-const TEXT_NOTE_TO_LIST = 'main/text-note-to-list';
-const LIST_NOTE_TO_TEXT = 'main/list-note-to-text';
-const SET_NOTE_POPUP = 'main/set-note-popup'; //! no sense without mount
-const SET_NOTE_COLOR = 'main/set-note-color';
-const SET_SELECTED_NOTES = 'main/set-selected-notes';
+import {
+  SET_NOTE_FOCUS,
+  SET_NOTE_PIN,
+  ADD_NOTE,
+  COPY_NOTE,
+  UPDATE_NOTE,
+  REMOVE_NOTE,
+  ADD_NOTE_LIST_ITEM,
+  REMOVE_NOTE_LIST_ITEM,
+  SET_CHECK_NOTE_LIST_ITEM,
+  UNCHECK_ALL_LIST_ITEMS,
+  REMOVE_CHECKED_LIST_ITEMS,
+  TEXT_NOTE_TO_LIST,
+  LIST_NOTE_TO_TEXT,
+  SET_NOTE_POPUP,
+  SET_NOTE_COLOR,
+  SET_SELECTED_NOTES,
+} from './actionsTypes';
+
+const handlers = {
+  [SET_NOTE_FOCUS]: (state, { id, isFocused }) => {
+    return {
+      ...state,
+      notes: {
+        ...state.notes,
+        [id]: {
+          ...state.notes[id],
+          isFocused,
+        },
+      },
+    };
+  },
+  [SET_NOTE_PIN]: (state, { ids, isPinned }) => {
+    const pinningNotes = ids.reduce((notes, id) => {
+      // eslint-disable-next-line no-param-reassign
+      notes[id] = {
+        ...state.notes[id],
+        isPinned,
+      };
+      return notes;
+    }, {});
+    return {
+      ...state,
+      notes: {
+        ...state.notes,
+        ...pinningNotes,
+      },
+    };
+  },
+  // ---unused---
+  [ADD_NOTE]: (state, { headerText, text, itemsArr }) => {
+    const newNoteId = Date.now();
+    return {
+      ...state,
+      notes: {
+        ...state.notes,
+        [newNoteId]: {
+          id: newNoteId,
+          type: text ? 'default' : 'list',
+          headerText,
+          text,
+          items: itemsArr
+            ? itemsArr.reduce((items, itemText, i) => {
+                const itemId = `${newNoteId}-${i}`;
+                // eslint-disable-next-line no-param-reassign
+                items[itemId] = {
+                  id: itemId,
+                  text: itemText,
+                  sub: [],
+                };
+                return items;
+              })
+            : null,
+          creationDate: new Date(),
+          editingDate: new Date(),
+        },
+      },
+      notesOrder: [
+        state.notesOrder[0],
+        newNoteId,
+        ...state.notesOrder.slice(1),
+      ],
+    };
+  },
+  [COPY_NOTE]: (state, { add, ids }) => {
+    const newNoteId = Date.now();
+    // first note is used for adding
+    if (add === state.notesOrder[0]) {
+      const note = state.notes[state.notesOrder[0]];
+      // no headerText and no text/items or items array is empty
+      if (!note.headerText && !note.text && (!note.items || !note.items[0])) {
+        return state; // nothing to add
+      }
+      return {
+        ...state,
+        notes: {
+          ...state.notes,
+          [newNoteId]: {
+            id: newNoteId,
+            type: 'default',
+            headerText: '',
+            text: '',
+            color: 'default',
+            popup: null,
+            creationDate: new Date(),
+            editingDate: new Date(),
+          },
+        },
+        notesOrder: [newNoteId, ...state.notesOrder],
+      };
+    }
+    const noteCopies = ids.reduce(
+      (copies, id, i) => {
+        const note = state.notes[id];
+        const noteId = `${newNoteId}-${i}`;
+        // eslint-disable-next-line no-param-reassign
+        copies.notes[noteId] = {
+          id: noteId,
+          type: note.type,
+          headerText: note.headerText,
+          text: note.text,
+          items: note.items,
+          popup: null,
+          creationDate: new Date(),
+          editingDate: new Date(),
+          color: note.color,
+        };
+        copies.notesOrder.push(noteId);
+        return copies;
+      },
+      { notes: {}, notesOrder: [] }
+    );
+    return {
+      ...state,
+      notes: {
+        ...state.notes,
+        ...noteCopies.notes,
+      },
+      notesOrder: [
+        state.notesOrder[0],
+        ...noteCopies.notesOrder,
+        ...state.notesOrder.slice(1),
+      ],
+    };
+  },
+  [UPDATE_NOTE]: (state, { id, headerText, text, itemId, itemText }) => {
+    return {
+      ...state,
+      notes: {
+        ...state.notes,
+        [id]: {
+          ...state.notes[id],
+          headerText:
+            typeof headerText === 'string'
+              ? headerText
+              : state.notes[id].headerText,
+          text: typeof text === 'string' ? text : state.notes[id].text,
+          items:
+            itemId != null
+              ? {
+                  ...state.notes[id].items,
+                  [itemId]: {
+                    ...state.notes[id].items[itemId],
+                    text: itemText,
+                  },
+                }
+              : state.notes[id].items,
+          editingDate: new Date(),
+        },
+      },
+    };
+  },
+  [REMOVE_NOTE]: (state, { ids }) => {
+    const notes = { ...state.notes };
+    ids.forEach((id) => {
+      delete notes[id];
+    });
+    return {
+      ...state,
+      notes,
+      notesOrder: state.notesOrder.filter((id) => !notes[id]),
+    };
+  },
+  [ADD_NOTE_LIST_ITEM]: (state, { id, text }) => {
+    const newItemId = Date.now();
+    return {
+      ...state,
+      notes: {
+        ...state.notes,
+        [id]: {
+          ...state.notes[id],
+          items: {
+            ...state.notes[id].items,
+            [newItemId]: {
+              id: newItemId,
+              text,
+              sub: [],
+            },
+          },
+          itemsOrder: [...state.notes[id].itemsOrder, newItemId],
+          editingDate: new Date(),
+        },
+      },
+    };
+  },
+  [REMOVE_NOTE_LIST_ITEM]: (state, { id, itemId }) => {
+    const { [itemId]: removingItem, ...items } = state.notes[id].items;
+    return {
+      ...state,
+      notes: {
+        ...state.notes,
+        [id]: {
+          ...state.notes[id],
+          items,
+          itemsOrder: state.notes[id].itemsOrder.filter(
+            (iId) => iId !== itemId
+          ),
+          editingDate: new Date(),
+        },
+      },
+    };
+  },
+  [SET_CHECK_NOTE_LIST_ITEM]: (state, { id, itemId, isMarked }) => {
+    return {
+      ...state,
+      notes: {
+        ...state.notes,
+        [id]: {
+          ...state.notes[id],
+          items: {
+            ...state.notes[id].items,
+            [itemId]: {
+              ...state.notes[id].items[itemId],
+              isMarked,
+            },
+          },
+          editingDate: new Date(),
+        },
+      },
+    };
+  },
+  [UNCHECK_ALL_LIST_ITEMS]: (state, { id }) => {
+    return {
+      ...state,
+      notes: {
+        ...state.notes,
+        [id]: {
+          ...state.notes[id],
+          items: Object.keys(state.notes[id].items).reduce(
+            (uncheckedItems, itemId) => {
+              /* eslint-disable no-param-reassign */
+              const item = state.notes[id].items[itemId];
+              if (item.isMarked)
+                uncheckedItems[itemId] = { ...item, isMarked: false };
+              else uncheckedItems[itemId] = item;
+              return uncheckedItems;
+              /* eslint-enable no-param-reassign */
+            },
+            {}
+          ),
+          editingDate: new Date(),
+        },
+      },
+    };
+  },
+  [REMOVE_CHECKED_LIST_ITEMS]: (state, { id }) => {
+    return {
+      ...state,
+      notes: {
+        ...state.notes,
+        [id]: {
+          ...state.notes[id],
+          items: Object.keys(state.notes[id].items).reduce(
+            (filteredItems, itemId) => {
+              /* eslint-disable no-param-reassign */
+              const item = state.notes[id].items[itemId];
+              if (!item.isMarked) filteredItems[itemId] = item;
+              return filteredItems;
+              /* eslint-enable no-param-reassign */
+            },
+            {}
+          ),
+          itemsOrder: state.notes[id].itemsOrder.filter(
+            (itemId) => !state.notes[id].items[itemId].isMarked
+          ),
+          editingDate: new Date(),
+        },
+      },
+    };
+  },
+  [TEXT_NOTE_TO_LIST]: (state, { id }) => {
+    const { text, ...note } = state.notes[id];
+    const itemsId = Date.now();
+    const items = text.split('\n').reduce((itemsFromText, itemText, i) => {
+      const itemId = `${itemsId}-${i}`;
+      // eslint-disable-next-line no-param-reassign
+      itemsFromText[itemId] = {
+        id: itemId,
+        text: itemText,
+        sub: [],
+      };
+      return itemsFromText;
+    }, {});
+    return {
+      ...state,
+      notes: {
+        ...state.notes,
+        [id]: {
+          ...note,
+          items,
+          itemsOrder: Object.keys(items),
+          editingDate: new Date(),
+        },
+      },
+    };
+  },
+  [LIST_NOTE_TO_TEXT]: (state, { id }) => {
+    const { items, itemsOrder, ...note } = state.notes[id];
+    return {
+      ...state,
+      notes: {
+        ...state.notes,
+        [id]: {
+          ...note,
+          text: itemsOrder.map((itemId) => items[itemId].text).join('\n'),
+          editingDate: new Date(),
+        },
+      },
+    };
+  },
+  // ---unnecessary---
+  [SET_NOTE_POPUP]: (state, { id, popup }) => {
+    return {
+      ...state,
+      notes: {
+        ...state.notes,
+        [id]: {
+          ...state.notes[id],
+          popup,
+        },
+      },
+    };
+  },
+  [SET_NOTE_COLOR]: (state, { ids, color }) => {
+    const coloredNotes = ids.reduce((notes, id) => {
+      // eslint-disable-next-line no-param-reassign
+      notes[id] = {
+        ...state.notes[id],
+        color,
+      };
+      return notes;
+    }, {});
+    return {
+      ...state,
+      notes: {
+        ...state.notes,
+        ...coloredNotes,
+      },
+    };
+  },
+  [SET_SELECTED_NOTES]: (state, { effect, id }) => {
+    let selectedNotes;
+    switch (effect) {
+      case 'add':
+        selectedNotes = [id, ...state.selectedNotes];
+        break;
+      case 'remove':
+        selectedNotes = state.selectedNotes.filter((noteId) => noteId !== id);
+        break;
+      case 'remove-all':
+        selectedNotes = [];
+        break;
+      default:
+        return state;
+    }
+    return { ...state, selectedNotes };
+  },
+};
 
 const normalizedInitialState = {
   notes: {
@@ -73,344 +434,13 @@ const normalizedInitialState = {
 };
 
 export default function mainReducer(state = normalizedInitialState, action) {
-  switch (action.type) {
-    case SET_NOTE_FOCUS:
-      return {
-        ...state,
-        notes: {
-          ...state.notes,
-          [action.id]: {
-            ...state.notes[action.id],
-            isFocused: action.isFocused,
-          },
-        },
-      };
-    case SET_NOTE_PIN:
-      return {
-        ...state,
-        notes: {
-          ...state.notes,
-          [action.id]: {
-            ...state.notes[action.id],
-            isPinned: action.isPinned,
-          },
-        },
-      };
-    // - unused
-    case ADD_NOTE: {
-      const newNoteId = Date.now();
-      return {
-        ...state,
-        notes: {
-          ...state.notes,
-          [newNoteId]: {
-            id: newNoteId,
-            type: action.text ? 'default' : 'list',
-            headerText: action.headerText,
-            text: action.text,
-            items: action.items
-              ? action.items.reduce((items, text, i) => {
-                  const itemId = `${newNoteId}-${i}`;
-                  // eslint-disable-next-line no-param-reassign
-                  items[itemId] = {
-                    id: itemId,
-                    text,
-                    sub: [],
-                  };
-                  return items;
-                })
-              : null,
-            creationDate: new Date(),
-            editingDate: new Date(),
-          },
-        },
-        notesOrder: [
-          state.notesOrder[0],
-          action.id,
-          ...state.notesOrder.slice(1),
-        ],
-      };
-    }
-    case COPY_NOTE: {
-      const newNoteId = Date.now();
-      // first note is used for adding
-      if (action.add === state.notesOrder[0]) {
-        const note = state.notes[state.notesOrder[0]];
-        // no headerText and no text/items or items array is empty
-        if (!note.headerText && !note.text && (!note.items || !note.items[0])) {
-          return state; // nothing to add
-        }
-        return {
-          ...state,
-          notes: {
-            ...state.notes,
-            [newNoteId]: {
-              id: newNoteId,
-              type: 'default',
-              headerText: '',
-              text: '',
-              color: 'default',
-              popup: null,
-              creationDate: new Date(),
-              editingDate: new Date(),
-            },
-          },
-          notesOrder: [newNoteId, ...state.notesOrder],
-        };
-      }
-      const note = state.notes[action.id];
-      return {
-        ...state,
-        notes: {
-          ...state.notes,
-          [newNoteId]: {
-            id: Date.now(),
-            type: note.type,
-            headerText: note.headerText,
-            text: note.text,
-            items: note.items,
-            popup: null,
-            creationDate: new Date(),
-            editingDate: new Date(),
-            color: note.color,
-          },
-        },
-        notesOrder: [
-          state.notesOrder[0],
-          newNoteId,
-          ...state.notesOrder.slice(1),
-        ],
-      };
-    }
-    case UPDATE_NOTE:
-      return {
-        ...state,
-        notes: {
-          ...state.notes,
-          [action.id]: {
-            ...state.notes[action.id],
-            headerText:
-              typeof action.headerText === 'string'
-                ? action.headerText
-                : state.notes[action.id].headerText,
-            text:
-              typeof action.text === 'string'
-                ? action.text
-                : state.notes[action.id].text,
-            items:
-              action.itemId != null
-                ? {
-                    ...state.notes[action.id].items,
-                    [action.itemId]: {
-                      ...state.notes[action.id].items[action.itemId],
-                      text: action.itemText,
-                    },
-                  }
-                : state.notes[action.id].items,
-            editingDate: new Date(),
-          },
-        },
-      };
-    case REMOVE_NOTE: {
-      const { [action.id]: removingNote, ...notes } = state.notes;
-      return {
-        ...state,
-        notes,
-        notesOrder: state.notesOrder.filter((id) => id !== action.id),
-      };
-    }
-    case ADD_NOTE_LIST_ITEM: {
-      const newItemId = Date.now();
-      return {
-        ...state,
-        notes: {
-          ...state.notes,
-          [action.id]: {
-            ...state.notes[action.id],
-            items: {
-              ...state.notes[action.id].items,
-              [newItemId]: {
-                id: newItemId,
-                text: action.text,
-                sub: [],
-              },
-            },
-            itemsOrder: [...state.notes[action.id].itemsOrder, newItemId],
-            editingDate: new Date(),
-          },
-        },
-      };
-    }
-    case REMOVE_NOTE_LIST_ITEM: {
-      const { [action.itemId]: removingItem, ...items } = state.notes[
-        action.id
-      ].items;
-      return {
-        ...state,
-        notes: {
-          ...state.notes,
-          [action.id]: {
-            ...state.notes[action.id],
-            items,
-            itemsOrder: state.notes[action.id].itemsOrder.filter(
-              (id) => id !== action.itemId
-            ),
-            editingDate: new Date(),
-          },
-        },
-      };
-    }
-    case SET_CHECK_NOTE_LIST_ITEM:
-      return {
-        ...state,
-        notes: {
-          ...state.notes,
-          [action.id]: {
-            ...state.notes[action.id],
-            items: {
-              ...state.notes[action.id].items,
-              [action.itemId]: {
-                ...state.notes[action.id].items[action.itemId],
-                isMarked: action.isMarked,
-              },
-            },
-            editingDate: new Date(),
-          },
-        },
-      };
-    case UNCHECK_ALL_LIST_ITEMS:
-      return {
-        ...state,
-        notes: {
-          ...state.notes,
-          [action.id]: {
-            ...state.notes[action.id],
-            items: Object.keys(state.notes[action.id].items).reduce(
-              (uncheckedItems, itemId) => {
-                /* eslint-disable no-param-reassign */
-                const item = state.notes[action.id].items[itemId];
-                if (item.isMarked)
-                  uncheckedItems[itemId] = { ...item, isMarked: false };
-                else uncheckedItems[itemId] = item;
-                return uncheckedItems;
-                /* eslint-enable no-param-reassign */
-              },
-              {}
-            ),
-            editingDate: new Date(),
-          },
-        },
-      };
-    case REMOVE_CHECKED_LIST_ITEMS:
-      return {
-        ...state,
-        notes: {
-          ...state.notes,
-          [action.id]: {
-            ...state.notes[action.id],
-            items: Object.keys(state.notes[action.id].items).reduce(
-              (filteredItems, itemId) => {
-                /* eslint-disable no-param-reassign */
-                const item = state.notes[action.id].items[itemId];
-                if (!item.isMarked) filteredItems[itemId] = item;
-                return filteredItems;
-                /* eslint-enable no-param-reassign */
-              },
-              {}
-            ),
-            itemsOrder: state.notes[action.id].itemsOrder.filter(
-              (id) => !state.notes[action.id].items[id].isMarked
-            ),
-            editingDate: new Date(),
-          },
-        },
-      };
-    case TEXT_NOTE_TO_LIST: {
-      const { text, ...note } = state.notes[action.id];
-      const itemsId = Date.now();
-      const items = text.split('\n').reduce((itemsFromText, itemText, i) => {
-        const itemId = `${itemsId}-${i}`;
-        // eslint-disable-next-line no-param-reassign
-        itemsFromText[itemId] = {
-          id: itemId,
-          text: itemText,
-          sub: [],
-        };
-        return itemsFromText;
-      }, {});
-      return {
-        ...state,
-        notes: {
-          ...state.notes,
-          [action.id]: {
-            ...note,
-            items,
-            itemsOrder: Object.keys(items),
-            editingDate: new Date(),
-          },
-        },
-      };
-    }
-    case LIST_NOTE_TO_TEXT: {
-      const { items, itemsOrder, ...note } = state.notes[action.id];
-      return {
-        ...state,
-        notes: {
-          ...state.notes,
-          [action.id]: {
-            ...note,
-            text: itemsOrder.map((itemId) => items[itemId].text).join('\n'),
-            editingDate: new Date(),
-          },
-        },
-      };
-    }
-    // -
-    case SET_NOTE_POPUP:
-      return {
-        ...state,
-        notes: {
-          ...state.notes,
-          [action.id]: {
-            ...state.notes[action.id],
-            popup: action.popup,
-          },
-        },
-      };
-    case SET_NOTE_COLOR:
-      return {
-        ...state,
-        notes: {
-          ...state.notes,
-          [action.id]: {
-            ...state.notes[action.id],
-            color: action.color,
-          },
-        },
-      };
-    case SET_SELECTED_NOTES: {
-      let selectedNotes;
-      switch (action.effect) {
-        case 'add':
-          selectedNotes = [action.id, ...state.selectedNotes];
-          break;
-        case 'remove':
-          selectedNotes = state.selectedNotes.filter((id) => id !== action.id);
-          break;
-        case 'remove-all':
-          selectedNotes = [];
-          break;
-        default:
-          return state;
-      }
-      return { ...state, selectedNotes };
-    }
-    default:
-      return state;
-  }
+  if (handlers[action.type]) return handlers[action.type](state, action);
+  return state;
 }
 
-// SET_NOTE_FOCUS
+/* SET_NOTE_FOCUS
+ * id: actual id only
+ */
 export function focusNote(id) {
   return { type: SET_NOTE_FOCUS, id, isFocused: true };
 }
@@ -418,31 +448,40 @@ export function blurNote(id) {
   return { type: SET_NOTE_FOCUS, id, isFocused: false };
 }
 
-// SET_NOTE_PIN
+/* SET_NOTE_PIN
+ * id: actual id / array of ids
+ */
 export function pinNote(id) {
-  return { type: SET_NOTE_PIN, id, isPinned: true };
+  const ids = id.map ? id : [id];
+  return { type: SET_NOTE_PIN, ids, isPinned: true };
 }
 export function unpinNote(id) {
-  return { type: SET_NOTE_PIN, id, isPinned: false };
+  const ids = id.map ? id : [id];
+  return { type: SET_NOTE_PIN, ids, isPinned: false };
 }
 
-// - ADD_NOTE unused
+// ---unused--- ADD_NOTE
 export function addTextNote(headerText = '', text) {
   return { type: ADD_NOTE, headerText, text };
 }
-export function addListNote(headerText = '', items) {
-  return { type: ADD_NOTE, headerText, items };
+export function addListNote(headerText = '', itemsArr) {
+  return { type: ADD_NOTE, headerText, itemsArr };
 }
 
-// COPY_NOTE
+/* COPY_NOTE
+ * id: actual id / array of ids
+ */
 export function addNewNote() {
   return { type: COPY_NOTE, add: true };
 }
 export function copyNote(id) {
-  return { type: COPY_NOTE, id };
+  const ids = id.map ? id : [id];
+  return { type: COPY_NOTE, ids };
 }
 
-// UPDATE_NOTE
+/* UPDATE_NOTE
+ * id: actual id only
+ */
 export function updateNoteHeader(id, headerText) {
   return { type: UPDATE_NOTE, id, headerText };
 }
@@ -453,9 +492,12 @@ export function updateNoteListItem(id, itemId, itemText) {
   return { type: UPDATE_NOTE, id, itemId, itemText };
 }
 
-// REMOVE_NOTE
+/* REMOVE_NOTE
+ * id: actual id / array of ids
+ */
 export function removeNote(id) {
-  return { type: REMOVE_NOTE, id };
+  const ids = id.map ? id : [id];
+  return { type: REMOVE_NOTE, ids };
 }
 
 // LIST ITEM ACTION CREATORS
@@ -478,26 +520,37 @@ export function removeCheckedListItems(id) {
   return { type: REMOVE_CHECKED_LIST_ITEMS, id };
 }
 
-// TEXT_NOTE_TO_LIST
+/* TEXT_NOTE_TO_LIST
+ * id: actual id only
+ */
 export function textNoteToList(id) {
   return { type: TEXT_NOTE_TO_LIST, id };
 }
-// LIST_NOTE_TO_TEXT
+/* LIST_NOTE_TO_TEXT
+ * id: actual id only
+ */
 export function listNoteToText(id) {
   return { type: LIST_NOTE_TO_TEXT, id };
 }
 
-// - SET_NOTE_POPUP
+/* ---unnecessary--- SET_NOTE_POPUP
+ * id: actual id only
+ */
 export function setNotePopup(id, popup = null) {
   return { type: SET_NOTE_POPUP, id, popup };
 }
 
-// SET_NOTE_COLOR
+/* SET_NOTE_COLOR
+ * id: actual id / array of ids
+ */
 export function setNoteColor(id, color) {
-  return { type: SET_NOTE_COLOR, id, color };
+  const ids = id.map ? id : [id];
+  return { type: SET_NOTE_COLOR, ids, color };
 }
 
-// SET_SELECTED_NOTES
+/* SET_SELECTED_NOTES
+ * id: actual id only
+ */
 export function selectNote(id) {
   return { type: SET_SELECTED_NOTES, effect: 'add', id };
 }

@@ -1,28 +1,26 @@
-const NOTIFY = 'modal/notify';
-const CLOSE = 'modal/close';
+import { NOTIFY, CLOSE } from './actionsTypes';
 
-const initialState = { callback: null };
+const handlers = {
+  [NOTIFY]: (state, { callback }) => {
+    return { ...state, isOpen: true, callback };
+  },
+  [CLOSE]: (state) => {
+    return { ...state, isOpen: false, callback: null };
+  },
+};
+
+const initialState = { isOpen: false, callback: null };
 
 export default function mainReducer(state = initialState, action) {
-  switch (action.type) {
-    case NOTIFY:
-      return { ...state, callback: action.callback };
-    case CLOSE:
-      return { ...state, callback: null };
-    default:
-      return state;
-  }
+  if (handlers[action.type]) return handlers[action.type](state, action);
+  return state;
 }
 
 // NOTIFY
 export function readyModal(callback) {
-  return {
-    type: NOTIFY,
-    callback,
-  };
+  return { type: NOTIFY, callback };
 }
+// CLOSE
 export function closeModal() {
-  return {
-    type: CLOSE,
-  };
+  return { type: CLOSE };
 }

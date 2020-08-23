@@ -2,9 +2,34 @@
 import { getPlaces } from '@api/places';
 /* eslint-enable import/no-unresolved */
 
-const SET_REMINDER = 'notification/set-reminder';
-const REMOVE_REMINDER = 'notification/remove-reminder';
-const SET_FOUND_PLACES = 'notification/set-found-places';
+import {
+  SET_REMINDER,
+  REMOVE_REMINDER,
+  SET_FOUND_PLACES,
+} from './actionsTypes';
+
+const handlers = {
+  [SET_REMINDER]: (state, { id, place, date, period }) => {
+    return {
+      ...state,
+      reminders: {
+        ...state.reminders,
+        [`note-${id}`]: {
+          place,
+          date,
+          period,
+        },
+      },
+    };
+  },
+  [REMOVE_REMINDER]: (state, { id }) => {
+    const { [`note-${id}`]: removingReminder, ...reminders } = state.reminders;
+    return { ...state, reminders };
+  },
+  [SET_FOUND_PLACES]: (state, { foundPlaces }) => {
+    return { ...state, foundPlaces };
+  },
+};
 
 const initialState = {
   reminders: {
@@ -33,43 +58,26 @@ const initialState = {
 };
 
 export default function notificationReducer(state = initialState, action) {
-  let reminders;
-  switch (action.type) {
-    case SET_REMINDER:
-      reminders = { ...state.reminders };
-      reminders[`note-${action.noteId}`] = {
-        place: action.place,
-        date: action.date,
-        period: action.period,
-      };
-      return { ...state, reminders };
-    case REMOVE_REMINDER:
-      reminders = { ...state.reminders };
-      delete reminders[`note-${action.noteId}`];
-      return { ...state, reminders };
-    case SET_FOUND_PLACES:
-      return { ...state, foundPlaces: action.foundPlaces };
-    default:
-      return state;
-  }
+  if (handlers[action.type]) return handlers[action.type](state, action);
+  return state;
 }
 
 // ADD_NEW_REMINDER
-export function setDateReminder(noteId, date, period) {
-  return { type: SET_REMINDER, noteId, date, period };
+export function setDateReminder(id, date, period) {
+  return { type: SET_REMINDER, id, date, period };
 }
-export function setPlaceReminder(noteId, place) {
-  return { type: SET_REMINDER, noteId, place };
+export function setPlaceReminder(id, place) {
+  return { type: SET_REMINDER, id, place };
 }
 
 // REMOVE_REMINDER
-export function removeReminder(noteId) {
-  return { type: REMOVE_REMINDER, noteId };
+export function removeReminder(id) {
+  return { type: REMOVE_REMINDER, id };
 }
 
 // REMINDER SELECTOR
-export function getReminderById(reminders, noteId) {
-  return reminders[`note-${noteId}`];
+export function getReminderById(reminders, id) {
+  return reminders[`note-${id}`];
 }
 
 // SET_FOUND_PLACES
