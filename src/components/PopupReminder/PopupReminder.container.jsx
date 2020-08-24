@@ -18,22 +18,19 @@ import {
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ POPUP-REMINDER
 // *
 function PopupReminderContainer({
-  index,
+  id,
   callerRef,
   handleClose,
-  notes,
-  reminders,
+  reminder,
   foundPlaces,
   setDateReminder,
   setPlaceReminder,
   findPlacesByQuery,
   setFoundPlaces,
 }) {
-  const { id: noteId } = notes[index];
-  const noteReminder = getReminderById(reminders, noteId);
-  const reminderDate = noteReminder && noteReminder.date;
-  const reminderPeriod = noteReminder && noteReminder.period;
-  const reminderPlace = noteReminder && noteReminder.place;
+  const reminderDate = reminder && reminder.date;
+  const reminderPeriod = reminder && reminder.period;
+  const reminderPlace = reminder && reminder.place;
 
   // detecting click inside popupMenu
   const setIsTouched = useEffectOnMouseDownOutside(() => {
@@ -60,11 +57,11 @@ function PopupReminderContainer({
       onKeyDown={keyDownHandler}
       reminderDate={reminderDate}
       setDate={(date, period) => {
-        setDateReminder(noteId, date, period);
+        setDateReminder(id, date, period);
       }}
       reminderPlace={reminderPlace}
       setPlace={(place) => {
-        setPlaceReminder(noteId, place);
+        setPlaceReminder(id, place);
       }}
       reminderPeriod={reminderPeriod}
       findPlacesByQuery={findPlacesByQuery}
@@ -76,10 +73,9 @@ function PopupReminderContainer({
   );
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, { id }) {
   return {
-    notes: state.main.notes,
-    reminders: state.notification.reminders,
+    reminder: getReminderById(state.notification.reminders, id),
     foundPlaces: state.notification.foundPlaces,
   };
 }

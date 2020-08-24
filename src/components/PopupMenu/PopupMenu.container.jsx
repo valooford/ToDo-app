@@ -19,7 +19,7 @@ import { closeModal } from '@store/modalReducer';
 
 // функция получения элементов всплывающего меню
 function getMenuItems({
-  index,
+  id,
   isFieldsFilled,
   isList,
   hasMarkedItems,
@@ -40,14 +40,14 @@ function getMenuItems({
       text: 'Удалить заметку',
       key: 'remove',
       onClick() {
-        onRemove([index]);
+        onRemove(id);
       },
     });
     menuItems.push({
       text: 'Создать копию',
       key: 'copy',
       onClick() {
-        onCopy(index);
+        onCopy(id);
       },
     });
   }
@@ -58,14 +58,14 @@ function getMenuItems({
           text: 'Снять все флажки',
           key: 'uncheck',
           onClick() {
-            onUncheckAll(index);
+            onUncheckAll(id);
           },
         },
         {
           text: 'Удалить отмеченные пункты',
           key: 'remove checked',
           onClick() {
-            onRemoveChecked(index);
+            onRemoveChecked(id);
           },
         }
       );
@@ -74,7 +74,7 @@ function getMenuItems({
       text: 'Обычный текст',
       key: 'to text',
       onClick() {
-        onListToText(index);
+        onListToText(id);
       },
     });
   } else {
@@ -82,7 +82,7 @@ function getMenuItems({
       text: 'В виде списка',
       key: 'to list',
       onClick() {
-        onTextToList(index);
+        onTextToList(id);
       },
     });
   }
@@ -102,8 +102,12 @@ function getMenuItems({
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ POPUP-MENU
 // *
 function PopupMenuContainer({
-  notes,
-  index,
+  // notes,
+  noteType,
+  noteHeader,
+  noteText,
+  noteItemsOrder,
+  id,
   hasMarkedItems,
   callerRef,
   ...props
@@ -131,20 +135,19 @@ function PopupMenuContainer({
       handleClose(true);
     }
   };
-  const { type, headerText, text, items } = notes[index];
   let isFieldsFilled = false;
   if (
-    (headerText && headerText !== '') ||
-    (type === 'default' && text && text !== '') ||
-    (type === 'list' && items && !!items.length)
+    (noteHeader && noteHeader !== '') ||
+    (noteType === 'default' && noteText && noteText !== '') ||
+    (noteType === 'list' && noteItemsOrder && !!noteItemsOrder.length)
   ) {
     isFieldsFilled = true;
   }
   return (
     <PopupMenu
       items={getMenuItems({
-        index,
-        isList: type === 'list',
+        id,
+        isList: noteType === 'list',
         isFieldsFilled,
         hasMarkedItems,
         onRemove,
@@ -165,8 +168,13 @@ function PopupMenuContainer({
   );
 }
 
-function mapStateToProps(state) {
-  return { notes: state.main.notes };
+function mapStateToProps(state, { id }) {
+  return {
+    noteType: state.main.notes[id].type,
+    noteHeader: state.main.notes[id].headerText,
+    noteText: state.main.notes[id].type,
+    noteItemsOrder: state.main.notes[id].itemsOrder,
+  };
 }
 
 function mapDispatchToProps(dispatch) {

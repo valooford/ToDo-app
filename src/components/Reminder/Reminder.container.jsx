@@ -11,34 +11,25 @@ import {
 } from '@store/notificationReducer';
 /* eslint-enable import/no-unresolved */
 
-function ReminderContainer({
-  index,
-  notes,
-  reminders,
-  setNotePopup,
-  removeReminder,
-}) {
-  const { id: noteId } = notes[index];
-  const noteReminder = getReminderById(reminders, noteId);
-  return noteReminder ? (
+function ReminderContainer({ id, reminder, setNotePopup, removeReminder }) {
+  return reminder ? (
     <Reminder
-      date={noteReminder.date}
-      period={noteReminder.period}
-      place={noteReminder.place}
+      date={reminder.date}
+      period={reminder.period}
+      place={reminder.place}
       onRemove={() => {
-        removeReminder(noteId);
+        removeReminder(id);
       }}
       onClick={() => {
-        setNotePopup(index, 'reminder');
+        setNotePopup(id, 'reminder');
       }}
     />
   ) : null;
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, { id }) {
   return {
-    notes: state.main.notes,
-    reminders: state.notification.reminders,
+    reminder: getReminderById(state.notification.reminders, id),
   };
 }
 

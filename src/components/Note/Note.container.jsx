@@ -33,13 +33,13 @@ import { closeModal } from '@store/modalReducer';
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ NOTE
 // *
 function NoteContainer({
-  index,
+  id,
+  isAddNote,
   isFiller,
   focusInfo = {},
   isSelected,
   onFocusInfoChange,
-  notes,
-  selectedNotes,
+  note,
   onClose,
   onNoteFocus,
   onNoteBlur,
@@ -57,8 +57,7 @@ function NoteContainer({
   onNoteSelection,
   onCancelNoteSelection,
 }) {
-  const note = notes[index];
-  const { items, popup } = note;
+  const { items, itemsOrder, popup } = note;
 
   // havePopupBeenClosed used to set the focus after popup's actions
   const [havePopupBeenClosed, setHavePopupBeenClosed] = useState(false);
@@ -77,82 +76,48 @@ function NoteContainer({
 
   // detecting click inside note[0]
   const setIsTouched = useEffectOnMouseDownOutside(() => {
-    onNoteBlur(index);
-    if (index === 0) {
+    onNoteBlur(id);
+    if (isAddNote) {
       onNoteAdd();
     }
-  }, [index === 0 && note.isFocused]);
+  }, [isAddNote && note.isFocused]);
 
-  let itemsCopy;
   let unmarkedItems;
   let markedItems;
   if (items) {
-    // adding indexes to items and sub items
-    itemsCopy = items.map((item, i) => {
+    const itemsWithHandlers = itemsOrder.map((itemId) => {
+      const item = items[itemId];
       return {
         ...item,
-        sub: item.sub.map((subItem, si) => ({
-          ...subItem,
-          index: si,
-          onChange({ target: { value: itemText } }) {
-            onListItemChange(index, itemText, i, si);
-          },
-          onRemove() {
-            onListItemRemove(index, i, si);
-          },
-        })),
-        index: i,
         onChange({ target: { value: itemText } }) {
-          onListItemChange(index, itemText, i);
+          onListItemChange(id, itemId, itemText);
         },
         onRemove() {
-          onListItemRemove(index, i);
+          onListItemRemove(id, itemId);
         },
       };
     });
-    unmarkedItems = itemsCopy
+    unmarkedItems = itemsWithHandlers
       .filter((item) => !item.isMarked)
       .map((item) => {
-        const { index: i, ...pureItem } = item;
         return {
-          ...pureItem,
-          sub: item.sub
-            .filter((subItem) => !subItem.isMarked)
-            .map((subItem) => {
-              const { index: si, ...pureSubItem } = subItem;
-              return {
-                ...pureSubItem,
-                onCheck() {
-                  onListItemCheck(index, i, si);
-                },
-              };
-            }),
+          ...item,
           onCheck() {
-            onListItemCheck(index, i);
+            onListItemCheck(id, item.id);
           },
         };
       });
-    markedItems = itemsCopy
+    markedItems = itemsWithHandlers
       .map((item) => ({
         ...item,
         sub: item.sub.filter((subItem) => subItem.isMarked),
       }))
       .filter((item) => item.isMarked || item.sub.length > 0)
       .map((item) => {
-        const { index: i, ...pureItem } = item;
         return {
-          ...pureItem,
-          sub: item.sub.map((subItem) => {
-            const { index: si, ...pureSubItem } = subItem;
-            return {
-              ...pureSubItem,
-              onCheck() {
-                onListItemUncheck(index, i, si);
-              },
-            };
-          }),
+          ...item,
           onCheck() {
-            onListItemUncheck(index, i);
+            onListItemUncheck(id, item.id);
           },
         };
       });
@@ -160,7 +125,7 @@ function NoteContainer({
 
   let onClick = null;
   let onMouseDown = null;
-  if (index === 0) {
+  if (isAddNote) {
     onMouseDown = () => {
       setIsTouched(); // клик был осуществлен в пределах note
     };
@@ -174,7 +139,7 @@ function NoteContainer({
         listItemStyle.listItem__checkbox,
       ].map((s) => `.${s}`);
       if (nonFocusingElementsSelectors.every((s) => !target.closest(s))) {
-        onNoteFocus(index);
+        onNoteFocus(id);
       }
     };
   }
@@ -203,11 +168,11 @@ function NoteContainer({
         !isFiller && {
           menu: popup === 'menu' && (
             <PopupMenu
-              index={index}
+              id={id}
               hasMarkedItems={markedItems && !!markedItems.length}
               callerRef={moreButtonRef}
               handleClose={(isSilent) => {
-                setPopup(index, null);
+                setPopup(id, null);
                 if (!isSilent) {
                   setHavePopupBeenClosed(true);
                 }
@@ -216,11 +181,11 @@ function NoteContainer({
           ),
           colors: popup === 'colors' && (
             <PopupColors
-              index={index}
+              id={id}
               callerRef={colorsButtonRef}
               itemToFocusRef={popupColorsItemToFocusRef}
               handleClose={(isSilent) => {
-                setPopup(index, null);
+                setPopup(id, null);
                 if (!isSilent) {
                   setHavePopupBeenClosed(true);
                 }
@@ -232,10 +197,10 @@ function NoteContainer({
           ),
           reminder: popup === 'reminder' && (
             <PopupReminder
-              index={index}
+              index={id}
               callerRef={reminderButtonRef}
               handleClose={(isSilent) => {
-                setPopup(index, null);
+                setPopup(id, null);
                 if (!isSilent) {
                   setHavePopupBeenClosed(true);
                 }
@@ -244,7 +209,7 @@ function NoteContainer({
           ),
         }
       }
-      extra={<Reminder index={index} />}
+      extra={<Reminder id={id} />}
       refs={{
         moreButton: moreButtonRef,
         colorsButton: colorsButtonRef,
@@ -257,13 +222,13 @@ function NoteContainer({
           if (onClose && note.isFocused) {
             onClose();
           }
-          onNoteBlur(index);
+          onNoteBlur(id);
 
-          if (index === 0) {
+          if (isAddNote) {
             onNoteAdd();
           }
         },
-        onSelection: selectedNotes.includes(note.id)
+        onSelection: isSelected
           ? () => {
               onCancelNoteSelection(note.id);
             }
@@ -272,13 +237,13 @@ function NoteContainer({
             },
         onPin: note.isPinned
           ? () => {
-              onNoteUnpin(index);
+              onNoteUnpin(id);
             }
           : () => {
-              onNotePin(index);
+              onNotePin(id);
             },
         onHeaderChange: ({ target: { value: headerText } }) => {
-          onHeaderChange(index, headerText);
+          onHeaderChange(id, headerText);
         },
         onHeaderFocus: ({ target }) => {
           setNoteFocusInfo({
@@ -287,7 +252,7 @@ function NoteContainer({
           });
         },
         onTextFieldChange: ({ target: { value: text } }) => {
-          onTextFieldChange(index, text);
+          onTextFieldChange(id, text);
         },
         onTextFieldFocus: ({ target }) => {
           setNoteFocusInfo({
@@ -297,7 +262,7 @@ function NoteContainer({
         },
         onListItemAdd: ({ target: { value: itemText } }) => {
           if (itemText !== '') {
-            onListItemAdd(index, itemText);
+            onListItemAdd(id, itemText);
           }
         },
         listItemMouseUpHandlerCreator: (isMarked, itemIndex) => ({
@@ -311,11 +276,11 @@ function NoteContainer({
         },
         onMoreButtonClick: () => {
           clearTimeout(colorsButtonMouseLeaveTimerId);
-          setPopup(index, 'menu');
+          setPopup(id, 'menu');
         },
         onColorsButtonClick: () => {
           clearTimeout(colorsButtonMouseLeaveTimerId);
-          setPopup(index, 'colors');
+          setPopup(id, 'colors');
           setTimeout(() => {
             popupColorsItemToFocusRef.current.focus();
           }, 0);
@@ -324,20 +289,20 @@ function NoteContainer({
           popup === null || popup === 'colors'
             ? () => {
                 clearTimeout(colorsButtonMouseLeaveTimerId);
-                setPopup(index, 'colors');
+                setPopup(id, 'colors');
               }
             : null,
         onColorsButtonMouseLeave:
           popup === 'colors'
             ? () => {
                 colorsButtonMouseLeaveTimerId = setTimeout(() => {
-                  setPopup(index, null);
+                  setPopup(id, null);
                 }, 1000);
               }
             : null,
         onReminderButtonClick: () => {
           clearTimeout(colorsButtonMouseLeaveTimerId);
-          setPopup(index, 'reminder');
+          setPopup(id, 'reminder');
         },
       }}
       focusInfo={
@@ -353,10 +318,11 @@ function NoteContainer({
   );
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, { id }) {
   return {
-    notes: state.main.notes,
-    selectedNotes: state.main.selectedNotes,
+    note: state.main.notes[id],
+    isAddNote: id === state.main.notesOrder[0],
+    isSelected: state.main.selectedNotes.includes(id),
   };
 }
 

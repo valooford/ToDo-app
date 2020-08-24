@@ -37,8 +37,7 @@ function SelectionBarContainer({
       popup={{
         menu: popupName === 'menu' && (
           <PopupMenu
-            ids={selectedNotes}
-            index={1} //-
+            id={selectedNotes}
             // hasMarkedItems={markedItems && !!markedItems.length}
             callerRef={moreButtonRef}
             handleClose={
@@ -53,8 +52,7 @@ function SelectionBarContainer({
         ),
         colors: popupName === 'colors' && (
           <PopupColors
-            ids={selectedNotes}
-            index={1} //-
+            id={selectedNotes}
             callerRef={colorsButtonRef}
             itemToFocusRef={popupColorsItemToFocusRef}
             handleClose={
@@ -72,8 +70,7 @@ function SelectionBarContainer({
         ),
         reminder: popupName === 'reminder' && (
           <PopupReminder
-            ids={selectedNotes}
-            index={1} //-
+            id={selectedNotes}
             callerRef={reminderButtonRef}
             handleClose={
               (/* isSilent */) => {
@@ -126,7 +123,7 @@ function SelectionBarContainer({
         //       unpinNote(1);
         //     },
         onPin: () => {
-          pinNote(1);
+          pinNote(selectedNotes);
         },
       }}
       refs={{ moreButtonRef, colorsButtonRef, reminderButtonRef }}
@@ -136,7 +133,6 @@ function SelectionBarContainer({
 
 function mapStateToProps(state) {
   return {
-    notes: state.main.notes,
     selectedNotes: state.main.selectedNotes,
   };
 }

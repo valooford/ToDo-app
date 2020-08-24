@@ -13,6 +13,7 @@ import Container from './Container';
 // *
 function ContainerContainer({
   notes,
+  notesOrder,
   selectedNotes,
   modalRef,
   onModalReady,
@@ -21,9 +22,9 @@ function ContainerContainer({
 }) {
   const [containerFocusInfo, setContainerFocusInfo] = useState({});
   // index of a currently focused container item
-  const [focusedItemIndex, setFocusedItemIndex] = useState(null);
-  // index of a container item that is needed to be focused
-  const [itemToFocusIndex, setItemToFocusIndex] = useState(null);
+  const [focusedItemId, setFocusedItemId] = useState(null);
+  // id of a container item that is needed to be focused
+  const [itemToFocusId, setItemToFocusId] = useState(null);
   // checking modal for being closed
   const [haveModalBeenClosed, setHaveModalBeenClosed] = useState(false);
   useEffect(() => {
@@ -32,21 +33,22 @@ function ContainerContainer({
         ...prevFocusInfo,
         noteFocusInfo: {},
       }));
-      setItemToFocusIndex(containerFocusInfo.noteIndex);
+      setItemToFocusId(containerFocusInfo.noteId);
       setHaveModalBeenClosed(false);
     } else {
-      setItemToFocusIndex(null);
+      setItemToFocusId(null);
     }
   }, [haveModalBeenClosed]);
 
+  const addingNote = notes[notesOrder[0]];
   const add = {
     key: 'add',
-    color: notes[0].isFocused && notes[0].color,
-    node: notes[0].isFocused ? (
+    color: addingNote.isFocused && addingNote.color,
+    node: addingNote.isFocused ? (
       <Note
-        index={0}
+        id={notesOrder[0]}
         focusInfo={{
-          fieldName: notes[0].type === 'list' ? 'add-list-item' : 'textfield',
+          fieldName: addingNote.type === 'list' ? 'add-list-item' : 'textfield',
         }}
       />
     ) : (
@@ -54,61 +56,65 @@ function ContainerContainer({
     ),
     isItemFocused: true, // always focused
   };
-  let focusedNoteIndex;
+  let focusedNoteId;
   // заметка с индексом 0 используется для добавления
   // контейнеру может передаваться только индекс в пределах [1,...)
   // в модальном окне могут редактироваться только уже добавленные заметки
-  const noteElements = notes.slice(1).map((note, i) => {
-    const index = i + 1;
+  const noteElements = notesOrder.slice(1).map((id) => {
+    const note = notes[id];
     if (note.isFocused) {
-      focusedNoteIndex = index;
+      focusedNoteId = id;
     }
     return {
       // assume that creationDate is unique for every note
-      key: note.creationDate.getTime(),
+      key: id,
       color: note.color,
-      isFiller: focusedNoteIndex === index,
+      isFiller: focusedNoteId === id,
       node: (
         <Note
-          index={index}
-          isFiller={focusedNoteIndex === index}
+          id={id}
+          isFiller={focusedNoteId === id}
           onFocusInfoChange={(noteFocusInfo) => {
             setContainerFocusInfo({
-              noteIndex: index,
+              noteId: id,
               noteFocusInfo,
             });
           }}
-          isSelected={!focusedNoteIndex && index === focusedItemIndex}
+          isSelected={!focusedNoteId && id === focusedItemId}
         />
       ),
       isFocusable: true,
-      isItemFocusNeeded: index === itemToFocusIndex,
+      isItemFocusNeeded: id === itemToFocusId,
       isSelected: selectedNotes.includes(note.id),
       onItemFocus: (e) => {
         // triggers for an unknown reason when something get focus inside
         // seems like bubbling
         if (e.target !== e.currentTarget) return;
-        setFocusedItemIndex(index);
+        setFocusedItemId(id);
       },
       onItemBlur: (e) => {
         // triggers for an unknown reason when something lose focus inside
         // seems like bubbling
         if (e.target !== e.currentTarget) return;
-        setFocusedItemIndex(null);
+        setFocusedItemId(null);
       },
       onItemKeyDown:
-        index === focusedItemIndex
+        id === focusedItemId
           ? (e) => {
               // Enter
               if (e.keyCode === 13) {
-                onNoteFocus(index);
+                onNoteFocus(id);
               }
             }
           : null,
     };
   });
-  const pinnedNotes = noteElements.filter((v, i) => notes[i + 1].isPinned);
-  const unpinnedNotes = noteElements.filter((v, i) => !notes[i + 1].isPinned);
+  const pinnedNotes = noteElements.filter(
+    (v, i) => notes[notesOrder[i + 1]].isPinned
+  );
+  const unpinnedNotes = noteElements.filter(
+    (v, i) => !notes[notesOrder[i + 1]].isPinned
+  );
   return (
     <Container
       elementGroups={[
@@ -121,9 +127,9 @@ function ContainerContainer({
       ]}
       portal={[
         {
-          node: focusedNoteIndex && (
+          node: focusedNoteId && (
             <Note
-              index={focusedNoteIndex}
+              id={focusedNoteId}
               onClose={() => {
                 setHaveModalBeenClosed(true);
               }}
@@ -131,7 +137,7 @@ function ContainerContainer({
                 // fallback to default focusInfo if field wasn't specified
                 {
                   fieldName:
-                    notes[focusedNoteIndex].type === 'list'
+                    notes[focusedNoteId].type === 'list'
                       ? 'add-list-item'
                       : 'textfield',
                   ...containerFocusInfo.noteFocusInfo,
@@ -139,11 +145,11 @@ function ContainerContainer({
               }
             />
           ),
-          color: focusedNoteIndex && notes[focusedNoteIndex].color,
+          color: focusedNoteId && notes[focusedNoteId].color,
         },
         () => {
           onModalReady(() => {
-            onNoteBlur(focusedNoteIndex);
+            onNoteBlur(focusedNoteId);
             setHaveModalBeenClosed(true);
           });
         },
@@ -156,6 +162,7 @@ function ContainerContainer({
 function mapStateToProps(state) {
   return {
     notes: state.main.notes,
+    notesOrder: state.main.notesOrder,
     selectedNotes: state.main.selectedNotes,
   };
 }

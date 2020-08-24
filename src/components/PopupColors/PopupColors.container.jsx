@@ -7,16 +7,14 @@ import { setNoteColor } from '@store/mainReducer';
 /* eslint-enable import/no-unresolved */
 
 function PopupColorsContainer({
-  index,
+  id,
   callerRef,
   itemToFocusRef,
   handleClose,
   onHover,
-  notes,
+  currentColor,
   onColorSelection,
 }) {
-  const { color } = notes[index];
-
   const firstButtonRef = itemToFocusRef || React.createRef();
   const lastButtonRef = useRef(null);
   const keyDownHandler = (e) => {
@@ -44,9 +42,9 @@ function PopupColorsContainer({
   return (
     <PopupColors
       onColorSelection={(c) => {
-        onColorSelection(index, c);
+        onColorSelection(id, c);
       }}
-      selectedColor={color}
+      selectedColor={currentColor}
       firstButtonRef={firstButtonRef}
       lastButtonRef={lastButtonRef}
       onKeyDown={keyDownHandler}
@@ -58,9 +56,9 @@ function PopupColorsContainer({
   );
 }
 
-function mapStateToProps(state) {
+function mapStateToProps(state, ownProps) {
   return {
-    notes: state.main.notes,
+    currentColor: state.main.notes[ownProps.id].color,
   };
 }
 
