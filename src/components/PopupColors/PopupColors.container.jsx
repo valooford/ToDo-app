@@ -56,9 +56,10 @@ function PopupColorsContainer({
   );
 }
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state, { id }) {
+  const noteId = id.map ? id[0] : id;
   return {
-    currentColor: state.main.notes[ownProps.id].color,
+    currentColor: state.main.notesDisplayInformation[noteId].color,
   };
 }
 

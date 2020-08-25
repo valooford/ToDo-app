@@ -170,10 +170,10 @@ function PopupMenuContainer({
 
 function mapStateToProps(state, { id }) {
   return {
-    noteType: state.main.notes[id].type,
-    noteHeader: state.main.notes[id].headerText,
-    noteText: state.main.notes[id].type,
-    noteItemsOrder: state.main.notes[id].itemsOrder,
+    noteType: state.main.notesData[id].type,
+    noteHeader: state.main.notesData[id].headerText,
+    noteText: state.main.notesData[id].type,
+    noteItemsOrder: state.main.notesData[id].itemsOrder,
   };
 }
 

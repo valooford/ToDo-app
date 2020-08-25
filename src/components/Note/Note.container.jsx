@@ -40,6 +40,9 @@ function NoteContainer({
   isSelected,
   onFocusInfoChange,
   note,
+  isFocused,
+  isPinned,
+  popup,
   onClose,
   onNoteFocus,
   onNoteBlur,
@@ -57,7 +60,7 @@ function NoteContainer({
   onNoteSelection,
   onCancelNoteSelection,
 }) {
-  const { items, itemsOrder, popup } = note;
+  const { items, itemsOrder } = note;
 
   // havePopupBeenClosed used to set the focus after popup's actions
   const [havePopupBeenClosed, setHavePopupBeenClosed] = useState(false);
@@ -80,7 +83,7 @@ function NoteContainer({
     if (isAddNote) {
       onNoteAdd();
     }
-  }, [isAddNote && note.isFocused]);
+  }, [isAddNote && isFocused]);
 
   let unmarkedItems;
   let markedItems;
@@ -159,8 +162,8 @@ function NoteContainer({
         text: note.text,
         items: unmarkedItems,
         markedItems,
-        isFocused: note.isFocused,
-        isPinned: note.isPinned,
+        isFocused,
+        isPinned,
         creationDate: note.creationDate,
         editingDate: note.editingDate,
       }}
@@ -219,7 +222,7 @@ function NoteContainer({
         onClick,
         onMouseDown,
         onClose: () => {
-          if (onClose && note.isFocused) {
+          if (onClose && isFocused) {
             onClose();
           }
           onNoteBlur(id);
@@ -230,12 +233,12 @@ function NoteContainer({
         },
         onSelection: isSelected
           ? () => {
-              onCancelNoteSelection(note.id);
+              onCancelNoteSelection(id);
             }
           : () => {
-              onNoteSelection(note.id);
+              onNoteSelection(id);
             },
-        onPin: note.isPinned
+        onPin: isPinned
           ? () => {
               onNoteUnpin(id);
             }
@@ -320,7 +323,10 @@ function NoteContainer({
 
 function mapStateToProps(state, { id }) {
   return {
-    note: state.main.notes[id],
+    note: state.main.notesData[id],
+    isFocused: state.main.notesDisplayInformation[id].isFocused,
+    isPinned: state.main.notesDisplayInformation[id].isPinned,
+    popup: state.main.notesDisplayInformation[id].popup,
     isAddNote: id === state.main.notesOrder[0],
     isSelected: state.main.selectedNotes.includes(id),
   };

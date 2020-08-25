@@ -12,7 +12,7 @@ import Container from './Container';
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ CONTAINER
 // *
 function ContainerContainer({
-  notes,
+  notesDisplayInformation,
   notesOrder,
   selectedNotes,
   modalRef,
@@ -40,16 +40,16 @@ function ContainerContainer({
     }
   }, [haveModalBeenClosed]);
 
-  const addingNote = notes[notesOrder[0]];
+  const addingNote = notesDisplayInformation[notesOrder[0]];
   const add = {
     key: 'add',
     color: addingNote.isFocused && addingNote.color,
     node: addingNote.isFocused ? (
       <Note
         id={notesOrder[0]}
-        focusInfo={{
-          fieldName: addingNote.type === 'list' ? 'add-list-item' : 'textfield',
-        }}
+        // focusInfo={{
+        //   fieldName: addingNote.type === 'list' ? 'add-list-item' : 'textfield',
+        // }}
       />
     ) : (
       <AddNote />
@@ -61,7 +61,7 @@ function ContainerContainer({
   // контейнеру может передаваться только индекс в пределах [1,...)
   // в модальном окне могут редактироваться только уже добавленные заметки
   const noteElements = notesOrder.slice(1).map((id) => {
-    const note = notes[id];
+    const note = notesDisplayInformation[id];
     if (note.isFocused) {
       focusedNoteId = id;
     }
@@ -85,7 +85,7 @@ function ContainerContainer({
       ),
       isFocusable: true,
       isItemFocusNeeded: id === itemToFocusId,
-      isSelected: selectedNotes.includes(note.id),
+      isSelected: selectedNotes.includes(id),
       onItemFocus: (e) => {
         // triggers for an unknown reason when something get focus inside
         // seems like bubbling
@@ -110,10 +110,10 @@ function ContainerContainer({
     };
   });
   const pinnedNotes = noteElements.filter(
-    (v, i) => notes[notesOrder[i + 1]].isPinned
+    (v, i) => notesDisplayInformation[notesOrder[i + 1]].isPinned
   );
   const unpinnedNotes = noteElements.filter(
-    (v, i) => !notes[notesOrder[i + 1]].isPinned
+    (v, i) => !notesDisplayInformation[notesOrder[i + 1]].isPinned
   );
   return (
     <Container
@@ -133,19 +133,19 @@ function ContainerContainer({
               onClose={() => {
                 setHaveModalBeenClosed(true);
               }}
-              focusInfo={
-                // fallback to default focusInfo if field wasn't specified
-                {
-                  fieldName:
-                    notes[focusedNoteId].type === 'list'
-                      ? 'add-list-item'
-                      : 'textfield',
-                  ...containerFocusInfo.noteFocusInfo,
-                }
-              }
+              // focusInfo={
+              //   // fallback to default focusInfo if field wasn't specified
+              //   {
+              //     fieldName:
+              //       notes[focusedNoteId].type === 'list'
+              //         ? 'add-list-item'
+              //         : 'textfield',
+              //     ...containerFocusInfo.noteFocusInfo,
+              //   }
+              // }
             />
           ),
-          color: focusedNoteId && notes[focusedNoteId].color,
+          color: focusedNoteId && notesDisplayInformation[focusedNoteId].color,
         },
         () => {
           onModalReady(() => {
@@ -161,7 +161,7 @@ function ContainerContainer({
 
 function mapStateToProps(state) {
   return {
-    notes: state.main.notes,
+    notesDisplayInformation: state.main.notesDisplayInformation,
     notesOrder: state.main.notesOrder,
     selectedNotes: state.main.selectedNotes,
   };
