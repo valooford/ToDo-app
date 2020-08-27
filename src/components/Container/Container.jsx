@@ -1,11 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 /* eslint-disable import/no-unresolved */
 import ReactDOM from 'react-dom';
 /* eslint-enable import/no-unresolved */
 import cn from 'classnames';
 import style from './Container-cfg.module.scss';
 
-function getContainerItems(elements, itemToFocusRef) {
+function getContainerItems(elements, [itemToFocusId, itemToFocusRef]) {
   return elements.map((element) => {
     return (
       // eslint-disable-next-line jsx-a11y/no-static-element-interactions
@@ -13,7 +13,7 @@ function getContainerItems(elements, itemToFocusRef) {
         className={cn(
           style.container__item,
           {
-            [style.container__item_focused]: element.isItemFocused,
+            [style.container__item_focused]: element.hasFocusStyling,
           },
           {
             [style.container__item_selected]: element.isSelected,
@@ -25,13 +25,13 @@ function getContainerItems(elements, itemToFocusRef) {
             [style[`container__item_style-${element.color}`]]: element.color,
           }
         )}
-        onFocus={element.onItemFocus}
-        onBlur={element.onItemBlur}
-        onKeyDown={element.onItemKeyDown}
+        onFocus={element.onFocus}
+        // onBlur={element.onItemBlur}
+        onKeyDown={element.onKeyDown}
         // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
         tabIndex={element.isFocusable ? 0 : -1}
-        ref={element.isItemFocusNeeded ? itemToFocusRef : null}
-        key={element.key}
+        ref={element.id === itemToFocusId ? itemToFocusRef : null}
+        key={element.id}
       >
         {element.node}
       </div>
@@ -43,6 +43,7 @@ function getContainerItems(elements, itemToFocusRef) {
 // *
 export default function Container({
   elementGroups = [],
+  itemToFocus,
   portal: [{ node: portalNode, color }, onModalReady, modal],
 }) {
   // informing the modal that the portal is incoming
@@ -52,25 +53,16 @@ export default function Container({
     }
   }, [portalNode]);
 
-  const containerItemToFocusRef = useRef(null);
-
   const groups = elementGroups.map((group) => {
     if (group.map) {
       if (!group || !group.length) return null;
       // anonymous group
-      return getContainerItems(group, containerItemToFocusRef);
+      return getContainerItems(group, itemToFocus);
     }
     if (!group.elements || !group.elements.length) return null;
     // named group
-    return getContainerItems(group.elements, containerItemToFocusRef);
+    return getContainerItems(group.elements, itemToFocus);
   });
-
-  // focusing container item after modal close
-  useEffect(() => {
-    if (containerItemToFocusRef.current) {
-      containerItemToFocusRef.current.focus();
-    }
-  }, [containerItemToFocusRef.current]);
 
   return (
     <div className={style.container}>
@@ -95,6 +87,7 @@ export default function Container({
             className={cn(style.container__item, style.container__item_modal, {
               [style[`container__item_style-${color}`]]: color,
             })}
+            key="modal"
           >
             {portalNode}
           </div>,

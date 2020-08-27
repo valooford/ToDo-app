@@ -36,7 +36,7 @@ function NoteContainer({
   id,
   isAddNote,
   isFiller,
-  focusInfo = {},
+  focusInfo,
   isSelected,
   onFocusInfoChange,
   note,
@@ -70,7 +70,11 @@ function NoteContainer({
     }
   }, [havePopupBeenClosed]);
 
-  const [noteFocusInfo, setNoteFocusInfo] = useState(focusInfo);
+  const [noteFocusInfo, setNoteFocusInfo] = useState(
+    focusInfo || {
+      fieldName: note.type === 'list' ? 'add-list-item' : 'textfield',
+    }
+  );
   useEffect(() => {
     if (noteFocusInfo && noteFocusInfo.fieldName && onFocusInfoChange) {
       onFocusInfoChange(noteFocusInfo);
@@ -328,7 +332,7 @@ function mapStateToProps(state, { id }) {
     isPinned: state.main.notesDisplayInformation[id].isPinned,
     popup: state.main.notesDisplayInformation[id].popup,
     isAddNote: id === state.main.notesOrder[0],
-    isSelected: state.main.selectedNotes.includes(id),
+    isSelected: state.main.selectedNotes[id],
   };
 }
 

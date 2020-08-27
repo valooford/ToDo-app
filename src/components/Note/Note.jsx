@@ -235,7 +235,7 @@ function Note({
                 onRemove={item.onRemove}
                 onCheck={item.onCheck}
                 onMouseUp={listItemMouseUpHandlerCreator(false, i)}
-                key={item.key}
+                key={item.id}
                 ref={
                   isUnmarkedListItemToFocus && i === itemIndex
                     ? fieldToFocusRef
@@ -247,6 +247,7 @@ function Note({
               <ListItem
                 isAddItem
                 onChange={onListItemAdd}
+                key="add-list-item"
                 ref={isAddListItemToFocus ? fieldToFocusRef : null}
               />
             )}
@@ -266,7 +267,7 @@ function Note({
                   onRemove={item.onRemove}
                   onCheck={item.onCheck}
                   onMouseUp={listItemMouseUpHandlerCreator(true, i)}
-                  key={item.key}
+                  key={item.id}
                   ref={
                     isMarkedListItemToFocus && i === itemIndex
                       ? fieldToFocusRef

@@ -385,13 +385,24 @@ const handlers = {
     let selectedNotes;
     switch (effect) {
       case 'add':
-        selectedNotes = [id, ...state.selectedNotes];
+        if (state.selectedNotes[id]) return state;
+        selectedNotes = {
+          ...state.selectedNotes,
+          [id]: true,
+          length: state.selectedNotes.length + 1,
+        };
         break;
       case 'remove':
-        selectedNotes = state.selectedNotes.filter((noteId) => noteId !== id);
+        if (!state.selectedNotes[id]) return state;
+        selectedNotes = {
+          ...state.selectedNotes,
+          length: state.selectedNotes.length - 1,
+        };
+        delete selectedNotes[id];
         break;
       case 'remove-all':
-        selectedNotes = [];
+        if (!state.selectedNotes.length) return state;
+        selectedNotes = { length: 0 };
         break;
       default:
         return state;
@@ -408,7 +419,7 @@ const normalizedInitialState = {
       headerText: '',
       text: '',
     },
-    '111': {
+    111: {
       id: '111',
       type: 'default',
       headerText: 'Мой заголовок',
@@ -416,7 +427,7 @@ const normalizedInitialState = {
       creationDate: new Date(2020, 5, 29, 10),
       editingDate: new Date(2020, 6, 1, 1, 12),
     },
-    '222': {
+    222: {
       id: '222',
       type: 'list',
       headerText: 'Список',
@@ -456,17 +467,20 @@ const normalizedInitialState = {
       // isFocused: false,
       // popup: null, // ---unnecessary---
     },
-    '111': {
+    111: {
       id: '111',
       color: 'default',
     },
-    '222': {
+    222: {
       id: '222',
       color: 'blue',
     },
   },
   notesOrder: ['000', '111', '222'],
-  selectedNotes: [], //-
+  selectedNotes: {
+    // '111': true,
+    length: 0,
+  },
   removedNotes: [],
 };
 
