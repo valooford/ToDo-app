@@ -27,7 +27,6 @@ import {
   selectNote,
   cancelNoteSelection,
 } from '@store/mainReducer';
-import { closeModal } from '@store/modalReducer';
 /* eslint-enable import/no-unresolved */
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ NOTE
@@ -340,7 +339,6 @@ function mapDispatchToProps(dispatch) {
   return {
     onNoteBlur(index) {
       dispatch(blurNote(index));
-      dispatch(closeModal());
     },
   };
 }

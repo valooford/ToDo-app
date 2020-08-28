@@ -5,7 +5,6 @@ import AddNote from '@components/AddNote/AddNote.container';
 import Note from '@components/Note/Note.container';
 
 import { focusNote, blurNote } from '@store/mainReducer';
-import { readyModal } from '@store/modalReducer';
 /* eslint-enable import/no-unresolved */
 import Container from './Container';
 
@@ -15,10 +14,6 @@ function ContainerContainer({
   notesDisplayInfo,
   notesOrder,
   selectedNotes,
-  // ---------- modal
-  modalRef,
-  onModalReady,
-
   onNoteFocus, // pressing Enter on focused container item
   onNoteBlur, // on closing modal
 }) {
@@ -29,14 +24,14 @@ function ContainerContainer({
   // id of the last  container item being focused
   const [lastItemBeingFocusedId, setLastItemBeingFocused] = useState(null);
   const lastItemBeingFocusedRef = useRef(null);
-  const onModalClose = () => {
-    // clearing focus info
-    setContainerFocusInfo((prevFocusInfo) => ({
-      ...prevFocusInfo, // saving noteId
-      noteFocusInfo: {},
-    }));
-    lastItemBeingFocusedRef.current.focus();
-  };
+  // const onModalClose = () => {
+  //   // clearing focus info
+  //   setContainerFocusInfo((prevFocusInfo) => ({
+  //     ...prevFocusInfo, // saving noteId
+  //     noteFocusInfo: {},
+  //   }));
+  //   lastItemBeingFocusedRef.current.focus();
+  // };
 
   // ELEMENT GROUPS GATHERING
   // *
@@ -118,7 +113,10 @@ function ContainerContainer({
           node: elementGroups.focusedNoteId && (
             <Note
               id={elementGroups.focusedNoteId}
-              onClose={onModalClose}
+              onClose={() => {
+                onNoteBlur(elementGroups.focusedNoteId);
+                // onModalClose();
+              }}
               focusInfo={
                 containerFocusInfo.noteFocusInfo.fieldName &&
                 containerFocusInfo.noteFocusInfo
@@ -131,12 +129,9 @@ function ContainerContainer({
           hasFocusStyling: true,
         },
         () => {
-          onModalReady(() => {
-            onNoteBlur(elementGroups.focusedNoteId);
-            onModalClose();
-          });
+          onNoteBlur(elementGroups.focusedNoteId);
+          // onModalClose();
         },
-        modalRef.current,
       ]}
     />
   );
@@ -153,5 +148,4 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   onNoteFocus: focusNote,
   onNoteBlur: blurNote,
-  onModalReady: readyModal,
 })(ContainerContainer);

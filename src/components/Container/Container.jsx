@@ -1,7 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+
+// temporary dirty import
 /* eslint-disable import/no-unresolved */
-import ReactDOM from 'react-dom';
+import Modal from '@components/Modal/Modal.container';
 /* eslint-enable import/no-unresolved */
+
 import cn from 'classnames';
 import style from './Container-cfg.module.scss';
 
@@ -44,15 +47,8 @@ function getContainerItems(elements, [itemToFocusId, itemToFocusRef]) {
 export default function Container({
   elementGroups = [],
   itemToFocus,
-  portal: [{ node: portalNode, color }, onModalReady, modal],
+  portal: [{ node: portalNode, color }, onModalClose],
 }) {
-  // informing the modal that the portal is incoming
-  useEffect(() => {
-    if (portalNode) {
-      onModalReady();
-    }
-  }, [portalNode]);
-
   const groups = elementGroups.map((group) => {
     if (group.map) {
       if (!group || !group.length) return null;
@@ -81,8 +77,8 @@ export default function Container({
           </div>
         ) : null
       )}
-      {portalNode &&
-        ReactDOM.createPortal(
+      {portalNode && (
+        <Modal onClose={onModalClose}>
           <div
             className={cn(style.container__item, style.container__item_modal, {
               [style[`container__item_style-${color}`]]: color,
@@ -90,9 +86,9 @@ export default function Container({
             key="modal"
           >
             {portalNode}
-          </div>,
-          modal
-        )}
+          </div>
+        </Modal>
+      )}
     </div>
   );
 }

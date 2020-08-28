@@ -1,8 +1,8 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import style from './Modal.module.scss';
 
-function Modal({ callback, onModalClose }, ref) {
-  const modalRef = ref;
+export default function Modal({ children, onClose }) {
+  const modalRef = useRef(null);
   // handle modal size
   useEffect(() => {
     function handleResize() {
@@ -15,14 +15,6 @@ function Modal({ callback, onModalClose }, ref) {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-  // handle modal display
-  useEffect(() => {
-    if (ref.current.children.length === 0) {
-      modalRef.current.style.display = 'none';
-    } else {
-      modalRef.current.style.display = 'block';
-    }
-  }, [callback]);
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
     <div
@@ -30,14 +22,11 @@ function Modal({ callback, onModalClose }, ref) {
       ref={modalRef}
       onClick={({ target, currentTarget }) => {
         if (target === currentTarget) {
-          setTimeout(() => {
-            callback();
-            onModalClose();
-          });
+          onClose();
         }
       }}
-    />
+    >
+      {children}
+    </div>
   );
 }
-
-export default React.forwardRef(Modal);

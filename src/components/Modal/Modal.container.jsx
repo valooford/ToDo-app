@@ -1,29 +1,18 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { useContext } from 'react';
+import ReactDOM from 'react-dom';
 /* eslint-disable import/no-unresolved */
 import Modal from '@components/Modal/Modal';
 
-import { closeModal } from '@store/modalReducer';
 /* eslint-enable import/no-unresolved */
+
+export const ModalContext = React.createContext();
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ MODAL
 // *
-function ModalContainer({ modalCallback, onModalClose, modalRef }) {
-  return (
-    <Modal
-      callback={modalCallback}
-      onModalClose={onModalClose}
-      ref={modalRef}
-    />
+export default function ModalContainer({ children, onClose }) {
+  const modalRef = useContext(ModalContext);
+  return ReactDOM.createPortal(
+    <Modal onClose={onClose}>{children}</Modal>,
+    modalRef.current
   );
 }
-
-function mapStateToProps(state) {
-  return {
-    modalCallback: state.modal.callback,
-  };
-}
-
-export default connect(mapStateToProps, { onModalClose: closeModal })(
-  ModalContainer
-);
