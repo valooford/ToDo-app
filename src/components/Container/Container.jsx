@@ -2,7 +2,6 @@ import React from 'react';
 
 // temporary dirty import
 /* eslint-disable import/no-unresolved */
-import Modal from '@components/Modal/Modal.container';
 /* eslint-enable import/no-unresolved */
 
 import cn from 'classnames';
@@ -20,9 +19,6 @@ function getContainerItems(elements, [itemToFocusId, itemToFocusRef]) {
           },
           {
             [style.container__item_selected]: element.isSelected,
-          },
-          {
-            [style.container__item_hidden]: element.isFiller,
           },
           {
             [style[`container__item_style-${element.color}`]]: element.color,
@@ -44,11 +40,7 @@ function getContainerItems(elements, [itemToFocusId, itemToFocusRef]) {
 
 // КОМПОНЕНТ КОНТЕЙНЕРА / CONTAINER
 // *
-export default function Container({
-  elementGroups = [],
-  itemToFocus,
-  portal: [{ node: portalNode, color }, onModalClose],
-}) {
+export default function Container({ elementGroups = [], itemToFocus }) {
   const groups = elementGroups.map((group) => {
     if (group.map) {
       if (!group || !group.length) return null;
@@ -76,18 +68,6 @@ export default function Container({
             {group}
           </div>
         ) : null
-      )}
-      {portalNode && (
-        <Modal onClose={onModalClose}>
-          <div
-            className={cn(style.container__item, style.container__item_modal, {
-              [style[`container__item_style-${color}`]]: color,
-            })}
-            key="modal"
-          >
-            {portalNode}
-          </div>
-        </Modal>
       )}
     </div>
   );

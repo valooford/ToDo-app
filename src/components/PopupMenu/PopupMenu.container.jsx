@@ -14,7 +14,6 @@ import {
   textNoteToList,
   listNoteToText,
 } from '@store/mainReducer';
-import { closeModal } from '@store/modalReducer';
 /* eslint-enable import/no-unresolved */
 
 // функция получения элементов всплывающего меню
@@ -181,7 +180,6 @@ function mapDispatchToProps(dispatch) {
   return {
     onRemove(index) {
       dispatch(removeNote(index));
-      dispatch(closeModal());
     },
   };
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import cn from 'classnames';
 /* eslint-disable import/no-unresolved */
 import Button from '@components/Button/Button';
@@ -6,7 +6,6 @@ import IconButton from '@components/IconButton/IconButton';
 import Textarea from '@components/Textarea/Textarea';
 import CreationTime from '@components/CreationTime/CreationTime';
 import ListItem from '@components/ListItem/ListItem';
-import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
 /* eslint-enable import/no-unresolved */
 import style from './Note-cfg.module.scss';
 
@@ -16,18 +15,16 @@ export { style };
 
 function Note({
   noteData: {
-    type,
     headerText,
     text,
     items,
     markedItems,
-    isFocused,
+    // isFocused,
     isPinned,
     creationDate,
     editingDate,
   },
   popup = {},
-  extra,
   eventHandlers: {
     onClick,
     onMouseDown,
@@ -46,49 +43,46 @@ function Note({
     onColorsButtonMouseLeave,
     onReminderButtonClick,
   },
-  refs: {
-    moreButton: moreButtonRef,
-    colorsButton: colorsButtonRef,
-    reminderButton: reminderButtonRef,
-  } = {},
-  focusInfo = {},
-  isSelected,
+  children,
+  refs: { moreButtonRef, colorsButtonRef, reminderButtonRef } = {},
+  // focusInfo = {},
+  // isSelected,
 }) {
-  const fieldToFocusRef = useRef(null);
-  useEffect(() => {
-    setTimeout(() => {
-      if (!fieldToFocusRef.current) return;
-      fieldToFocusRef.current.focus();
-      const caretPos = focusInfo.caret != null ? focusInfo.caret : 9999;
-      fieldToFocusRef.current.setSelectionRange(caretPos, caretPos);
-    }, 0);
-  }, [focusInfo.fieldName, focusInfo.itemIndex]);
-  const { fieldName, itemIndex } = focusInfo;
-  const isHeaderToFocus = fieldName === 'header';
-  const isTextfieldToFocus = fieldName === 'textfield';
-  const isAddListItemToFocus = fieldName === 'add-list-item';
-  const isUnmarkedListItemToFocus = fieldName === 'unmarked-list-item';
-  const isMarkedListItemToFocus = fieldName === 'marked-list-item';
+  // const fieldToFocusRef = useRef(null);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     if (!fieldToFocusRef.current) return;
+  //     fieldToFocusRef.current.focus();
+  //     const caretPos = focusInfo.caret != null ? focusInfo.caret : 9999;
+  //     fieldToFocusRef.current.setSelectionRange(caretPos, caretPos);
+  //   }, 0);
+  // }, [focusInfo.fieldName, focusInfo.itemIndex]);
+  // const { fieldName, itemIndex } = focusInfo;
+  // const isHeaderToFocus = fieldName === 'header';
+  // const isTextfieldToFocus = fieldName === 'textfield';
+  // const isAddListItemToFocus = fieldName === 'add-list-item';
+  // const isUnmarkedListItemToFocus = fieldName === 'unmarked-list-item';
+  // const isMarkedListItemToFocus = fieldName === 'marked-list-item';
 
-  const noteRef = useRef(null);
-  const [isInteracting, setIsInteracting] = useState(isSelected);
-  // is any focused element inside this note
-  const [isFocusing, setIsFocusing] = useState(false);
-  useEffect(() => {
-    if (!noteRef.current) return;
-    noteRef.current.addEventListener('focusin', () => {
-      setIsFocusing(true);
-    });
-    noteRef.current.addEventListener('focusout', () => {
-      setIsFocusing(false);
-    });
-  }, [noteRef.current]);
-  useEffect(() => {
-    setIsInteracting(
-      // isSelected || isFocusing || Object.values(popup).filter((v) => v).length
-      isSelected || isFocusing || Object.keys(popup).filter((v) => v).length
-    );
-  }, [isSelected, isFocusing]);
+  // const noteRef = useRef(null);
+  // const [isInteracting, setIsInteracting] = useState(isSelected);
+  // // is any focused element inside this note
+  // const [isFocusing, setIsFocusing] = useState(false);
+  // useEffect(() => {
+  //   if (!noteRef.current) return;
+  //   noteRef.current.addEventListener('focusin', () => {
+  //     setIsFocusing(true);
+  //   });
+  //   noteRef.current.addEventListener('focusout', () => {
+  //     setIsFocusing(false);
+  //   });
+  // }, [noteRef.current]);
+  // useEffect(() => {
+  //   setIsInteracting(
+  //     // isSelected || isFocusing || Object.values(popup).filter((v) => v).length
+  //     isSelected || isFocusing || Object.keys(popup).filter((v) => v).length
+  //   );
+  // }, [isSelected, isFocusing]);
 
   const buttons = [
     {
@@ -145,7 +139,7 @@ function Note({
       disabled: true,
     },
   ]
-    .filter((params) => isFocused || !params.disabled)
+    .filter((params) => !params.disabled) // add notes change history
     .map((params) => (
       <span key={params.titleText}>
         <IconButton
@@ -166,23 +160,23 @@ function Note({
     <form
       className={cn(
         style.note,
-        { [style.note_focused]: isFocused },
-        {
-          [style.note_interacting]: isInteracting,
-        }
+        { [style.note_focused]: onClose }
+        // {
+        //   [style.note_interacting]: isInteracting,
+        // }
       )}
       onSubmit={(e) => e.preventDefault()}
       onClick={onClick}
       onMouseDown={onMouseDown}
       onKeyDown={(e) => {
         // Esc
-        if (e.keyCode === 27) {
+        if (onClose && e.keyCode === 27) {
           onClose();
         }
       }}
-      ref={noteRef}
+      // ref={noteRef}
     >
-      {!isFocused && (
+      {onSelection && (
         <div className={style.note__check}>
           <IconButton
             iconSymbol="&#xe80b;"
@@ -200,7 +194,7 @@ function Note({
           onClick={onPin}
         />
       </div>
-      {(isFocused || headerText !== '') && (
+      {(onHeaderChange || headerText !== '') && (
         <input
           className={style.note__header}
           type="text"
@@ -208,47 +202,50 @@ function Note({
           value={headerText}
           onChange={onHeaderChange}
           onMouseUp={onHeaderFocus}
-          tabIndex={isFocused ? 0 : -1}
-          ref={isHeaderToFocus ? fieldToFocusRef : null}
+          tabIndex={onHeaderChange ? 0 : -1}
+          // ref={isHeaderToFocus ? fieldToFocusRef : null}
         />
       )}
-      {type !== 'list' && (
+      {text != null && (
         <div className={style.note__text}>
           <Textarea
             placeholder="Заметка..."
             value={text}
             onChange={onTextFieldChange}
             onMouseUp={onTextFieldFocus}
-            tabIndex={isFocused ? 0 : -1}
-            ref={isTextfieldToFocus ? fieldToFocusRef : null}
+            tabIndex={onTextFieldChange ? 0 : -1}
+            // ref={isTextfieldToFocus ? fieldToFocusRef : null}
           />
         </div>
       )}
-      {type === 'list' && (
+      {items && (
         <div className={style.note__listWrapper}>
           <ul className={style.note__list}>
             {items.map((item, i) => (
               <ListItem
-                isPreview={!isFocused}
+                isPreview={!listItemMouseUpHandlerCreator}
                 value={item.text}
                 onChange={item.onChange}
                 onRemove={item.onRemove}
                 onCheck={item.onCheck}
-                onMouseUp={listItemMouseUpHandlerCreator(false, i)}
-                key={item.id}
-                ref={
-                  isUnmarkedListItemToFocus && i === itemIndex
-                    ? fieldToFocusRef
-                    : null
+                onMouseUp={
+                  listItemMouseUpHandlerCreator &&
+                  listItemMouseUpHandlerCreator(false, i)
                 }
+                key={item.id}
+                // ref={
+                //   isUnmarkedListItemToFocus && i === itemIndex
+                //     ? fieldToFocusRef
+                //     : null
+                // }
               />
             ))}
-            {isFocused && (
+            {onListItemAdd && (
               <ListItem
                 isAddItem
                 onChange={onListItemAdd}
                 key="add-list-item"
-                ref={isAddListItemToFocus ? fieldToFocusRef : null}
+                // ref={isAddListItemToFocus ? fieldToFocusRef : null}
               />
             )}
           </ul>
@@ -261,18 +258,21 @@ function Note({
               {markedItems.map((item, i) => (
                 <ListItem
                   isChecked
-                  isPreview={!isFocused}
+                  isPreview={!listItemMouseUpHandlerCreator}
                   value={item.text}
                   onChange={item.onChange}
                   onRemove={item.onRemove}
                   onCheck={item.onCheck}
-                  onMouseUp={listItemMouseUpHandlerCreator(true, i)}
-                  key={item.id}
-                  ref={
-                    isMarkedListItemToFocus && i === itemIndex
-                      ? fieldToFocusRef
-                      : null
+                  onMouseUp={
+                    listItemMouseUpHandlerCreator &&
+                    listItemMouseUpHandlerCreator(true, i)
                   }
+                  key={item.id}
+                  // ref={
+                  //   isMarkedListItemToFocus && i === itemIndex
+                  //     ? fieldToFocusRef
+                  //     : null
+                  // }
                 />
               ))}
             </ul>
@@ -280,7 +280,7 @@ function Note({
         </div>
       )}
       <div className={style.note__info}>
-        {isFocused && creationDate && editingDate && (
+        {onClose && (
           <span className={style.note__creationTime}>
             <CreationTime
               creationDate={creationDate}
@@ -288,10 +288,10 @@ function Note({
             />
           </span>
         )}
-        {extra}
+        {children}
       </div>
       <div className={style.note__buttons}>
-        {isFocused && (
+        {onClose && (
           <span className={style.note__button}>
             <Button onClick={onClose}>Закрыть</Button>
           </span>
@@ -300,8 +300,7 @@ function Note({
       </div>
     </form>
   );
-
-  return isFocused ? <KeyboardTrap>{note}</KeyboardTrap> : note;
+  return note;
 }
 
 export default React.memo(Note);

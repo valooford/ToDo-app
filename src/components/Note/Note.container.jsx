@@ -9,6 +9,7 @@ import PopupMenu from '@components/PopupMenu/PopupMenu.container';
 import PopupColors from '@components/PopupColors/PopupColors.container';
 import PopupReminder from '@components/PopupReminder/PopupReminder.container';
 import Reminder from '@components/Reminder/Reminder.container';
+import Modal from '@components/Modal/Modal.container';
 
 import {
   focusNote,
@@ -34,14 +35,12 @@ import {
 function NoteContainer({
   id,
   isAddNote,
-  isFiller,
   focusInfo,
   isSelected,
   onFocusInfoChange,
   note,
   isFocused,
-  isPinned,
-  popup,
+  displayInfo: { isPinned, popupName },
   onClose,
   onNoteFocus,
   onNoteBlur,
@@ -59,84 +58,184 @@ function NoteContainer({
   onNoteSelection,
   onCancelNoteSelection,
 }) {
-  const { items, itemsOrder } = note;
-
-  // havePopupBeenClosed used to set the focus after popup's actions
-  const [havePopupBeenClosed, setHavePopupBeenClosed] = useState(false);
-  useEffect(() => {
-    if (!havePopupBeenClosed) {
-      setHavePopupBeenClosed(false);
-    }
-  }, [havePopupBeenClosed]);
+  // // havePopupBeenClosed used to set the focus after popup's actions
+  // const [havePopupBeenClosed, setHavePopupBeenClosed] = useState(false);
+  // useEffect(() => {
+  //   if (!havePopupBeenClosed) {
+  //     setHavePopupBeenClosed(false);
+  //   }
+  // }, [havePopupBeenClosed]);
 
   const [noteFocusInfo, setNoteFocusInfo] = useState(
     focusInfo || {
       fieldName: note.type === 'list' ? 'add-list-item' : 'textfield',
     }
   );
+  // informing about a new focus info
   useEffect(() => {
     if (noteFocusInfo && noteFocusInfo.fieldName && onFocusInfoChange) {
       onFocusInfoChange(noteFocusInfo);
     }
   }, [noteFocusInfo]);
 
-  // detecting click inside note[0]
+  // detecting click outside focused note
   const setIsTouched = useEffectOnMouseDownOutside(() => {
-    onNoteBlur(id);
-    if (isAddNote) {
-      onNoteAdd();
+    if (isFocused) {
+      onNoteBlur();
+      if (isAddNote) {
+        onNoteAdd();
+      }
     }
-  }, [isAddNote && isFocused]);
+  }, [isFocused]);
+  const onMouseDown = () => {
+    setIsTouched(); // клик был осуществлен в пределах note
+  };
 
-  let unmarkedItems;
-  let markedItems;
-  if (items) {
-    const itemsWithHandlers = itemsOrder.map((itemId) => {
-      const item = items[itemId];
-      return {
-        ...item,
-        onChange({ target: { value: itemText } }) {
-          onListItemChange(id, itemId, itemText);
-        },
-        onRemove() {
-          onListItemRemove(id, itemId);
-        },
-      };
-    });
-    unmarkedItems = itemsWithHandlers
-      .filter((item) => !item.isMarked)
-      .map((item) => {
-        return {
+  // separation into marked and unmarked list items
+  const { items, itemsOrder } = note;
+  let itemsWithHandlersGroups;
+  if (itemsOrder) {
+    itemsWithHandlersGroups = itemsOrder.reduce(
+      (itemsGroups, itemId) => {
+        const item = items[itemId];
+        const itemWithHandlers = {
           ...item,
-          onCheck() {
-            onListItemCheck(id, item.id);
+          onChange({ target: { value: itemText } }) {
+            onListItemChange(id, itemId, itemText);
+          },
+          onRemove() {
+            onListItemRemove(id, itemId);
           },
         };
-      });
-    markedItems = itemsWithHandlers
-      .map((item) => ({
-        ...item,
-        sub: item.sub.filter((subItem) => subItem.isMarked),
-      }))
-      .filter((item) => item.isMarked || item.sub.length > 0)
-      .map((item) => {
-        return {
-          ...item,
-          onCheck() {
+        if (item.isMarked) {
+          itemWithHandlers.onCheck = () => {
             onListItemUncheck(id, item.id);
-          },
-        };
-      });
+          };
+          itemsGroups.marked.push(itemWithHandlers);
+        } else {
+          itemWithHandlers.onCheck = () => {
+            onListItemCheck(id, item.id);
+          };
+          itemsGroups.unmarked.push(itemWithHandlers);
+        }
+        return itemsGroups;
+      },
+      { unmarked: [], marked: [] }
+    );
   }
 
-  let onClick = null;
-  let onMouseDown = null;
-  if (isAddNote) {
-    onMouseDown = () => {
-      setIsTouched(); // клик был осуществлен в пределах note
-    };
-  } else {
-    onClick = ({ target }) => {
+  // the buttons refs for backward focusing
+  const moreButtonRef = useRef(null);
+  const colorsButtonRef = useRef(null);
+  const popupColorsItemToFocusRef = useRef(null);
+  const reminderButtonRef = useRef(null);
+
+  let colorsButtonMouseLeaveTimerId; // a PopupColors disappearance timer id
+
+  const popup = {};
+  switch (popupName) {
+    case 'menu':
+      popup.menu = (
+        <PopupMenu
+          id={id}
+          hasMarkedItems={
+            itemsWithHandlersGroups && !!itemsWithHandlersGroups.marked.length
+          }
+          callerRef={moreButtonRef}
+          handleClose={
+            (/* isSilent */) => {
+              setPopup(id, null);
+              // if (!isSilent) {
+              //   setHavePopupBeenClosed(true);
+              // }
+            }
+          }
+        />
+      );
+      break;
+    case 'colors':
+      popup.colors = (
+        <PopupColors
+          id={id}
+          callerRef={colorsButtonRef}
+          itemToFocusRef={popupColorsItemToFocusRef}
+          handleClose={
+            (/* isSilent */) => {
+              setPopup(id, null);
+              // if (!isSilent) {
+              //   setHavePopupBeenClosed(true);
+              // }
+            }
+          }
+          onHover={() => {
+            clearTimeout(colorsButtonMouseLeaveTimerId);
+          }}
+        />
+      );
+      break;
+    case 'reminder':
+      popup.reminder = (
+        <PopupReminder
+          index={id}
+          callerRef={reminderButtonRef}
+          handleClose={
+            (/* isSilent */) => {
+              setPopup(id, null);
+              // if (!isSilent) {
+              //   setHavePopupBeenClosed(true);
+              // }
+            }
+          }
+        />
+      );
+      break;
+    default:
+      break;
+  }
+
+  const eventHandlers = {
+    onMouseDown,
+    onPin: isPinned
+      ? () => {
+          onNoteUnpin(id);
+        }
+      : () => {
+          onNotePin(id);
+        },
+    onMoreButtonClick: () => {
+      clearTimeout(colorsButtonMouseLeaveTimerId);
+      setPopup(id, 'menu');
+    },
+    onColorsButtonClick: () => {
+      clearTimeout(colorsButtonMouseLeaveTimerId);
+      setPopup(id, 'colors');
+      setTimeout(() => {
+        popupColorsItemToFocusRef.current.focus();
+      }, 0);
+    },
+    onColorsButtonHover:
+      popupName === null || popupName === 'colors'
+        ? () => {
+            clearTimeout(colorsButtonMouseLeaveTimerId);
+            setPopup(id, 'colors');
+          }
+        : null,
+    onColorsButtonMouseLeave:
+      popupName === 'colors'
+        ? () => {
+            colorsButtonMouseLeaveTimerId = setTimeout(() => {
+              setPopup(id, null);
+            }, 1000);
+          }
+        : null,
+    onReminderButtonClick: () => {
+      clearTimeout(colorsButtonMouseLeaveTimerId);
+      setPopup(id, 'reminder');
+    },
+  };
+  // a click handler focusing the note
+  if (!isAddNote) {
+    eventHandlers.onClick = ({ target }) => {
       const nonFocusingElementsSelectors = [
         style.note__check,
         style.note__cornerButtons,
@@ -149,187 +248,111 @@ function NoteContainer({
       }
     };
   }
+  if (isFocused) {
+    eventHandlers.onClose = () => {
+      if (onClose) {
+        onClose();
+      }
+      onNoteBlur();
 
-  const moreButtonRef = useRef(null);
-  const colorsButtonRef = useRef(null);
-  const popupColorsItemToFocusRef = useRef(null);
-  const reminderButtonRef = useRef(null);
+      if (isAddNote) {
+        onNoteAdd();
+      }
+    };
+    eventHandlers.onHeaderChange = ({ target: { value: headerText } }) => {
+      onHeaderChange(id, headerText);
+    };
+    eventHandlers.onTextFieldChange = ({ target: { value: text } }) => {
+      onTextFieldChange(id, text);
+    };
+    eventHandlers.onListItemAdd = ({ target: { value: itemText } }) => {
+      if (itemText !== '') {
+        onListItemAdd(id, itemText);
+      }
+    };
+  } else {
+    // !isFocused
+    eventHandlers.onSelection = isSelected
+      ? () => {
+          onCancelNoteSelection(id);
+        }
+      : () => {
+          onNoteSelection(id);
+        };
+    eventHandlers.onHeaderFocus = ({ target }) => {
+      setNoteFocusInfo({
+        fieldName: 'header',
+        caret: target.selectionStart,
+      });
+    };
+    eventHandlers.onTextFieldFocus = ({ target }) => {
+      setNoteFocusInfo({
+        fieldName: 'textfield',
+        caret: target.selectionStart,
+      });
+    };
+    eventHandlers.listItemMouseUpHandlerCreator = (isMarked, itemIndex) => ({
+      target,
+    }) => {
+      setNoteFocusInfo({
+        fieldName: isMarked ? 'marked-list-item' : 'unmarked-list-item',
+        itemIndex,
+        caret: target.selectionStart,
+      });
+    };
+  }
 
-  let colorsButtonMouseLeaveTimerId;
-
-  return (
+  const noteElem = (
     <Note
       noteData={{
-        type: note.type,
         headerText: note.headerText,
         text: note.text,
-        items: unmarkedItems,
-        markedItems,
+        items: itemsOrder && itemsWithHandlersGroups.unmarked,
+        markedItems: itemsOrder && itemsWithHandlersGroups.marked,
         isFocused,
         isPinned,
         creationDate: note.creationDate,
         editingDate: note.editingDate,
       }}
-      popup={
-        !isFiller && {
-          menu: popup === 'menu' && (
-            <PopupMenu
-              id={id}
-              hasMarkedItems={markedItems && !!markedItems.length}
-              callerRef={moreButtonRef}
-              handleClose={(isSilent) => {
-                setPopup(id, null);
-                if (!isSilent) {
-                  setHavePopupBeenClosed(true);
-                }
-              }}
-            />
-          ),
-          colors: popup === 'colors' && (
-            <PopupColors
-              id={id}
-              callerRef={colorsButtonRef}
-              itemToFocusRef={popupColorsItemToFocusRef}
-              handleClose={(isSilent) => {
-                setPopup(id, null);
-                if (!isSilent) {
-                  setHavePopupBeenClosed(true);
-                }
-              }}
-              onHover={() => {
-                clearTimeout(colorsButtonMouseLeaveTimerId);
-              }}
-            />
-          ),
-          reminder: popup === 'reminder' && (
-            <PopupReminder
-              index={id}
-              callerRef={reminderButtonRef}
-              handleClose={(isSilent) => {
-                setPopup(id, null);
-                if (!isSilent) {
-                  setHavePopupBeenClosed(true);
-                }
-              }}
-            />
-          ),
-        }
-      }
-      extra={<Reminder id={id} />}
-      refs={{
-        moreButton: moreButtonRef,
-        colorsButton: colorsButtonRef,
-        reminderButton: reminderButtonRef,
-      }}
-      eventHandlers={{
-        onClick,
-        onMouseDown,
-        onClose: () => {
-          if (onClose && isFocused) {
-            onClose();
-          }
-          onNoteBlur(id);
-
-          if (isAddNote) {
-            onNoteAdd();
-          }
-        },
-        onSelection: isSelected
-          ? () => {
-              onCancelNoteSelection(id);
-            }
-          : () => {
-              onNoteSelection(id);
-            },
-        onPin: isPinned
-          ? () => {
-              onNoteUnpin(id);
-            }
-          : () => {
-              onNotePin(id);
-            },
-        onHeaderChange: ({ target: { value: headerText } }) => {
-          onHeaderChange(id, headerText);
-        },
-        onHeaderFocus: ({ target }) => {
-          setNoteFocusInfo({
-            fieldName: 'header',
-            caret: target.selectionStart,
-          });
-        },
-        onTextFieldChange: ({ target: { value: text } }) => {
-          onTextFieldChange(id, text);
-        },
-        onTextFieldFocus: ({ target }) => {
-          setNoteFocusInfo({
-            fieldName: 'textfield',
-            caret: target.selectionStart,
-          });
-        },
-        onListItemAdd: ({ target: { value: itemText } }) => {
-          if (itemText !== '') {
-            onListItemAdd(id, itemText);
-          }
-        },
-        listItemMouseUpHandlerCreator: (isMarked, itemIndex) => ({
-          target,
-        }) => {
-          setNoteFocusInfo({
-            fieldName: isMarked ? 'marked-list-item' : 'unmarked-list-item',
-            itemIndex,
-            caret: target.selectionStart,
-          });
-        },
-        onMoreButtonClick: () => {
-          clearTimeout(colorsButtonMouseLeaveTimerId);
-          setPopup(id, 'menu');
-        },
-        onColorsButtonClick: () => {
-          clearTimeout(colorsButtonMouseLeaveTimerId);
-          setPopup(id, 'colors');
-          setTimeout(() => {
-            popupColorsItemToFocusRef.current.focus();
-          }, 0);
-        },
-        onColorsButtonHover:
-          popup === null || popup === 'colors'
-            ? () => {
-                clearTimeout(colorsButtonMouseLeaveTimerId);
-                setPopup(id, 'colors');
-              }
-            : null,
-        onColorsButtonMouseLeave:
-          popup === 'colors'
-            ? () => {
-                colorsButtonMouseLeaveTimerId = setTimeout(() => {
-                  setPopup(id, null);
-                }, 1000);
-              }
-            : null,
-        onReminderButtonClick: () => {
-          clearTimeout(colorsButtonMouseLeaveTimerId);
-          setPopup(id, 'reminder');
-        },
-      }}
-      focusInfo={
-        havePopupBeenClosed
-          ? // default focusInfo after popup's actions
-            {
-              fieldName: note.type === 'list' ? 'add-list-item' : 'textfield',
-            }
-          : focusInfo
-      }
-      isSelected={isSelected}
-    />
+      popup={popup}
+      eventHandlers={eventHandlers}
+      refs={{ moreButtonRef, colorsButtonRef, reminderButtonRef }}
+      // focusInfo={
+      //   havePopupBeenClosed
+      //     ? // default focusInfo after popup's actions
+      //       {
+      //         fieldName: note.type === 'list' ? 'add-list-item' : 'textfield',
+      //       }
+      //     : focusInfo
+      // }
+      // isSelected={isSelected}
+    >
+      <Reminder id={id} />
+    </Note>
   );
+
+  if (isFocused) {
+    return (
+      <>
+        <div>FILLER FILLER FILLER FILLER FILLER</div>
+        <Modal
+          onClose={() => {
+            onNoteBlur();
+          }}
+        >
+          {noteElem}
+        </Modal>
+      </>
+    );
+  }
+  return noteElem;
 }
 
 function mapStateToProps(state, { id }) {
   return {
     note: state.main.notesData[id],
-    isFocused: state.main.notesDisplayInformation[id].isFocused,
-    isPinned: state.main.notesDisplayInformation[id].isPinned,
-    popup: state.main.notesDisplayInformation[id].popup,
+    isFocused: id === state.main.focusedNoteId,
+    displayInfo: state.main.notesDisplayInformation[id],
     isAddNote: id === state.main.notesOrder[0],
     isSelected: state.main.selectedNotes[id],
   };

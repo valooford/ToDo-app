@@ -1,5 +1,5 @@
 // main
-export const SET_NOTE_FOCUS = 'main/set-note-focus';
+export const SET_FOCUSED_NOTE = 'main/set-focused-note';
 export const SET_NOTE_PIN = 'main/set-note-pin';
 export const ADD_NOTE = 'main/add-note';
 export const COPY_NOTE = 'main/copy-note';

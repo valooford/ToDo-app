@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import ReactDOM from 'react-dom';
 /* eslint-disable import/no-unresolved */
 import Modal from '@components/Modal/Modal';
-
+import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
 /* eslint-enable import/no-unresolved */
 
 export const ModalContext = React.createContext();
@@ -12,7 +12,9 @@ export const ModalContext = React.createContext();
 export default function ModalContainer({ children, onClose }) {
   const modalRef = useContext(ModalContext);
   return ReactDOM.createPortal(
-    <Modal onClose={onClose}>{children}</Modal>,
+    <KeyboardTrap>
+      <Modal onClose={onClose}>{children}</Modal>
+    </KeyboardTrap>,
     modalRef.current
   );
 }

@@ -4,11 +4,26 @@
   $no-padding-icon-size: 22px,
   $smaller-base-unit: 11px,
   $icon-font-name: IconFont,
-  $reminder-base-unit: 7px
+  $reminder-base-unit: 7px,
+  $background-color: #fff,
+  $border-color: rgba(0, 0, 0, 0.133)
 ) {
   .#{$class-name} {
-    padding-top: $base-unit;
-    padding-bottom: 0.5 * $base-unit;
+    position: relative;
+    box-sizing: border-box;
+    max-width: 600px;
+    margin: 0.5 * $base-unit auto 0;
+    // margin-top: 0.5 * $base-unit;
+    padding: $base-unit $base-unit 0.5 * $base-unit;
+    background-color: $background-color;
+    border: 1px solid $border-color;
+    border-radius: 10px;
+    outline: none;
+
+    color: #888;
+    font-size: 16px;
+    font-weight: bold;
+
     cursor: default;
 
     &__check,
@@ -17,14 +32,21 @@
       opacity: 0;
     }
 
-    *:hover > &,
+    &:hover,
     &_interacting,
     &_focused {
+      box-shadow: (
+        0 1px 5px rgba(0, 0, 0, 0.133),
+        inset 0 -1px 2px rgba(0, 0, 0, 0.266)
+      );
       .#{$class-name}__check,
       .#{$class-name}__cornerButtons,
       .#{$class-name}__buttons {
         opacity: 1;
       }
+    }
+    &_selected {
+      border: 2px solid #000;
     }
 
     &__check {

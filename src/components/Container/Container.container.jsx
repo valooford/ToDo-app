@@ -1,10 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
 import AddNote from '@components/AddNote/AddNote.container';
 import Note from '@components/Note/Note.container';
 
-import { focusNote, blurNote } from '@store/mainReducer';
+import { focusNote } from '@store/mainReducer';
 /* eslint-enable import/no-unresolved */
 import Container from './Container';
 
@@ -14,16 +14,16 @@ function ContainerContainer({
   notesDisplayInfo,
   notesOrder,
   selectedNotes,
+  focusedNoteId,
   onNoteFocus, // pressing Enter on focused container item
-  onNoteBlur, // on closing modal
 }) {
   // FOCUS HANDLING (not finished yet)
   // *
-  // info for saving note focus info to set focus inside modal
-  const [containerFocusInfo, setContainerFocusInfo] = useState({});
-  // id of the last  container item being focused
-  const [lastItemBeingFocusedId, setLastItemBeingFocused] = useState(null);
-  const lastItemBeingFocusedRef = useRef(null);
+  // // info for saving note focus info to set focus inside modal
+  // const [containerFocusInfo, setContainerFocusInfo] = useState({});
+  // // id of the last  container item being focused
+  // const [lastItemBeingFocusedId, setLastItemBeingFocused] = useState(null);
+  // const lastItemBeingFocusedRef = useRef(null);
   // const onModalClose = () => {
   //   // clearing focus info
   //   setContainerFocusInfo((prevFocusInfo) => ({
@@ -38,7 +38,8 @@ function ContainerContainer({
   const addElem = {};
   {
     const addNoteId = notesOrder[0];
-    const { isFocused, color } = notesDisplayInfo[addNoteId];
+    const { color } = notesDisplayInfo[addNoteId];
+    const isFocused = addNoteId === focusedNoteId;
     addElem.id = isFocused ? addNoteId : 'add';
     addElem.color = isFocused && color;
     addElem.node = isFocused ? <Note id={addNoteId} /> : <AddNote />;
@@ -53,9 +54,9 @@ function ContainerContainer({
   // в модальном окне могут редактироваться только уже добавленные заметки
   const elementGroups = notesOrder.slice(1).reduce(
     (groups, id) => {
-      const { isFocused, isPinned, color } = notesDisplayInfo[id];
+      const { isPinned, color } = notesDisplayInfo[id];
       // eslint-disable-next-line no-param-reassign
-      if (isFocused) groups.focusedNoteId = id;
+      const isFocused = id === focusedNoteId;
       const noteElem = {
         id,
         color,
@@ -64,23 +65,23 @@ function ContainerContainer({
           <Note
             id={id}
             isFiller={isFocused}
-            onFocusInfoChange={(noteFocusInfo) => {
-              setContainerFocusInfo({
-                noteId: id,
-                noteFocusInfo,
-              });
-            }}
+            // onFocusInfoChange={(noteFocusInfo) => {
+            //   setContainerFocusInfo({
+            //     noteId: id,
+            //     noteFocusInfo,
+            //   });
+            // }}
             // ? isSelected={!focusedNoteId && id === focusedItemId}
           />
         ),
         isFocusable: true,
         isSelected: selectedNotes[id],
-        onFocus: (e) => {
-          // triggers for an unknown reason when something get focus inside
-          // seems like it's bubbling
-          if (e.target !== e.currentTarget) return;
-          setLastItemBeingFocused(id);
-        },
+        // onFocus: (e) => {
+        //   // triggers for an unknown reason when something get focus inside
+        //   // seems like it's bubbling
+        //   if (e.target !== e.currentTarget) return;
+        //   setLastItemBeingFocused(id);
+        // },
         onKeyDown: (e) => {
           // Enter
           if (e.keyCode === 13) {
@@ -107,32 +108,7 @@ function ContainerContainer({
           elements: elementGroups.unpinned,
         },
       ]}
-      itemToFocus={[lastItemBeingFocusedId, lastItemBeingFocusedRef]}
-      portal={[
-        {
-          node: elementGroups.focusedNoteId && (
-            <Note
-              id={elementGroups.focusedNoteId}
-              onClose={() => {
-                onNoteBlur(elementGroups.focusedNoteId);
-                // onModalClose();
-              }}
-              focusInfo={
-                containerFocusInfo.noteFocusInfo.fieldName &&
-                containerFocusInfo.noteFocusInfo
-              }
-            />
-          ),
-          color:
-            elementGroups.focusedNoteId &&
-            notesDisplayInfo[elementGroups.focusedNoteId].color,
-          hasFocusStyling: true,
-        },
-        () => {
-          onNoteBlur(elementGroups.focusedNoteId);
-          // onModalClose();
-        },
-      ]}
+      // itemToFocus={[lastItemBeingFocusedId, lastItemBeingFocusedRef]}
     />
   );
 }
@@ -142,10 +118,10 @@ function mapStateToProps(state) {
     notesDisplayInfo: state.main.notesDisplayInformation,
     notesOrder: state.main.notesOrder,
     selectedNotes: state.main.selectedNotes,
+    focusedNoteId: state.main.focusedNoteId,
   };
 }
 
 export default connect(mapStateToProps, {
   onNoteFocus: focusNote,
-  onNoteBlur: blurNote,
 })(ContainerContainer);

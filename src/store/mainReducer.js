@@ -1,5 +1,5 @@
 import {
-  SET_NOTE_FOCUS,
+  SET_FOCUSED_NOTE,
   SET_NOTE_PIN,
   ADD_NOTE,
   COPY_NOTE,
@@ -322,16 +322,10 @@ const handlers = {
       },
     };
   },
-  [SET_NOTE_FOCUS]: (state, { id, isFocused }) => {
+  [SET_FOCUSED_NOTE]: (state, { focusedId }) => {
     return {
       ...state,
-      notesDisplayInformation: {
-        ...state.notesDisplayInformation,
-        [id]: {
-          ...state.notesDisplayInformation[id],
-          isFocused,
-        },
-      },
+      focusedNoteId: focusedId,
     };
   },
   [SET_NOTE_PIN]: (state, { ids, isPinned }) => {
@@ -352,14 +346,14 @@ const handlers = {
     };
   },
   // ---unnecessary---
-  [SET_NOTE_POPUP]: (state, { id, popup }) => {
+  [SET_NOTE_POPUP]: (state, { id, popupName }) => {
     return {
       ...state,
       notesDisplayInformation: {
         ...state.notesDisplayInformation,
         [id]: {
           ...state.notesDisplayInformation[id],
-          popup,
+          popupName,
         },
       },
     };
@@ -459,13 +453,13 @@ const normalizedInitialState = {
       editingDate: new Date(2020, 6, 1, 1, 12),
     },
   },
+  focusedNoteId: null,
   notesDisplayInformation: {
     '000': {
       id: '000',
       color: 'default',
       // isPinned: false,
-      // isFocused: false,
-      // popup: null, // ---unnecessary---
+      // popupName: null, // ---unnecessary---
     },
     111: {
       id: '111',
@@ -489,14 +483,14 @@ export default function mainReducer(state = normalizedInitialState, action) {
   return state;
 }
 
-/* SET_NOTE_FOCUS
+/* SET_FOCUSED_NOTE
  * id: actual id only
  */
 export function focusNote(id) {
-  return { type: SET_NOTE_FOCUS, id, isFocused: true };
+  return { type: SET_FOCUSED_NOTE, focusedId: id };
 }
-export function blurNote(id) {
-  return { type: SET_NOTE_FOCUS, id, isFocused: false };
+export function blurNote() {
+  return { type: SET_FOCUSED_NOTE, focusedId: null };
 }
 
 /* SET_NOTE_PIN
@@ -587,8 +581,8 @@ export function listNoteToText(id) {
 /* ---unnecessary--- SET_NOTE_POPUP
  * id: actual id only
  */
-export function setNotePopup(id, popup = null) {
-  return { type: SET_NOTE_POPUP, id, popup };
+export function setNotePopup(id, popupName = null) {
+  return { type: SET_NOTE_POPUP, id, popupName };
 }
 
 /* SET_NOTE_COLOR
