@@ -1,37 +1,12 @@
 import React from 'react';
 
-// temporary dirty import
-/* eslint-disable import/no-unresolved */
-/* eslint-enable import/no-unresolved */
-
-import cn from 'classnames';
 import style from './Container-cfg.module.scss';
 
-function getContainerItems(elements, [itemToFocusId, itemToFocusRef]) {
+function getContainerItems(elements) {
   return elements.map((element) => {
     return (
       // eslint-disable-next-line jsx-a11y/no-static-element-interactions
-      <div
-        className={cn(
-          style.container__item,
-          {
-            [style.container__item_focused]: element.hasFocusStyling,
-          },
-          {
-            [style.container__item_selected]: element.isSelected,
-          },
-          {
-            [style[`container__item_style-${element.color}`]]: element.color,
-          }
-        )}
-        onFocus={element.onFocus}
-        // onBlur={element.onItemBlur}
-        onKeyDown={element.onKeyDown}
-        // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-        tabIndex={element.isFocusable ? 0 : -1}
-        ref={element.id === itemToFocusId ? itemToFocusRef : null}
-        key={element.id}
-      >
+      <div className={style.container__item} key={element.id}>
         {element.node}
       </div>
     );
@@ -40,16 +15,16 @@ function getContainerItems(elements, [itemToFocusId, itemToFocusRef]) {
 
 // КОМПОНЕНТ КОНТЕЙНЕРА / CONTAINER
 // *
-export default function Container({ elementGroups = [], itemToFocus }) {
+export default function Container({ elementGroups = [] }) {
   const groups = elementGroups.map((group) => {
     if (group.map) {
       if (!group || !group.length) return null;
       // anonymous group
-      return getContainerItems(group, itemToFocus);
+      return getContainerItems(group);
     }
     if (!group.elements || !group.elements.length) return null;
     // named group
-    return getContainerItems(group.elements, itemToFocus);
+    return getContainerItems(group.elements);
   });
 
   return (
