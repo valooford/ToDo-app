@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
 /* eslint-disable import/no-unresolved */
 import { useEffectOnMouseDownOutside } from '@/utils';
 
@@ -331,7 +330,7 @@ function NoteContainer({
     </Note>
   );
 
-  if (isFocused) {
+  if (isFocused && !isAddNote) {
     return (
       <>
         <div>FILLER FILLER FILLER FILLER FILLER</div>
@@ -358,31 +357,20 @@ function mapStateToProps(state, { id }) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    onNoteBlur(index) {
-      dispatch(blurNote(index));
-    },
-  };
-}
-
-export default compose(
-  connect(mapStateToProps, mapDispatchToProps),
-  connect(null, {
-    onNoteFocus: focusNote,
-    onNotePin: pinNote,
-    onNoteUnpin: unpinNote,
-    onNoteAdd: addNewNote,
-    onHeaderChange: updateNoteHeader,
-    onTextFieldChange: updateNoteText,
-    onListItemAdd: addNoteListItem,
-    onListItemChange: updateNoteListItem,
-    onListItemRemove: removeNoteListItem,
-    onListItemCheck: checkNoteListItem,
-    onListItemUncheck: uncheckNoteListItem,
-    setPopup: setNotePopup,
-    onNoteSelection: selectNote,
-    onCancelNoteSelection: cancelNoteSelection,
-  }),
-  React.memo
-)(NoteContainer);
+export default connect(mapStateToProps, {
+  onNoteFocus: focusNote,
+  onNoteBlur: blurNote,
+  onNotePin: pinNote,
+  onNoteUnpin: unpinNote,
+  onNoteAdd: addNewNote,
+  onHeaderChange: updateNoteHeader,
+  onTextFieldChange: updateNoteText,
+  onListItemAdd: addNoteListItem,
+  onListItemChange: updateNoteListItem,
+  onListItemRemove: removeNoteListItem,
+  onListItemCheck: checkNoteListItem,
+  onListItemUncheck: uncheckNoteListItem,
+  setPopup: setNotePopup,
+  onNoteSelection: selectNote,
+  onCancelNoteSelection: cancelNoteSelection,
+})(NoteContainer);

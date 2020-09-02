@@ -12,8 +12,7 @@
     position: relative;
     box-sizing: border-box;
     max-width: 600px;
-    margin: 0.5 * $base-unit auto 0;
-    // margin-top: 0.5 * $base-unit;
+    margin: 0 auto;
     padding: $base-unit $base-unit 0.5 * $base-unit;
     background-color: $background-color;
     border: 1px solid $border-color;
@@ -34,7 +33,8 @@
 
     &:hover,
     &_interacting,
-    &_focused {
+    &_focused,
+    &-add {
       box-shadow: (
         0 1px 5px rgba(0, 0, 0, 0.133),
         inset 0 -1px 2px rgba(0, 0, 0, 0.266)
@@ -52,12 +52,12 @@
     &__check {
       position: absolute;
       top: 3px + -$no-padding-icon-size / 2;
-      left: 3px + -($base-unit + $no-padding-icon-size / 2);
+      left: 3px + -($no-padding-icon-size / 2);
     }
     &__cornerButtons {
       position: absolute;
       top: 0.5 * $base-unit;
-      right: 0;
+      right: $base-unit;
       margin-bottom: 0;
     }
     &__header {
@@ -131,6 +131,32 @@
     }
     & &__info {
       margin-bottom: $base-unit;
+    }
+  }
+
+  .#{$class-name}-add {
+    width: 100%;
+    padding-top: 0;
+    padding-bottom: 0;
+    line-height: 3 * $base-unit;
+    cursor: text;
+
+    &__input {
+      height: 3 * $base-unit;
+      margin: 0;
+      background-color: transparent;
+      font: inherit;
+      border: none;
+      &:focus {
+        border: none;
+        outline: none;
+      }
+    }
+    &__buttons {
+      float: right;
+      > * {
+        margin-left: 5px;
+      }
     }
   }
 }

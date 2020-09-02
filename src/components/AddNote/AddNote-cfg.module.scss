@@ -1,7 +1,0 @@
-@import 'AddNote';
-@import '@styles/variables';
-
-@include addNoteStylesheet(
-  $class-name: $addNoteClassName,
-  $base-unit: $base-unit
-);

@@ -13,7 +13,7 @@ import style from './Note-cfg.module.scss';
 export { style as listItemStyle } from '@components/ListItem/ListItem';
 export { style };
 
-function Note({
+export default function Note({
   noteData: {
     headerText,
     text,
@@ -302,5 +302,3 @@ function Note({
   );
   return note;
 }
-
-export default React.memo(Note);

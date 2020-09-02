@@ -63,7 +63,7 @@ const handlers = {
   [COPY_NOTE]: (state, { add, ids }) => {
     const newNoteId = Date.now();
     // first note is used for adding
-    if (add === state.notesOrder[0]) {
+    if (add) {
       const note = state.notesData[state.notesOrder[0]];
       // no headerText and no text/items or items array is empty
       if (!note.headerText && !note.text && (!note.items || !note.items[0])) {
@@ -323,10 +323,16 @@ const handlers = {
     };
   },
   [SET_FOCUSED_NOTE]: (state, { focusedId }) => {
-    return {
+    const newState = {
       ...state,
       focusedNoteId: focusedId,
     };
+    if (focusedId === state.notesOrder[0]) {
+      const date = new Date();
+      newState.notesData[focusedId].creationDate = date;
+      newState.notesData[focusedId].editingDate = date;
+    }
+    return newState;
   },
   [SET_NOTE_PIN]: (state, { ids, isPinned }) => {
     const pinningNotes = ids.reduce((notesDisplayInformation, id) => {
