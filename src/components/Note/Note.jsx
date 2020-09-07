@@ -4,14 +4,11 @@ import cn from 'classnames';
 import Button from '@components/Button/Button';
 import IconButton from '@components/IconButton/IconButton';
 import Textarea from '@components/Textarea/Textarea';
-import CreationTime from '@components/CreationTime/CreationTime';
-import ListItem from '@components/ListItem/ListItem';
 /* eslint-enable import/no-unresolved */
+import ListItem from './components/ListItem/ListItem';
+import CreationTime from './components/CreationTime/CreationTime';
+// ...add some tag/reminder general-purpose component
 import style from './Note-cfg.module.scss';
-
-// eslint-disable-next-line import/no-unresolved
-export { style as listItemStyle } from '@components/ListItem/ListItem';
-export { style };
 
 export default function Note({
   noteData: {
@@ -19,16 +16,14 @@ export default function Note({
     text,
     items,
     markedItems,
-    // isFocused,
     isPinned,
     creationDate,
     editingDate,
   },
-  popup = {},
   eventHandlers: {
     onClick,
     onMouseDown,
-    onClose,
+    onClose, // on close button click / pressing Esc
     onSelection,
     onPin,
     onHeaderChange,
@@ -43,47 +38,13 @@ export default function Note({
     onColorsButtonMouseLeave,
     onReminderButtonClick,
   },
-  children,
   refs: { moreButtonRef, colorsButtonRef, reminderButtonRef } = {},
-  // focusInfo = {},
-  // isSelected,
+
+  // ---replace---
+  children, // replace with tag/reminder component data
+  // ---remove---
+  popup = {}, // create global Popup state and remove this
 }) {
-  // const fieldToFocusRef = useRef(null);
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     if (!fieldToFocusRef.current) return;
-  //     fieldToFocusRef.current.focus();
-  //     const caretPos = focusInfo.caret != null ? focusInfo.caret : 9999;
-  //     fieldToFocusRef.current.setSelectionRange(caretPos, caretPos);
-  //   }, 0);
-  // }, [focusInfo.fieldName, focusInfo.itemIndex]);
-  // const { fieldName, itemIndex } = focusInfo;
-  // const isHeaderToFocus = fieldName === 'header';
-  // const isTextfieldToFocus = fieldName === 'textfield';
-  // const isAddListItemToFocus = fieldName === 'add-list-item';
-  // const isUnmarkedListItemToFocus = fieldName === 'unmarked-list-item';
-  // const isMarkedListItemToFocus = fieldName === 'marked-list-item';
-
-  // const noteRef = useRef(null);
-  // const [isInteracting, setIsInteracting] = useState(isSelected);
-  // // is any focused element inside this note
-  // const [isFocusing, setIsFocusing] = useState(false);
-  // useEffect(() => {
-  //   if (!noteRef.current) return;
-  //   noteRef.current.addEventListener('focusin', () => {
-  //     setIsFocusing(true);
-  //   });
-  //   noteRef.current.addEventListener('focusout', () => {
-  //     setIsFocusing(false);
-  //   });
-  // }, [noteRef.current]);
-  // useEffect(() => {
-  //   setIsInteracting(
-  //     // isSelected || isFocusing || Object.values(popup).filter((v) => v).length
-  //     isSelected || isFocusing || Object.keys(popup).filter((v) => v).length
-  //   );
-  // }, [isSelected, isFocusing]);
-
   const buttons = [
     {
       iconSymbol: '\uf0f3',
@@ -139,7 +100,8 @@ export default function Note({
       disabled: true,
     },
   ]
-    .filter((params) => !params.disabled) // add notes change history
+    // +
+    .filter((params) => !params.disabled) // + add notes change history
     .map((params) => (
       <span key={params.titleText}>
         <IconButton
@@ -155,16 +117,10 @@ export default function Note({
         {params.append}
       </span>
     ));
-  const note = (
+  return (
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
     <form
-      className={cn(
-        style.note,
-        { [style.note_focused]: onClose }
-        // {
-        //   [style.note_interacting]: isInteracting,
-        // }
-      )}
+      className={cn(style.note, { [style.note_focused]: onClose })}
       onSubmit={(e) => e.preventDefault()}
       onClick={onClick}
       onMouseDown={onMouseDown}
@@ -174,7 +130,6 @@ export default function Note({
           onClose();
         }
       }}
-      // ref={noteRef}
     >
       {onSelection && (
         <div className={style.note__check}>
@@ -187,12 +142,14 @@ export default function Note({
         </div>
       )}
       <div className={style.note__cornerButtons}>
-        <IconButton
-          iconSymbol={isPinned ? '\ue801' : '\ue812'}
-          titleText={isPinned ? 'Открепить заметку' : 'Закрепить заметку'}
-          modificators="icon-button_smaller"
-          onClick={onPin}
-        />
+        {onPin && (
+          <IconButton
+            iconSymbol={isPinned ? '\ue801' : '\ue812'}
+            titleText={isPinned ? 'Открепить заметку' : 'Закрепить заметку'}
+            modificators="icon-button_smaller"
+            onClick={onPin}
+          />
+        )}
       </div>
       {(onHeaderChange || headerText !== '') && (
         <input
@@ -200,10 +157,11 @@ export default function Note({
           type="text"
           placeholder="Введите заголовок"
           value={headerText}
-          onChange={onHeaderChange}
+          onChange={({ target: { value } }) => {
+            onHeaderChange(value);
+          }}
           onMouseUp={onHeaderFocus}
           tabIndex={onHeaderChange ? 0 : -1}
-          // ref={isHeaderToFocus ? fieldToFocusRef : null}
         />
       )}
       {text != null && (
@@ -211,10 +169,11 @@ export default function Note({
           <Textarea
             placeholder="Заметка..."
             value={text}
-            onChange={onTextFieldChange}
+            onChange={({ target: { value } }) => {
+              onTextFieldChange(value);
+            }}
             onMouseUp={onTextFieldFocus}
             tabIndex={onTextFieldChange ? 0 : -1}
-            // ref={isTextfieldToFocus ? fieldToFocusRef : null}
           />
         </div>
       )}
@@ -233,19 +192,17 @@ export default function Note({
                   listItemMouseUpHandlerCreator(false, i)
                 }
                 key={item.id}
-                // ref={
-                //   isUnmarkedListItemToFocus && i === itemIndex
-                //     ? fieldToFocusRef
-                //     : null
-                // }
               />
             ))}
             {onListItemAdd && (
               <ListItem
                 isAddItem
-                onChange={onListItemAdd}
+                onChange={({ target: { value } }) => {
+                  if (value !== '') {
+                    onListItemAdd(value);
+                  }
+                }}
                 key="add-list-item"
-                // ref={isAddListItemToFocus ? fieldToFocusRef : null}
               />
             )}
           </ul>
@@ -268,11 +225,6 @@ export default function Note({
                     listItemMouseUpHandlerCreator(true, i)
                   }
                   key={item.id}
-                  // ref={
-                  //   isMarkedListItemToFocus && i === itemIndex
-                  //     ? fieldToFocusRef
-                  //     : null
-                  // }
                 />
               ))}
             </ul>
@@ -300,5 +252,4 @@ export default function Note({
       </div>
     </form>
   );
-  return note;
 }

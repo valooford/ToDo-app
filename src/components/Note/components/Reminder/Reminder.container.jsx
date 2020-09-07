@@ -2,14 +2,13 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 /* eslint-disable import/no-unresolved */
-import Reminder from '@components/Reminder/Reminder';
-
 import { setNotePopup as setNotePopupAC } from '@store/mainReducer';
 import {
   removeReminder as removeReminderAC,
   getReminderById,
 } from '@store/notificationReducer';
 /* eslint-enable import/no-unresolved */
+import Reminder from './Reminder';
 
 function ReminderContainer({ id, reminder, setNotePopup, removeReminder }) {
   return reminder ? (

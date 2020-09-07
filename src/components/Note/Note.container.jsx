@@ -3,11 +3,10 @@ import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
 import { useEffectOnMouseDownOutside } from '@/utils';
 
-import Note, { style, listItemStyle } from '@components/Note/Note';
+import Note from '@components/Note/Note';
 import PopupMenu from '@components/PopupMenu/PopupMenu.container';
 import PopupColors from '@components/PopupColors/PopupColors.container';
 import PopupReminder from '@components/PopupReminder/PopupReminder.container';
-import Reminder from '@components/Reminder/Reminder.container';
 import Modal from '@components/Modal/Modal.container';
 
 import {
@@ -27,7 +26,12 @@ import {
   selectNote,
   cancelNoteSelection,
 } from '@store/mainReducer';
+import { bindActionCreators } from 'redux';
 /* eslint-enable import/no-unresolved */
+import style from './Note-cfg.module.scss';
+import listItemStyle from './components/ListItem/ListItem-cfg.module.scss';
+// ---replace--- insert in Note as tag/reminder general-purpose component
+import Reminder from './components/Reminder/Reminder.container';
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ NOTE
 // *
@@ -53,7 +57,10 @@ function NoteContainer({
   onListItemRemove,
   onListItemCheck,
   onListItemUncheck,
-  setPopup,
+  clearPopup,
+  setMenuPopup,
+  setColorsPopup,
+  setReminderPopup,
   onNoteSelection,
   onCancelNoteSelection,
 }) {
@@ -100,20 +107,20 @@ function NoteContainer({
         const itemWithHandlers = {
           ...item,
           onChange({ target: { value: itemText } }) {
-            onListItemChange(id, itemId, itemText);
+            onListItemChange(itemId, itemText);
           },
           onRemove() {
-            onListItemRemove(id, itemId);
+            onListItemRemove(itemId);
           },
         };
         if (item.isMarked) {
           itemWithHandlers.onCheck = () => {
-            onListItemUncheck(id, item.id);
+            onListItemUncheck(item.id);
           };
           itemsGroups.marked.push(itemWithHandlers);
         } else {
           itemWithHandlers.onCheck = () => {
-            onListItemCheck(id, item.id);
+            onListItemCheck(item.id);
           };
           itemsGroups.unmarked.push(itemWithHandlers);
         }
@@ -141,14 +148,7 @@ function NoteContainer({
             itemsWithHandlersGroups && !!itemsWithHandlersGroups.marked.length
           }
           callerRef={moreButtonRef}
-          handleClose={
-            (/* isSilent */) => {
-              setPopup(id, null);
-              // if (!isSilent) {
-              //   setHavePopupBeenClosed(true);
-              // }
-            }
-          }
+          handleClose={clearPopup}
         />
       );
       break;
@@ -158,14 +158,7 @@ function NoteContainer({
           id={id}
           callerRef={colorsButtonRef}
           itemToFocusRef={popupColorsItemToFocusRef}
-          handleClose={
-            (/* isSilent */) => {
-              setPopup(id, null);
-              // if (!isSilent) {
-              //   setHavePopupBeenClosed(true);
-              // }
-            }
-          }
+          handleClose={clearPopup}
           onHover={() => {
             clearTimeout(colorsButtonMouseLeaveTimerId);
           }}
@@ -177,14 +170,7 @@ function NoteContainer({
         <PopupReminder
           index={id}
           callerRef={reminderButtonRef}
-          handleClose={
-            (/* isSilent */) => {
-              setPopup(id, null);
-              // if (!isSilent) {
-              //   setHavePopupBeenClosed(true);
-              // }
-            }
-          }
+          handleClose={clearPopup}
         />
       );
       break;
@@ -194,20 +180,14 @@ function NoteContainer({
 
   const eventHandlers = {
     onMouseDown,
-    onPin: isPinned
-      ? () => {
-          onNoteUnpin(id);
-        }
-      : () => {
-          onNotePin(id);
-        },
+    onPin: isPinned ? onNoteUnpin : onNotePin,
     onMoreButtonClick: () => {
       clearTimeout(colorsButtonMouseLeaveTimerId);
-      setPopup(id, 'menu');
+      setMenuPopup();
     },
     onColorsButtonClick: () => {
       clearTimeout(colorsButtonMouseLeaveTimerId);
-      setPopup(id, 'colors');
+      setColorsPopup();
       setTimeout(() => {
         popupColorsItemToFocusRef.current.focus();
       }, 0);
@@ -216,20 +196,20 @@ function NoteContainer({
       popupName === null || popupName === 'colors'
         ? () => {
             clearTimeout(colorsButtonMouseLeaveTimerId);
-            setPopup(id, 'colors');
+            setColorsPopup();
           }
         : null,
     onColorsButtonMouseLeave:
       popupName === 'colors'
         ? () => {
             colorsButtonMouseLeaveTimerId = setTimeout(() => {
-              setPopup(id, null);
+              clearPopup();
             }, 1000);
           }
         : null,
     onReminderButtonClick: () => {
       clearTimeout(colorsButtonMouseLeaveTimerId);
-      setPopup(id, 'reminder');
+      setReminderPopup();
     },
   };
   // a click handler focusing the note
@@ -243,7 +223,7 @@ function NoteContainer({
         listItemStyle.listItem__checkbox,
       ].map((s) => `.${s}`);
       if (nonFocusingElementsSelectors.every((s) => !target.closest(s))) {
-        onNoteFocus(id);
+        onNoteFocus();
       }
     };
   }
@@ -258,26 +238,14 @@ function NoteContainer({
         onNoteAdd();
       }
     };
-    eventHandlers.onHeaderChange = ({ target: { value: headerText } }) => {
-      onHeaderChange(id, headerText);
-    };
-    eventHandlers.onTextFieldChange = ({ target: { value: text } }) => {
-      onTextFieldChange(id, text);
-    };
-    eventHandlers.onListItemAdd = ({ target: { value: itemText } }) => {
-      if (itemText !== '') {
-        onListItemAdd(id, itemText);
-      }
-    };
+    eventHandlers.onHeaderChange = onHeaderChange;
+    eventHandlers.onTextFieldChange = onTextFieldChange;
+    eventHandlers.onListItemAdd = onListItemAdd;
   } else {
     // !isFocused
     eventHandlers.onSelection = isSelected
-      ? () => {
-          onCancelNoteSelection(id);
-        }
-      : () => {
-          onNoteSelection(id);
-        };
+      ? onCancelNoteSelection
+      : onNoteSelection;
     eventHandlers.onHeaderFocus = ({ target }) => {
       setNoteFocusInfo({
         fieldName: 'header',
@@ -334,13 +302,7 @@ function NoteContainer({
     return (
       <>
         <div>FILLER FILLER FILLER FILLER FILLER</div>
-        <Modal
-          onClose={() => {
-            onNoteBlur();
-          }}
-        >
-          {noteElem}
-        </Modal>
+        <Modal onClose={onNoteBlur}>{noteElem}</Modal>
       </>
     );
   }
@@ -357,20 +319,31 @@ function mapStateToProps(state, { id }) {
   };
 }
 
-export default connect(mapStateToProps, {
-  onNoteFocus: focusNote,
-  onNoteBlur: blurNote,
-  onNotePin: pinNote,
-  onNoteUnpin: unpinNote,
-  onNoteAdd: addNewNote,
-  onHeaderChange: updateNoteHeader,
-  onTextFieldChange: updateNoteText,
-  onListItemAdd: addNoteListItem,
-  onListItemChange: updateNoteListItem,
-  onListItemRemove: removeNoteListItem,
-  onListItemCheck: checkNoteListItem,
-  onListItemUncheck: uncheckNoteListItem,
-  setPopup: setNotePopup,
-  onNoteSelection: selectNote,
-  onCancelNoteSelection: cancelNoteSelection,
-})(NoteContainer);
+function mapDispatchToProps(dispatch, { id }) {
+  return bindActionCreators(
+    {
+      onNoteFocus: () => focusNote(id),
+      onNoteBlur: blurNote,
+      onNotePin: () => pinNote(id),
+      onNoteUnpin: () => unpinNote(id),
+      onNoteAdd: addNewNote,
+      onHeaderChange: (headerText) => updateNoteHeader(id, headerText),
+      onTextFieldChange: (text) => updateNoteText(id, text),
+      onListItemAdd: (itemText) => addNoteListItem(id, itemText),
+      onListItemChange: (itemId, itemText) =>
+        updateNoteListItem(id, itemId, itemText),
+      onListItemRemove: (itemId) => removeNoteListItem(id, itemId),
+      onListItemCheck: (itemId) => checkNoteListItem(id, itemId),
+      onListItemUncheck: (itemId) => uncheckNoteListItem(id, itemId),
+      clearPopup: () => setNotePopup(id, null),
+      setMenuPopup: () => setNotePopup(id, 'menu'),
+      setColorsPopup: () => setNotePopup(id, 'colors'),
+      setReminderPopup: () => setNotePopup(id, 'reminder'),
+      onNoteSelection: () => selectNote(id),
+      onCancelNoteSelection: () => cancelNoteSelection(id),
+    },
+    dispatch
+  );
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(NoteContainer);
