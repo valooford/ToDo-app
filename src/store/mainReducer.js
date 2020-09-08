@@ -44,12 +44,6 @@ const handlers = {
             : null,
           creationDate: new Date(),
           editingDate: new Date(),
-        },
-      },
-      notesDisplayInformation: {
-        ...state.notesDisplayInformation,
-        [newNoteId]: {
-          id: newNoteId,
           color: 'default',
         },
       },
@@ -81,12 +75,6 @@ const handlers = {
             popup: null,
             creationDate: new Date(),
             editingDate: new Date(),
-          },
-        },
-        notesDisplayInformation: {
-          ...state.notesDisplayInformation,
-          [newNoteId]: {
-            id: newNoteId,
             color: 'default',
           },
         },
@@ -106,26 +94,19 @@ const handlers = {
           items: note.items,
           creationDate: new Date(),
           editingDate: new Date(),
-        };
-        copies.notesDisplayInformation[noteId] = {
-          id: noteId,
           color: note.color,
         };
         /* eslint-enable no-param-reassign */
         copies.notesOrder.push(noteId);
         return copies;
       },
-      { notesData: {}, notesDisplayInformation: {}, notesOrder: [] }
+      { notesData: {}, notesOrder: [] }
     );
     return {
       ...state,
       notesData: {
         ...state.notesData,
         ...noteCopies.notesData,
-      },
-      notesDisplayInformation: {
-        ...state.notesDisplayInformation,
-        ...noteCopies.notesDisplayInformation,
       },
       notesOrder: [
         state.notesOrder[0],
@@ -163,15 +144,12 @@ const handlers = {
   },
   [REMOVE_NOTE]: (state, { ids }) => {
     const notesData = { ...state.notesData };
-    const notesDisplayInformation = { ...state.notesDisplayInformation };
     ids.forEach((id) => {
       delete notesData[id];
-      delete notesDisplayInformation[id];
     });
     return {
       ...state,
       notesData,
-      notesDisplayInformation,
       notesOrder: state.notesOrder.filter((id) => !notesData[id]),
     };
   },
@@ -335,48 +313,42 @@ const handlers = {
     return newState;
   },
   [SET_NOTE_PIN]: (state, { ids, isPinned }) => {
-    const pinningNotes = ids.reduce((notesDisplayInformation, id) => {
-      // eslint-disable-next-line no-param-reassign
-      notesDisplayInformation[id] = {
-        ...state.notesDisplayInformation[id],
-        isPinned,
-      };
-      return notesDisplayInformation;
-    }, {});
-    return {
-      ...state,
-      notesDisplayInformation: {
-        ...state.notesDisplayInformation,
-        ...pinningNotes,
-      },
-    };
+    const pinnedNotes = { ...state.pinnedNotes };
+    ids.forEach((id) => {
+      if (isPinned) {
+        pinnedNotes[id] = true;
+      } else {
+        delete pinnedNotes[id];
+      }
+    });
+    return { ...state, pinnedNotes };
   },
   // ---unnecessary---
   [SET_NOTE_POPUP]: (state, { id, popupName }) => {
     return {
       ...state,
-      notesDisplayInformation: {
-        ...state.notesDisplayInformation,
+      notesData: {
+        ...state.notesData,
         [id]: {
-          ...state.notesDisplayInformation[id],
+          ...state.notesData[id],
           popupName,
         },
       },
     };
   },
   [SET_NOTE_COLOR]: (state, { ids, color }) => {
-    const coloredNotes = ids.reduce((notesDisplayInformation, id) => {
+    const coloredNotes = ids.reduce((notesData, id) => {
       // eslint-disable-next-line no-param-reassign
-      notesDisplayInformation[id] = {
-        ...state.notesDisplayInformation[id],
+      notesData[id] = {
+        ...state.notesData[id],
         color,
       };
-      return notesDisplayInformation;
+      return notesData;
     }, {});
     return {
       ...state,
-      notesDisplayInformation: {
-        ...state.notesDisplayInformation,
+      notesData: {
+        ...state.notesData,
         ...coloredNotes,
       },
     };
@@ -418,6 +390,8 @@ const normalizedInitialState = {
       type: 'default',
       headerText: '',
       text: '',
+      color: 'default',
+      // popupName: null, // ---unnecessary---
     },
     111: {
       id: '111',
@@ -426,6 +400,7 @@ const normalizedInitialState = {
       text: 'Привет\nПока',
       creationDate: new Date(2020, 5, 29, 10),
       editingDate: new Date(2020, 6, 1, 1, 12),
+      color: 'default',
     },
     222: {
       id: '222',
@@ -457,28 +432,17 @@ const normalizedInitialState = {
       itemsOrder: ['222-1', '222-2', '222-3'],
       creationDate: new Date(2020, 5, 30, 10),
       editingDate: new Date(2020, 6, 1, 1, 12),
-    },
-  },
-  focusedNoteId: null,
-  notesDisplayInformation: {
-    '000': {
-      id: '000',
-      color: 'default',
-      // isPinned: false,
-      // popupName: null, // ---unnecessary---
-    },
-    111: {
-      id: '111',
-      color: 'default',
-    },
-    222: {
-      id: '222',
       color: 'blue',
     },
   },
+  focusedNoteId: null,
   notesOrder: ['000', '111', '222'],
   selectedNotes: {
     // '111': true,
+    length: 0,
+  },
+  pinnedNotes: {
+    // '222': true,
     length: 0,
   },
   removedNotes: [],

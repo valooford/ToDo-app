@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { /* useState, useEffect, */ useRef } from 'react';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
 import { useEffectOnMouseDownOutside } from '@/utils';
@@ -38,12 +38,12 @@ import Reminder from './components/Reminder/Reminder.container';
 function NoteContainer({
   id,
   isAddNote,
-  focusInfo,
+  // focusInfo,
   isSelected,
-  onFocusInfoChange,
+  isPinned,
+  // onFocusInfoChange,
   note,
   isFocused,
-  displayInfo: { isPinned, popupName },
   onClose,
   onNoteFocus,
   onNoteBlur,
@@ -64,25 +64,17 @@ function NoteContainer({
   onNoteSelection,
   onCancelNoteSelection,
 }) {
-  // // havePopupBeenClosed used to set the focus after popup's actions
-  // const [havePopupBeenClosed, setHavePopupBeenClosed] = useState(false);
-  // useEffect(() => {
-  //   if (!havePopupBeenClosed) {
-  //     setHavePopupBeenClosed(false);
+  // const [noteFocusInfo, setNoteFocusInfo] = useState(
+  //   focusInfo || {
+  //     fieldName: note.type === 'list' ? 'add-list-item' : 'textfield',
   //   }
-  // }, [havePopupBeenClosed]);
-
-  const [noteFocusInfo, setNoteFocusInfo] = useState(
-    focusInfo || {
-      fieldName: note.type === 'list' ? 'add-list-item' : 'textfield',
-    }
-  );
+  // );
   // informing about a new focus info
-  useEffect(() => {
-    if (noteFocusInfo && noteFocusInfo.fieldName && onFocusInfoChange) {
-      onFocusInfoChange(noteFocusInfo);
-    }
-  }, [noteFocusInfo]);
+  // useEffect(() => {
+  //   if (noteFocusInfo && noteFocusInfo.fieldName && onFocusInfoChange) {
+  //     onFocusInfoChange(noteFocusInfo);
+  //   }
+  // }, [noteFocusInfo]);
 
   // detecting click outside focused note
   const setIsTouched = useEffectOnMouseDownOutside(() => {
@@ -98,7 +90,7 @@ function NoteContainer({
   };
 
   // separation into marked and unmarked list items
-  const { items, itemsOrder } = note;
+  const { items, itemsOrder, popupName } = note;
   let itemsWithHandlersGroups;
   if (itemsOrder) {
     itemsWithHandlersGroups = itemsOrder.reduce(
@@ -138,6 +130,7 @@ function NoteContainer({
 
   let colorsButtonMouseLeaveTimerId; // a PopupColors disappearance timer id
 
+  // ---replace--- with 'Popup' components receiving refs as props
   const popup = {};
   switch (popupName) {
     case 'menu':
@@ -246,27 +239,27 @@ function NoteContainer({
     eventHandlers.onSelection = isSelected
       ? onCancelNoteSelection
       : onNoteSelection;
-    eventHandlers.onHeaderFocus = ({ target }) => {
-      setNoteFocusInfo({
-        fieldName: 'header',
-        caret: target.selectionStart,
-      });
-    };
-    eventHandlers.onTextFieldFocus = ({ target }) => {
-      setNoteFocusInfo({
-        fieldName: 'textfield',
-        caret: target.selectionStart,
-      });
-    };
-    eventHandlers.listItemMouseUpHandlerCreator = (isMarked, itemIndex) => ({
-      target,
-    }) => {
-      setNoteFocusInfo({
-        fieldName: isMarked ? 'marked-list-item' : 'unmarked-list-item',
-        itemIndex,
-        caret: target.selectionStart,
-      });
-    };
+    // eventHandlers.onHeaderFocus = ({ target }) => {
+    //   setNoteFocusInfo({
+    //     fieldName: 'header',
+    //     caret: target.selectionStart,
+    //   });
+    // };
+    // eventHandlers.onTextFieldFocus = ({ target }) => {
+    //   setNoteFocusInfo({
+    //     fieldName: 'textfield',
+    //     caret: target.selectionStart,
+    //   });
+    // };
+    // eventHandlers.listItemMouseUpHandlerCreator = (isMarked, itemIndex) => ({
+    //   target,
+    // }) => {
+    //   setNoteFocusInfo({
+    //     fieldName: isMarked ? 'marked-list-item' : 'unmarked-list-item',
+    //     itemIndex,
+    //     caret: target.selectionStart,
+    //   });
+    // };
   }
 
   const noteElem = (
@@ -313,9 +306,9 @@ function mapStateToProps(state, { id }) {
   return {
     note: state.main.notesData[id],
     isFocused: id === state.main.focusedNoteId,
-    displayInfo: state.main.notesDisplayInformation[id],
     isAddNote: id === state.main.notesOrder[0],
     isSelected: state.main.selectedNotes[id],
+    isPinned: state.main.pinnedNotes[id],
   };
 }
 

@@ -8,7 +8,7 @@ import Container from './Container';
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ CONTAINER
 // *
-function ContainerContainer({ notesDisplayInfo, notesOrder }) {
+function ContainerContainer({ pinnedNotes, notesOrder }) {
   // FOCUS HANDLING (not finished yet)
   // *
   // // info for saving note focus info to set focus inside modal
@@ -38,7 +38,7 @@ function ContainerContainer({ notesDisplayInfo, notesOrder }) {
         id,
         node: <Note id={id} />,
       };
-      if (notesDisplayInfo[id].isPinned) {
+      if (pinnedNotes[id]) {
         groups.pinned.push(noteElem);
       } else {
         groups.unpinned.push(noteElem);
@@ -65,7 +65,7 @@ function ContainerContainer({ notesDisplayInfo, notesOrder }) {
 
 function mapStateToProps(state) {
   return {
-    notesDisplayInfo: state.main.notesDisplayInformation,
+    pinnedNotes: state.main.pinnedNotes,
     notesOrder: state.main.notesOrder,
   };
 }
