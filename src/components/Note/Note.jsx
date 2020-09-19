@@ -10,41 +10,53 @@ import CreationTime from './components/CreationTime/CreationTime';
 // ...add some tag/reminder general-purpose component
 import style from './Note-cfg.module.scss';
 
-export default function Note({
-  noteData: {
-    headerText,
-    text,
-    items,
-    markedItems,
-    isPinned,
-    creationDate,
-    editingDate,
-  },
-  eventHandlers: {
-    onClick,
-    onMouseDown,
-    onClose, // on close button click / pressing Esc
-    onSelection,
-    onPin,
-    onHeaderChange,
-    onHeaderFocus,
-    onTextFieldChange,
-    onTextFieldFocus,
-    onListItemAdd,
-    listItemMouseUpHandlerCreator,
-    onMoreButtonClick,
-    onColorsButtonClick,
-    onColorsButtonHover,
-    onColorsButtonMouseLeave,
-    onReminderButtonClick,
-  },
-  refs: { moreButtonRef, colorsButtonRef, reminderButtonRef } = {},
+function Note(
+  {
+    noteData: {
+      headerText,
+      text,
+      items,
+      markedItems,
+      isPinned,
+      creationDate,
+      editingDate,
+    },
+    eventHandlers: {
+      onClick,
+      onMouseDown,
+      onKeyDown,
+      onClose, // on close button click / pressing Esc
+      onSelection,
+      onPin,
+      onHeaderChange,
+      onTextFieldChange,
+      onListItemAdd,
+      onMoreButtonClick,
+      onColorsButtonClick,
+      onColorsButtonHover,
+      onColorsButtonMouseLeave,
+      onReminderButtonClick,
 
-  // ---replace---
-  children, // replace with tag/reminder component data
-  // ---remove---
-  popup = {}, // create global Popup state and remove this
-}) {
+      onHeaderFocus,
+      onTextFieldFocus,
+    },
+    refs: {
+      moreButtonRef,
+      colorsButtonRef,
+      reminderButtonRef,
+
+      headerRef,
+      textFieldRef,
+      addListItemRef,
+    } = {},
+
+    // ---replace---
+    children, // replace with tag/reminder component data
+    // ---remove---
+    popup = {}, // create global Popup state and remove this
+  },
+  ref
+) {
   const buttons = [
     {
       iconSymbol: '\uf0f3',
@@ -125,11 +137,15 @@ export default function Note({
       onClick={onClick}
       onMouseDown={onMouseDown}
       onKeyDown={(e) => {
+        if (onKeyDown) onKeyDown(e);
         // Esc
         if (onClose && e.keyCode === 27) {
           onClose();
         }
       }}
+      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
+      tabIndex={0}
+      ref={ref}
     >
       {onSelection && (
         <div className={style.note__check}>
@@ -162,6 +178,7 @@ export default function Note({
           }}
           onMouseUp={onHeaderFocus}
           tabIndex={onHeaderChange ? 0 : -1}
+          ref={headerRef}
         />
       )}
       {text != null && (
@@ -174,24 +191,23 @@ export default function Note({
             }}
             onMouseUp={onTextFieldFocus}
             tabIndex={onTextFieldChange ? 0 : -1}
+            ref={textFieldRef}
           />
         </div>
       )}
       {items && (
         <div className={style.note__listWrapper}>
           <ul className={style.note__list}>
-            {items.map((item, i) => (
+            {items.map((item) => (
               <ListItem
-                isPreview={!listItemMouseUpHandlerCreator}
+                isPreview={item.onFocus}
                 value={item.text}
                 onChange={item.onChange}
                 onRemove={item.onRemove}
                 onCheck={item.onCheck}
-                onMouseUp={
-                  listItemMouseUpHandlerCreator &&
-                  listItemMouseUpHandlerCreator(false, i)
-                }
+                onMouseUp={item.onFocus}
                 key={item.id}
+                ref={item.ref}
               />
             ))}
             {onListItemAdd && (
@@ -203,6 +219,7 @@ export default function Note({
                   }
                 }}
                 key="add-list-item"
+                ref={addListItemRef}
               />
             )}
           </ul>
@@ -212,19 +229,17 @@ export default function Note({
               {`${markedItems.length} отмеченных пунктов`}
             </span>
             <ul className={style.note__list}>
-              {markedItems.map((item, i) => (
+              {markedItems.map((item) => (
                 <ListItem
                   isChecked
-                  isPreview={!listItemMouseUpHandlerCreator}
+                  isPreview={item.onFocus}
                   value={item.text}
                   onChange={item.onChange}
                   onRemove={item.onRemove}
                   onCheck={item.onCheck}
-                  onMouseUp={
-                    listItemMouseUpHandlerCreator &&
-                    listItemMouseUpHandlerCreator(true, i)
-                  }
+                  onMouseUp={item.onFocus}
                   key={item.id}
+                  ref={item.ref}
                 />
               ))}
             </ul>
@@ -253,3 +268,5 @@ export default function Note({
     </form>
   );
 }
+
+export default React.forwardRef(Note);

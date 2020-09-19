@@ -91,7 +91,19 @@ const handlers = {
           type: note.type,
           headerText: note.headerText,
           text: note.text,
-          items: note.items,
+          items:
+            note.items &&
+            Object.keys(note.items).reduce((items, itemId) => {
+              const { text, sub, isMarked } = note.items[itemId];
+              items[itemId] = {
+                id: itemId,
+                text,
+                sub: [...sub],
+                isMarked,
+              };
+              return items;
+            }, {}),
+          itemsOrder: note.itemsOrder && [...note.itemsOrder],
           creationDate: new Date(),
           editingDate: new Date(),
           color: note.color,
@@ -150,7 +162,7 @@ const handlers = {
     return {
       ...state,
       notesData,
-      notesOrder: state.notesOrder.filter((id) => !notesData[id]),
+      notesOrder: state.notesOrder.filter((id) => notesData[id]),
     };
   },
   [ADD_NOTE_LIST_ITEM]: (state, { id, text }) => {
@@ -279,6 +291,7 @@ const handlers = {
         ...state.notesData,
         [id]: {
           ...note,
+          type: 'list',
           items,
           itemsOrder: Object.keys(items),
           editingDate: new Date(),
@@ -294,6 +307,7 @@ const handlers = {
         ...state.notesData,
         [id]: {
           ...note,
+          type: 'default',
           text: itemsOrder.map((itemId) => items[itemId].text).join('\n'),
           editingDate: new Date(),
         },

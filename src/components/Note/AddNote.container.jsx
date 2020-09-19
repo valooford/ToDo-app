@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
 import { focusNote, updateNoteText } from '@store/mainReducer';
@@ -8,14 +8,20 @@ import AddNote from './AddNote';
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ ADD-NOTE
 // *
-function AddNoteContainer({ id, isFocused, onNoteFocus, onInput }) {
+function AddNoteContainer({ id, isFocused, onNoteFocus, onInput, addNoteRef }) {
+  // focusing
+  const inputRef = addNoteRef || React.createRef();
+  useEffect(() => {
+    if (isFocused) return undefined;
+    const timerId = setTimeout(() => {
+      inputRef.current.focus();
+    }, 0);
+    return () => clearTimeout(timerId);
+  }, [isFocused]);
+
   if (isFocused) {
     return <Note id={id} />;
   }
-  const inputRef = useRef(null);
-  useEffect(() => {
-    inputRef.current.focus();
-  }, []);
   return (
     <AddNote
       onClick={() => {

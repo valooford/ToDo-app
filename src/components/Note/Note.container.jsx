@@ -1,4 +1,8 @@
-import React, { /* useState, useEffect, */ useRef } from 'react';
+import React, {
+  /* useState, useEffect, */ useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
 import { useEffectOnMouseDownOutside } from '@/utils';
@@ -38,13 +42,10 @@ import Reminder from './components/Reminder/Reminder.container';
 function NoteContainer({
   id,
   isAddNote,
-  // focusInfo,
   isSelected,
   isPinned,
-  // onFocusInfoChange,
   note,
   isFocused,
-  onClose,
   onNoteFocus,
   onNoteBlur,
   onNotePin,
@@ -63,18 +64,34 @@ function NoteContainer({
   setReminderPopup,
   onNoteSelection,
   onCancelNoteSelection,
+  noteRef = React.createRef(),
+  neighbourRef,
 }) {
-  // const [noteFocusInfo, setNoteFocusInfo] = useState(
-  //   focusInfo || {
-  //     fieldName: note.type === 'list' ? 'add-list-item' : 'textfield',
-  //   }
-  // );
-  // informing about a new focus info
-  // useEffect(() => {
-  //   if (noteFocusInfo && noteFocusInfo.fieldName && onFocusInfoChange) {
-  //     onFocusInfoChange(noteFocusInfo);
-  //   }
-  // }, [noteFocusInfo]);
+  // focusing
+  const { type } = note;
+  const headerRef = useRef(null);
+  const textFieldRef = useRef(null);
+  const listItemRef = useRef(null);
+  const addListItemRef = useRef(null);
+  const defaultFocusInfo = {
+    fieldRef: type === 'list' ? addListItemRef : textFieldRef,
+    caret: 9999,
+  };
+  const [focusInfo, setFocusInfo] = useState(defaultFocusInfo);
+  useEffect(() => {
+    if (isFocused) {
+      const { fieldRef, caret } = focusInfo;
+      const timerId = setTimeout(() => {
+        // setting caret position to the text end
+        fieldRef.current.focus();
+        fieldRef.current.setSelectionRange(caret, caret);
+      }, 0);
+      return () => clearTimeout(timerId);
+    }
+    // not focused
+    setFocusInfo(defaultFocusInfo);
+    return undefined;
+  }, [isFocused]);
 
   // detecting click outside focused note
   const setIsTouched = useEffectOnMouseDownOutside(() => {
@@ -96,7 +113,7 @@ function NoteContainer({
     itemsWithHandlersGroups = itemsOrder.reduce(
       (itemsGroups, itemId) => {
         const item = items[itemId];
-        const itemWithHandlers = {
+        const supplementedItem = {
           ...item,
           onChange({ target: { value: itemText } }) {
             onListItemChange(itemId, itemText);
@@ -104,17 +121,27 @@ function NoteContainer({
           onRemove() {
             onListItemRemove(itemId);
           },
+          ref: itemId === focusInfo.itemId ? listItemRef : null,
         };
+        if (!isFocused) {
+          supplementedItem.onFocus = ({ target }) => {
+            setFocusInfo({
+              fieldRef: listItemRef,
+              itemId,
+              caret: target.selectionStart,
+            });
+          };
+        }
         if (item.isMarked) {
-          itemWithHandlers.onCheck = () => {
+          supplementedItem.onCheck = () => {
             onListItemUncheck(item.id);
           };
-          itemsGroups.marked.push(itemWithHandlers);
+          itemsGroups.marked.push(supplementedItem);
         } else {
-          itemWithHandlers.onCheck = () => {
+          supplementedItem.onCheck = () => {
             onListItemCheck(item.id);
           };
-          itemsGroups.unmarked.push(itemWithHandlers);
+          itemsGroups.unmarked.push(supplementedItem);
         }
         return itemsGroups;
       },
@@ -140,8 +167,14 @@ function NoteContainer({
           hasMarkedItems={
             itemsWithHandlersGroups && !!itemsWithHandlersGroups.marked.length
           }
-          callerRef={moreButtonRef}
-          handleClose={clearPopup}
+          handleClose={() => {
+            clearPopup();
+            moreButtonRef.current.focus();
+          }}
+          onRemove={() => {
+            if (neighbourRef && neighbourRef.current)
+              neighbourRef.current.focus();
+          }}
         />
       );
       break;
@@ -149,9 +182,11 @@ function NoteContainer({
       popup.colors = (
         <PopupColors
           id={id}
-          callerRef={colorsButtonRef}
           itemToFocusRef={popupColorsItemToFocusRef}
-          handleClose={clearPopup}
+          handleClose={() => {
+            clearPopup();
+            colorsButtonRef.current.focus();
+          }}
           onHover={() => {
             clearTimeout(colorsButtonMouseLeaveTimerId);
           }}
@@ -162,14 +197,27 @@ function NoteContainer({
       popup.reminder = (
         <PopupReminder
           index={id}
-          callerRef={reminderButtonRef}
-          handleClose={clearPopup}
+          handleClose={() => {
+            clearPopup();
+            reminderButtonRef.current.focus();
+          }}
         />
       );
       break;
     default:
       break;
   }
+
+  // const noteRef = useRef(null);
+  const onClose = () => {
+    onNoteBlur();
+    if (isAddNote) {
+      onNoteAdd();
+    }
+    setTimeout(() => {
+      if (noteRef.current) noteRef.current.focus();
+    }, 0);
+  };
 
   const eventHandlers = {
     onMouseDown,
@@ -221,45 +269,33 @@ function NoteContainer({
     };
   }
   if (isFocused) {
-    eventHandlers.onClose = () => {
-      if (onClose) {
-        onClose();
-      }
-      onNoteBlur();
-
-      if (isAddNote) {
-        onNoteAdd();
-      }
-    };
+    eventHandlers.onClose = onClose;
     eventHandlers.onHeaderChange = onHeaderChange;
     eventHandlers.onTextFieldChange = onTextFieldChange;
     eventHandlers.onListItemAdd = onListItemAdd;
   } else {
     // !isFocused
+    eventHandlers.onKeyDown = (e) => {
+      // Enter
+      if (e.target === e.currentTarget && e.keyCode === 13) {
+        onNoteFocus();
+      }
+    };
     eventHandlers.onSelection = isSelected
       ? onCancelNoteSelection
       : onNoteSelection;
-    // eventHandlers.onHeaderFocus = ({ target }) => {
-    //   setNoteFocusInfo({
-    //     fieldName: 'header',
-    //     caret: target.selectionStart,
-    //   });
-    // };
-    // eventHandlers.onTextFieldFocus = ({ target }) => {
-    //   setNoteFocusInfo({
-    //     fieldName: 'textfield',
-    //     caret: target.selectionStart,
-    //   });
-    // };
-    // eventHandlers.listItemMouseUpHandlerCreator = (isMarked, itemIndex) => ({
-    //   target,
-    // }) => {
-    //   setNoteFocusInfo({
-    //     fieldName: isMarked ? 'marked-list-item' : 'unmarked-list-item',
-    //     itemIndex,
-    //     caret: target.selectionStart,
-    //   });
-    // };
+    eventHandlers.onHeaderFocus = ({ target }) => {
+      setFocusInfo({
+        fieldRef: headerRef,
+        caret: target.selectionStart,
+      });
+    };
+    eventHandlers.onTextFieldFocus = ({ target }) => {
+      setFocusInfo({
+        fieldRef: textFieldRef,
+        caret: target.selectionStart,
+      });
+    };
   }
 
   const noteElem = (
@@ -276,16 +312,16 @@ function NoteContainer({
       }}
       popup={popup}
       eventHandlers={eventHandlers}
-      refs={{ moreButtonRef, colorsButtonRef, reminderButtonRef }}
-      // focusInfo={
-      //   havePopupBeenClosed
-      //     ? // default focusInfo after popup's actions
-      //       {
-      //         fieldName: note.type === 'list' ? 'add-list-item' : 'textfield',
-      //       }
-      //     : focusInfo
-      // }
-      // isSelected={isSelected}
+      refs={{
+        moreButtonRef,
+        colorsButtonRef,
+        reminderButtonRef,
+
+        headerRef,
+        textFieldRef,
+        addListItemRef,
+      }}
+      ref={noteRef}
     >
       <Reminder id={id} />
     </Note>
@@ -295,7 +331,7 @@ function NoteContainer({
     return (
       <>
         <div>FILLER FILLER FILLER FILLER FILLER</div>
-        <Modal onClose={onNoteBlur}>{noteElem}</Modal>
+        <Modal onClose={onClose}>{noteElem}</Modal>
       </>
     );
   }

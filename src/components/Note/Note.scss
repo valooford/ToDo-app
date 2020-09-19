@@ -25,13 +25,14 @@
 
     cursor: default;
 
-    &__check,
-    &__cornerButtons,
-    &__buttons {
-      opacity: 0;
-    }
+    // &__check,
+    // &__cornerButtons,
+    // &__buttons {
+    //   opacity: 0;
+    // }
 
     &:hover,
+    &:focus,
     &_interacting,
     &_focused,
     &-add {

@@ -101,25 +101,20 @@ function getMenuItems({
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ POPUP-MENU
 // *
 function PopupMenuContainer({
-  // notes,
   noteType,
   noteHeader,
   noteText,
   noteItemsOrder,
   id,
   hasMarkedItems,
-  callerRef,
-  ...props
+  onRemove,
+  onCopy,
+  onUncheckAll,
+  onRemoveChecked,
+  onTextToList,
+  onListToText,
+  handleClose,
 }) {
-  const {
-    handleClose,
-    onRemove,
-    onCopy,
-    onUncheckAll,
-    onRemoveChecked,
-    onTextToList,
-    onListToText,
-  } = props;
   // detecting click inside popupMenu
   const setIsTouched = useEffectOnMouseDownOutside(() => {
     handleClose();
@@ -130,8 +125,7 @@ function PopupMenuContainer({
     if (e.keyCode === 9 || e.keyCode === 27) {
       e.preventDefault();
       e.stopPropagation(); // prevent a focused note from blurring
-      callerRef.current.focus();
-      handleClose(true);
+      handleClose(/* true */); // + handle different situations
     }
   };
   let isFieldsFilled = false;
@@ -176,10 +170,11 @@ function mapStateToProps(state, { id }) {
   };
 }
 
-function mapDispatchToProps(dispatch) {
+function mapDispatchToProps(dispatch, { onRemove }) {
   return {
     onRemove(index) {
       dispatch(removeNote(index));
+      onRemove();
     },
   };
 }

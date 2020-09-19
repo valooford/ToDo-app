@@ -9,43 +9,35 @@ import Container from './Container';
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ CONTAINER
 // *
 function ContainerContainer({ pinnedNotes, notesOrder }) {
-  // FOCUS HANDLING (not finished yet)
-  // *
-  // // info for saving note focus info to set focus inside modal
-  // const [containerFocusInfo, setContainerFocusInfo] = useState({});
-  // // id of the last  container item being focused
-  // const [lastItemBeingFocusedId, setLastItemBeingFocused] = useState(null);
-  // const lastItemBeingFocusedRef = useRef(null);
-  // const onModalClose = () => {
-  //   // clearing focus info
-  //   setContainerFocusInfo((prevFocusInfo) => ({
-  //     ...prevFocusInfo, // saving noteId
-  //     noteFocusInfo: {},
-  //   }));
-  //   lastItemBeingFocusedRef.current.focus();
-  // };
-
   // ELEMENT GROUPS GATHERING
   // *
   const elementGroups = notesOrder.reduce(
     (groups, id) => {
+      /* eslint-disable no-param-reassign */
       if (id === notesOrder[0]) {
         // first note is used for adding
-        groups.addition.push({ id, node: <AddNote /> });
+        const addNoteRef = React.createRef();
+        groups.addition.push({ id, node: <AddNote addNoteRef={addNoteRef} /> });
+        groups.neighbourRef = addNoteRef;
         return groups;
       }
+      const noteRef = React.createRef();
       const noteElem = {
         id,
-        node: <Note id={id} />,
+        node: (
+          <Note id={id} neighbourRef={groups.neighbourRef} noteRef={noteRef} />
+        ),
       };
+      groups.neighbourRef = noteRef;
       if (pinnedNotes[id]) {
         groups.pinned.push(noteElem);
       } else {
         groups.unpinned.push(noteElem);
       }
       return groups;
+      /* eslint-enable no-param-reassign */
     },
-    { addition: [], pinned: [], unpinned: [] }
+    { addition: [], pinned: [], unpinned: [], neighbourRef: null }
   );
   elementGroups.addition.key = 'addition'; // adding key for correct rerender
   return (
