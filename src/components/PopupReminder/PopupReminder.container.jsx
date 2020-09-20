@@ -1,7 +1,8 @@
 import React from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
-import { useEffectOnMouseDownOutside } from '@/utils';
+import { useEffectOnMouseDownOutside, associativeArrToArr } from '@/utils';
 
 import PopupReminder from '@components/PopupReminder/PopupReminder';
 
@@ -18,32 +19,27 @@ import {
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ POPUP-REMINDER
 // *
 function PopupReminderContainer({
-  id,
-  callerRef,
   handleClose,
   reminder,
   foundPlaces,
   setDateReminder,
   setPlaceReminder,
   findPlacesByQuery,
-  setFoundPlaces,
+  resetFoundPlaces,
 }) {
   const reminderDate = reminder && reminder.date;
   const reminderPeriod = reminder && reminder.period;
   const reminderPlace = reminder && reminder.place;
 
   // detecting click inside popupMenu
-  const setIsTouched = useEffectOnMouseDownOutside(() => {
-    handleClose();
-  }, []);
+  const setIsTouched = useEffectOnMouseDownOutside(handleClose, []);
 
   const keyDownHandler = (e) => {
     // Tab or Esc
     if (e.keyCode === 9 || e.keyCode === 27) {
       e.preventDefault();
       e.stopPropagation(); // prevent a focused note from blurring
-      callerRef.current.focus();
-      handleClose(true);
+      handleClose();
     }
   };
   return (
@@ -51,38 +47,41 @@ function PopupReminderContainer({
       onMouseDown={() => {
         setIsTouched();
       }}
-      onClose={() => {
-        handleClose(true);
-      }}
+      onClose={handleClose}
       onKeyDown={keyDownHandler}
       reminderDate={reminderDate}
-      setDate={(date, period) => {
-        setDateReminder(id, date, period);
-      }}
+      setDate={setDateReminder}
       reminderPlace={reminderPlace}
-      setPlace={(place) => {
-        setPlaceReminder(id, place);
-      }}
+      setPlace={setPlaceReminder}
       reminderPeriod={reminderPeriod}
       findPlacesByQuery={findPlacesByQuery}
       foundPlaces={foundPlaces}
-      resetFoundPlaces={() => {
-        setFoundPlaces([]);
-      }}
+      resetFoundPlaces={resetFoundPlaces}
     />
   );
 }
 
 function mapStateToProps(state, { id }) {
+  const [noteId] = associativeArrToArr(id);
   return {
-    reminder: getReminderById(state.notification.reminders, id),
+    reminder: getReminderById(state.notification.reminders, noteId),
     foundPlaces: state.notification.foundPlaces,
   };
 }
 
-export default connect(mapStateToProps, {
-  setDateReminder: setDateReminderAC,
-  setPlaceReminder: setPlaceReminderAC,
-  findPlacesByQuery: findPlaces,
-  setFoundPlaces: setFoundPlacesAC,
-})(PopupReminderContainer);
+function mapDispatchToProps(dispatch, { id }) {
+  return bindActionCreators(
+    {
+      setDateReminder: (date, period) => setDateReminderAC(id, date, period),
+      setPlaceReminder: (place) => setPlaceReminderAC(id, place),
+      findPlacesByQuery: findPlaces,
+      resetFoundPlaces: () => setFoundPlacesAC([]),
+    },
+    dispatch
+  );
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PopupReminderContainer);

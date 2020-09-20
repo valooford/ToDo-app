@@ -283,3 +283,10 @@ export function isTimePassed(date, hours, minutes = 0) {
   combinedDate.setHours(hours, minutes);
   return combinedDate - Date.now() < 0;
 }
+
+export function associativeArrToArr(arr) {
+  if (typeof arr === 'object') {
+    return Object.keys(arr).filter((el) => el !== 'length');
+  }
+  return [arr];
+}

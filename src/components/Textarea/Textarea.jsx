@@ -1,4 +1,4 @@
-import React, { useEffect, createRef } from 'react';
+import React, { useEffect } from 'react';
 import style from './Textarea-cfg.module.scss';
 
 // функция автоматического изменения высоты Textarea
@@ -30,7 +30,7 @@ function Textarea(
   { placeholder = '', value = '', onChange, onMouseUp, tabIndex },
   ref
 ) {
-  const textareaRef = ref || createRef();
+  const textareaRef = ref || React.createRef();
   useEffect(() => {
     handleAutoResize(textareaRef.current);
   });
@@ -42,6 +42,7 @@ function Textarea(
       placeholder={placeholder}
       value={value}
       onChange={onChange}
+      readOnly={!onChange}
       onMouseUp={onMouseUp}
       tabIndex={tabIndex}
     />

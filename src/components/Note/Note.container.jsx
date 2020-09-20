@@ -37,6 +37,8 @@ import listItemStyle from './components/ListItem/ListItem-cfg.module.scss';
 // ---replace--- insert in Note as tag/reminder general-purpose component
 import Reminder from './components/Reminder/Reminder.container';
 
+const checkboxClassname = listItemStyle.listItem__checkbox;
+
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ NOTE
 // *
 function NoteContainer({
@@ -44,7 +46,17 @@ function NoteContainer({
   isAddNote,
   isSelected,
   isPinned,
-  note,
+  note: {
+    type,
+    headerText,
+    text,
+    items,
+    itemsOrder,
+    creationDate,
+    editingDate,
+    color,
+    popupName,
+  },
   isFocused,
   onNoteFocus,
   onNoteBlur,
@@ -67,24 +79,50 @@ function NoteContainer({
   noteRef = React.createRef(),
   neighbourRef,
 }) {
+  // interacting
+  const [isInteracting, setIsInteracting] = useState(false);
+  useEffect(() => {
+    if (popupName) setIsInteracting(true);
+  }, [popupName]);
+  useEffect(() => {
+    if (isFocused || isAddNote) return undefined;
+    const noteElement = noteRef.current;
+    const onFocusin = (e) => {
+      if (e.target.classList.contains(checkboxClassname)) return;
+      setIsInteracting(true);
+    };
+    const onFocusout = () => {
+      setIsInteracting(false);
+    };
+    noteElement.addEventListener('focusin', onFocusin);
+    noteElement.addEventListener('focusout', onFocusout);
+    return () => {
+      noteElement.removeEventListener('focusin', onFocusin);
+      noteElement.removeEventListener('focusout', onFocusout);
+    };
+  }, [isFocused]);
+
   // focusing
-  const { type } = note;
   const headerRef = useRef(null);
   const textFieldRef = useRef(null);
   const listItemRef = useRef(null);
   const addListItemRef = useRef(null);
   const defaultFocusInfo = {
     fieldRef: type === 'list' ? addListItemRef : textFieldRef,
+    type,
     caret: 9999,
   };
   const [focusInfo, setFocusInfo] = useState(defaultFocusInfo);
   useEffect(() => {
     if (isFocused) {
-      const { fieldRef, caret } = focusInfo;
+      const {
+        fieldRef: { current: field },
+        caret,
+      } = focusInfo;
       const timerId = setTimeout(() => {
         // setting caret position to the text end
-        fieldRef.current.focus();
-        fieldRef.current.setSelectionRange(caret, caret);
+        field.focus();
+        field.setSelectionRange(caret, caret);
       }, 0);
       return () => clearTimeout(timerId);
     }
@@ -92,6 +130,16 @@ function NoteContainer({
     setFocusInfo(defaultFocusInfo);
     return undefined;
   }, [isFocused]);
+  useEffect(() => {
+    if (!isFocused) return undefined;
+    const { current: field } = type === 'list' ? addListItemRef : textFieldRef;
+    const timerId = setTimeout(() => {
+      // setting caret position to the text end
+      field.focus();
+      field.setSelectionRange(9999, 9999);
+    }, 0);
+    return () => clearTimeout(timerId);
+  }, [type]);
 
   // detecting click outside focused note
   const setIsTouched = useEffectOnMouseDownOutside(() => {
@@ -107,7 +155,6 @@ function NoteContainer({
   };
 
   // separation into marked and unmarked list items
-  const { items, itemsOrder, popupName } = note;
   let itemsWithHandlersGroups;
   if (itemsOrder) {
     itemsWithHandlersGroups = itemsOrder.reduce(
@@ -183,9 +230,9 @@ function NoteContainer({
         <PopupColors
           id={id}
           itemToFocusRef={popupColorsItemToFocusRef}
-          handleClose={() => {
+          handleClose={(isSilent) => {
             clearPopup();
-            colorsButtonRef.current.focus();
+            if (!isSilent) colorsButtonRef.current.focus();
           }}
           onHover={() => {
             clearTimeout(colorsButtonMouseLeaveTimerId);
@@ -196,7 +243,7 @@ function NoteContainer({
     case 'reminder':
       popup.reminder = (
         <PopupReminder
-          index={id}
+          id={id}
           handleClose={() => {
             clearPopup();
             reminderButtonRef.current.focus();
@@ -234,7 +281,7 @@ function NoteContainer({
       }, 0);
     },
     onColorsButtonHover:
-      popupName === null || popupName === 'colors'
+      popupName == null || popupName === 'colors'
         ? () => {
             clearTimeout(colorsButtonMouseLeaveTimerId);
             setColorsPopup();
@@ -261,7 +308,7 @@ function NoteContainer({
         style.note__cornerButtons,
         style.note__buttons,
         style.note__info,
-        listItemStyle.listItem__checkbox,
+        checkboxClassname,
       ].map((s) => `.${s}`);
       if (nonFocusingElementsSelectors.every((s) => !target.closest(s))) {
         onNoteFocus();
@@ -301,14 +348,17 @@ function NoteContainer({
   const noteElem = (
     <Note
       noteData={{
-        headerText: note.headerText,
-        text: note.text,
+        headerText,
+        text,
         items: itemsOrder && itemsWithHandlersGroups.unmarked,
         markedItems: itemsOrder && itemsWithHandlersGroups.marked,
         isFocused,
         isPinned,
-        creationDate: note.creationDate,
-        editingDate: note.editingDate,
+        creationDate,
+        editingDate,
+        color,
+        isInteracting,
+        isSelected,
       }}
       popup={popup}
       eventHandlers={eventHandlers}

@@ -39,30 +39,20 @@ function SelectionBarContainer({
           <PopupMenu
             id={selectedNotes}
             // hasMarkedItems={markedItems && !!markedItems.length}
-            callerRef={moreButtonRef}
-            handleClose={
-              (/* isSilent */) => {
-                setPopupName(null);
-                // if (!isSilent) {
-                //   setHavePopupBeenClosed(true);
-                // }
-              }
-            }
+            handleClose={() => {
+              setPopupName(null);
+              moreButtonRef.current.focus();
+            }}
           />
         ),
         colors: popupName === 'colors' && (
           <PopupColors
             id={selectedNotes}
-            callerRef={colorsButtonRef}
             itemToFocusRef={popupColorsItemToFocusRef}
-            handleClose={
-              (/* isSilent */) => {
-                setPopupName(null);
-                // if (!isSilent) {
-                //   setHavePopupBeenClosed(true);
-                // }
-              }
-            }
+            handleClose={(isSilent) => {
+              setPopupName(null);
+              if (!isSilent) colorsButtonRef.current.focus();
+            }}
             onHover={() => {
               clearTimeout(colorsButtonMouseLeaveTimerId);
             }}
@@ -71,15 +61,10 @@ function SelectionBarContainer({
         reminder: popupName === 'reminder' && (
           <PopupReminder
             id={selectedNotes}
-            callerRef={reminderButtonRef}
-            handleClose={
-              (/* isSilent */) => {
-                setPopupName(null);
-                // if (!isSilent) {
-                //   setHavePopupBeenClosed(true);
-                // }
-              }
-            }
+            handleClose={() => {
+              setPopupName(null);
+              reminderButtonRef.current.focus();
+            }}
           />
         ),
       }}

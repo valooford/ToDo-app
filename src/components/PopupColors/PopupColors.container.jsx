@@ -1,14 +1,15 @@
 import React, { useRef } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
+import { associativeArrToArr } from '@/utils';
+
 import PopupColors from '@components/PopupColors/PopupColors';
 
 import { setNoteColor } from '@store/mainReducer';
 /* eslint-enable import/no-unresolved */
 
 function PopupColorsContainer({
-  id,
-  callerRef,
   itemToFocusRef,
   handleClose,
   onHover,
@@ -22,28 +23,23 @@ function PopupColorsContainer({
     if (e.keyCode === 27) {
       e.preventDefault();
       e.stopPropagation(); // prevent a focused note from blurring
-      callerRef.current.focus();
-      handleClose(true);
+      handleClose();
     } else if (e.keyCode === 9) {
       if (e.shiftKey) {
         if (document.activeElement === firstButtonRef.current) {
           e.preventDefault();
-          callerRef.current.focus(); // for IE
-          handleClose(true);
+          handleClose();
         }
       } else if (document.activeElement === lastButtonRef.current) {
         e.preventDefault();
-        callerRef.current.focus();
-        handleClose(true);
+        handleClose();
       }
     }
   };
 
   return (
     <PopupColors
-      onColorSelection={(c) => {
-        onColorSelection(id, c);
-      }}
+      onColorSelection={onColorSelection}
       selectedColor={currentColor}
       firstButtonRef={firstButtonRef}
       lastButtonRef={lastButtonRef}
@@ -57,12 +53,20 @@ function PopupColorsContainer({
 }
 
 function mapStateToProps(state, { id }) {
-  const noteId = id.map ? id[0] : id;
+  const [noteId] = associativeArrToArr(id);
   return {
-    currentColor: state.main.notesDisplayInformation[noteId].color,
+    currentColor: state.main.notesData[noteId].color,
   };
 }
 
-export default connect(mapStateToProps, { onColorSelection: setNoteColor })(
-  PopupColorsContainer
-);
+function mapDispatchToProps(dispatch, { id }) {
+  return bindActionCreators(
+    { onColorSelection: (color) => setNoteColor(id, color) },
+    dispatch
+  );
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PopupColorsContainer);

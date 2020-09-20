@@ -20,6 +20,9 @@ function Note(
       isPinned,
       creationDate,
       editingDate,
+      color,
+      isInteracting,
+      isSelected,
     },
     eventHandlers: {
       onClick,
@@ -132,7 +135,11 @@ function Note(
   return (
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
     <form
-      className={cn(style.note, { [style.note_focused]: onClose })}
+      className={cn(style.note, style[`note_style-${color}`], {
+        [style.note_focused]: onClose,
+        [style.note_interacting]: isInteracting,
+        [style.note_selected]: isSelected,
+      })}
       onSubmit={(e) => e.preventDefault()}
       onClick={onClick}
       onMouseDown={onMouseDown}
@@ -144,7 +151,7 @@ function Note(
         }
       }}
       // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-      tabIndex={0}
+      tabIndex={!onClose ? 0 : -1}
       ref={ref}
     >
       {onSelection && (
@@ -186,9 +193,12 @@ function Note(
           <Textarea
             placeholder="Заметка..."
             value={text}
-            onChange={({ target: { value } }) => {
-              onTextFieldChange(value);
-            }}
+            onChange={
+              onTextFieldChange &&
+              (({ target: { value } }) => {
+                onTextFieldChange(value);
+              })
+            }
             onMouseUp={onTextFieldFocus}
             tabIndex={onTextFieldChange ? 0 : -1}
             ref={textFieldRef}

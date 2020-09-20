@@ -30,7 +30,10 @@ function AddNote({ onClick, onInput }, inputRef) {
   ));
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
-    <div className={cn(style.note, style['note-add'])} onClick={onClick}>
+    <div
+      className={cn(style.note, style.note_focused, style['note-add'])}
+      onClick={onClick}
+    >
       <input
         className={style['note-add__input']}
         type="text"

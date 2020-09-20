@@ -1,4 +1,6 @@
-import {
+/* eslint-disable import/no-unresolved */
+import { associativeArrToArr } from '@/utils';
+/* eslint-enable import/no-unresolved */ import {
   SET_FOCUSED_NOTE,
   SET_NOTE_PIN,
   ADD_NOTE,
@@ -481,11 +483,11 @@ export function blurNote() {
  * id: actual id / array of ids
  */
 export function pinNote(id) {
-  const ids = id.map ? id : [id];
+  const ids = associativeArrToArr(id);
   return { type: SET_NOTE_PIN, ids, isPinned: true };
 }
 export function unpinNote(id) {
-  const ids = id.map ? id : [id];
+  const ids = associativeArrToArr(id);
   return { type: SET_NOTE_PIN, ids, isPinned: false };
 }
 
@@ -504,7 +506,7 @@ export function addNewNote() {
   return { type: COPY_NOTE, add: true };
 }
 export function copyNote(id) {
-  const ids = id.map ? id : [id];
+  const ids = associativeArrToArr(id);
   return { type: COPY_NOTE, ids };
 }
 
@@ -525,7 +527,7 @@ export function updateNoteListItem(id, itemId, itemText) {
  * id: actual id / array of ids
  */
 export function removeNote(id) {
-  const ids = id.map ? id : [id];
+  const ids = associativeArrToArr(id);
   return { type: REMOVE_NOTE, ids };
 }
 
@@ -573,7 +575,7 @@ export function setNotePopup(id, popupName = null) {
  * id: actual id / array of ids
  */
 export function setNoteColor(id, color) {
-  const ids = id.map ? id : [id];
+  const ids = associativeArrToArr(id);
   return { type: SET_NOTE_COLOR, ids, color };
 }
 

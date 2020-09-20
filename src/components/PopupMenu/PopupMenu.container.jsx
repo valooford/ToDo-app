@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { bindActionCreators } from 'redux';
 /* eslint-disable import/no-unresolved */
-import { useEffectOnMouseDownOutside } from '@/utils';
+import { useEffectOnMouseDownOutside, associativeArrToArr } from '@/utils';
 
 import PopupMenu from '@components/PopupMenu/PopupMenu';
 
@@ -18,7 +18,6 @@ import {
 
 // функция получения элементов всплывающего меню
 function getMenuItems({
-  id,
   isFieldsFilled,
   isList,
   hasMarkedItems,
@@ -38,16 +37,12 @@ function getMenuItems({
     menuItems.unshift({
       text: 'Удалить заметку',
       key: 'remove',
-      onClick() {
-        onRemove(id);
-      },
+      onClick: onRemove,
     });
     menuItems.push({
       text: 'Создать копию',
       key: 'copy',
-      onClick() {
-        onCopy(id);
-      },
+      onClick: onCopy,
     });
   }
   if (isList) {
@@ -56,33 +51,25 @@ function getMenuItems({
         {
           text: 'Снять все флажки',
           key: 'uncheck',
-          onClick() {
-            onUncheckAll(id);
-          },
+          onClick: onUncheckAll,
         },
         {
           text: 'Удалить отмеченные пункты',
           key: 'remove checked',
-          onClick() {
-            onRemoveChecked(id);
-          },
+          onClick: onRemoveChecked,
         }
       );
     }
     menuItems.push({
       text: 'Обычный текст',
       key: 'to text',
-      onClick() {
-        onListToText(id);
-      },
+      onClick: onListToText,
     });
   } else {
     menuItems.push({
       text: 'В виде списка',
       key: 'to list',
-      onClick() {
-        onTextToList(id);
-      },
+      onClick: onTextToList,
     });
   }
   if (isFieldsFilled) {
@@ -105,7 +92,6 @@ function PopupMenuContainer({
   noteHeader,
   noteText,
   noteItemsOrder,
-  id,
   hasMarkedItems,
   onRemove,
   onCopy,
@@ -125,7 +111,7 @@ function PopupMenuContainer({
     if (e.keyCode === 9 || e.keyCode === 27) {
       e.preventDefault();
       e.stopPropagation(); // prevent a focused note from blurring
-      handleClose(/* true */); // + handle different situations
+      handleClose();
     }
   };
   let isFieldsFilled = false;
@@ -139,7 +125,6 @@ function PopupMenuContainer({
   return (
     <PopupMenu
       items={getMenuItems({
-        id,
         isList: noteType === 'list',
         isFieldsFilled,
         hasMarkedItems,
@@ -162,30 +147,30 @@ function PopupMenuContainer({
 }
 
 function mapStateToProps(state, { id }) {
+  const [noteId] = associativeArrToArr(id);
   return {
-    noteType: state.main.notesData[id].type,
-    noteHeader: state.main.notesData[id].headerText,
-    noteText: state.main.notesData[id].type,
-    noteItemsOrder: state.main.notesData[id].itemsOrder,
+    noteType: state.main.notesData[noteId].type,
+    noteHeader: state.main.notesData[noteId].headerText,
+    noteText: state.main.notesData[noteId].type,
+    noteItemsOrder: state.main.notesData[noteId].itemsOrder,
   };
 }
 
-function mapDispatchToProps(dispatch, { onRemove }) {
-  return {
-    onRemove(index) {
-      dispatch(removeNote(index));
-      onRemove();
+function mapDispatchToProps(dispatch, { id, onRemove }) {
+  return bindActionCreators(
+    {
+      onRemove() {
+        if (onRemove) onRemove();
+        return removeNote(id);
+      },
+      onCopy: () => copyNote(id),
+      onUncheckAll: () => uncheckAllListItems(id),
+      onRemoveChecked: () => removeCheckedListItems(id),
+      onTextToList: () => textNoteToList(id),
+      onListToText: () => listNoteToText(id),
     },
-  };
+    dispatch
+  );
 }
 
-export default compose(
-  connect(mapStateToProps, mapDispatchToProps),
-  connect(null, {
-    onCopy: copyNote,
-    onUncheckAll: uncheckAllListItems,
-    onRemoveChecked: removeCheckedListItems,
-    onTextToList: textNoteToList,
-    onListToText: listNoteToText,
-  })
-)(PopupMenuContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(PopupMenuContainer);

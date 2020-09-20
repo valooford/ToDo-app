@@ -10,45 +10,23 @@
   $reminder-base-unit: $reminder-base-unit
 );
 
-// from Container-cfg.module.scss
+@mixin addNoteStyle($style-name, $style-color) {
+  @include extendNoteStylesheet(
+    $class-name: $noteClassName,
+    $modificator-name: 'style-#{$style-name}',
+    $background-color: $style-color,
+    $border-color: $style-color
+  );
+}
 
-// @mixin addContainerItemStyle($style-name, $style-color) {
-//   @include extendContainerItemStylesheet(
-//     $class-name: $containerClassName,
-//     $modificator-name: 'style-#{$style-name}',
-//     $background-color: $style-color,
-//     $border-color: $style-color
-//   );
-// }
-
-// @include addContainerItemStyle('red', $color-red);
-// @include addContainerItemStyle('orange', $color-orange);
-// @include addContainerItemStyle('yellow', $color-yellow);
-// @include addContainerItemStyle('green', $color-green);
-// @include addContainerItemStyle('aquamarine', $color-aquamarine);
-// @include addContainerItemStyle('blue', $color-blue);
-// @include addContainerItemStyle('darkblue', $color-darkblue);
-// @include addContainerItemStyle('purple', $color-purple);
-// @include addContainerItemStyle('pink', $color-pink);
-// @include addContainerItemStyle('brown', $color-brown);
-// @include addContainerItemStyle('grey', $color-grey);
-
-// from Container.scss
-
-// @mixin extendContainerItemStylesheet(
-//   $class-name: 'container',
-//   $modificator-name: 'modificator',
-//   $background-color: null,
-//   $border-color: null
-// ) {
-//   .#{$class-name} {
-//     &__item_#{$modificator-name} {
-//       background-color: $background-color;
-//     }
-//     &__item_#{$modificator-name}:not(&__item_selected) {
-//       border-color: $border-color;
-//     }
-
-//     @content;
-//   }
-// }
+@include addNoteStyle('red', $color-red);
+@include addNoteStyle('orange', $color-orange);
+@include addNoteStyle('yellow', $color-yellow);
+@include addNoteStyle('green', $color-green);
+@include addNoteStyle('aquamarine', $color-aquamarine);
+@include addNoteStyle('blue', $color-blue);
+@include addNoteStyle('darkblue', $color-darkblue);
+@include addNoteStyle('purple', $color-purple);
+@include addNoteStyle('pink', $color-pink);
+@include addNoteStyle('brown', $color-brown);
+@include addNoteStyle('grey', $color-grey);
