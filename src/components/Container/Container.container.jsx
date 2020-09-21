@@ -3,12 +3,19 @@ import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
 import AddNote from '@components/Note/AddNote.container';
 import Note from '@components/Note/Note.container';
+
+import { clearSelectedNotes as clearSelectedNotesAC } from '@store/mainReducer';
 /* eslint-enable import/no-unresolved */
 import Container from './Container';
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ CONTAINER
 // *
-function ContainerContainer({ pinnedNotes, notesOrder }) {
+function ContainerContainer({
+  pinnedNotes,
+  notesOrder,
+  isSelectionMode,
+  clearSelectedNotes,
+}) {
   // ELEMENT GROUPS GATHERING
   // *
   const elementGroups = notesOrder.reduce(
@@ -25,7 +32,12 @@ function ContainerContainer({ pinnedNotes, notesOrder }) {
       const noteElem = {
         id,
         node: (
-          <Note id={id} neighbourRef={groups.neighbourRef} noteRef={noteRef} />
+          <Note
+            id={id}
+            isSelectionMode={isSelectionMode}
+            neighbourRef={groups.neighbourRef}
+            noteRef={noteRef}
+          />
         ),
       };
       groups.neighbourRef = noteRef;
@@ -51,6 +63,7 @@ function ContainerContainer({ pinnedNotes, notesOrder }) {
           key: 'unpinned',
         },
       ]}
+      onClickOutsideOfElements={isSelectionMode ? clearSelectedNotes : null}
     />
   );
 }
@@ -59,7 +72,10 @@ function mapStateToProps(state) {
   return {
     pinnedNotes: state.main.pinnedNotes,
     notesOrder: state.main.notesOrder,
+    isSelectionMode: !!state.main.selectedNotes.length,
   };
 }
 
-export default connect(mapStateToProps, null)(ContainerContainer);
+export default connect(mapStateToProps, {
+  clearSelectedNotes: clearSelectedNotesAC,
+})(ContainerContainer);

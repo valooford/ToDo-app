@@ -20,6 +20,7 @@ import {
 function getMenuItems({
   isFieldsFilled,
   isList,
+  isMultiple,
   hasMarkedItems,
   onRemove,
   onCopy,
@@ -29,10 +30,10 @@ function getMenuItems({
   onListToText,
   closePopup,
 } = {}) {
-  const menuItems = [
-    { text: 'Добавить ярлык', key: 'tag' },
-    { text: 'Добавить рисунок', key: 'paint' },
-  ];
+  const menuItems = [{ text: 'Добавить ярлык', key: 'tag' }];
+  if (!isMultiple) {
+    menuItems.push({ text: 'Добавить рисунок', key: 'paint' });
+  }
   if (isFieldsFilled) {
     menuItems.unshift({
       text: 'Удалить заметку',
@@ -45,32 +46,34 @@ function getMenuItems({
       onClick: onCopy,
     });
   }
-  if (isList) {
-    if (hasMarkedItems) {
-      menuItems.push(
-        {
-          text: 'Снять все флажки',
-          key: 'uncheck',
-          onClick: onUncheckAll,
-        },
-        {
-          text: 'Удалить отмеченные пункты',
-          key: 'remove checked',
-          onClick: onRemoveChecked,
-        }
-      );
+  if (!isMultiple) {
+    if (isList) {
+      if (hasMarkedItems) {
+        menuItems.push(
+          {
+            text: 'Снять все флажки',
+            key: 'uncheck',
+            onClick: onUncheckAll,
+          },
+          {
+            text: 'Удалить отмеченные пункты',
+            key: 'remove checked',
+            onClick: onRemoveChecked,
+          }
+        );
+      }
+      menuItems.push({
+        text: 'Обычный текст',
+        key: 'to text',
+        onClick: onListToText,
+      });
+    } else {
+      menuItems.push({
+        text: 'В виде списка',
+        key: 'to list',
+        onClick: onTextToList,
+      });
     }
-    menuItems.push({
-      text: 'Обычный текст',
-      key: 'to text',
-      onClick: onListToText,
-    });
-  } else {
-    menuItems.push({
-      text: 'В виде списка',
-      key: 'to list',
-      onClick: onTextToList,
-    });
   }
   if (isFieldsFilled) {
     menuItems.push({ text: 'Скопировать в Google Документы', key: 'docs' });
@@ -92,6 +95,7 @@ function PopupMenuContainer({
   noteHeader,
   noteText,
   noteItemsOrder,
+  isMultiple,
   hasMarkedItems,
   onRemove,
   onCopy,
@@ -125,9 +129,10 @@ function PopupMenuContainer({
   return (
     <PopupMenu
       items={getMenuItems({
-        isList: noteType === 'list',
-        isFieldsFilled,
         hasMarkedItems,
+        isFieldsFilled,
+        isList: noteType === 'list',
+        isMultiple,
         onRemove,
         onCopy,
         onUncheckAll,

@@ -31,43 +31,55 @@ function SelectionBarContainer({
 
   if (!selectedNotes.length) return null;
 
+  const popup = {};
+  switch (popupName) {
+    case 'menu':
+      popup.menu = (
+        <PopupMenu
+          id={selectedNotes}
+          isMultiple
+          // hasMarkedItems={markedItems && !!markedItems.length}
+          handleClose={() => {
+            setPopupName(null);
+            moreButtonRef.current.focus();
+          }}
+        />
+      );
+      break;
+    case 'colors':
+      popup.colors = (
+        <PopupColors
+          id={selectedNotes}
+          itemToFocusRef={popupColorsItemToFocusRef}
+          handleClose={(isSilent) => {
+            setPopupName(null);
+            if (!isSilent) colorsButtonRef.current.focus();
+          }}
+          onHover={() => {
+            clearTimeout(colorsButtonMouseLeaveTimerId);
+          }}
+        />
+      );
+      break;
+    case 'reminder':
+      popup.reminder = (
+        <PopupReminder
+          id={selectedNotes}
+          handleClose={() => {
+            setPopupName(null);
+            reminderButtonRef.current.focus();
+          }}
+        />
+      );
+      break;
+    default:
+      break;
+  }
+
   return (
     <SelectionBar
       selectedCount={selectedNotes.length}
-      popup={{
-        menu: popupName === 'menu' && (
-          <PopupMenu
-            id={selectedNotes}
-            // hasMarkedItems={markedItems && !!markedItems.length}
-            handleClose={() => {
-              setPopupName(null);
-              moreButtonRef.current.focus();
-            }}
-          />
-        ),
-        colors: popupName === 'colors' && (
-          <PopupColors
-            id={selectedNotes}
-            itemToFocusRef={popupColorsItemToFocusRef}
-            handleClose={(isSilent) => {
-              setPopupName(null);
-              if (!isSilent) colorsButtonRef.current.focus();
-            }}
-            onHover={() => {
-              clearTimeout(colorsButtonMouseLeaveTimerId);
-            }}
-          />
-        ),
-        reminder: popupName === 'reminder' && (
-          <PopupReminder
-            id={selectedNotes}
-            handleClose={() => {
-              setPopupName(null);
-              reminderButtonRef.current.focus();
-            }}
-          />
-        ),
-      }}
+      popup={popup}
       eventHandlers={{
         onClose: clearSelectedNotes,
         onMoreButtonClick() {

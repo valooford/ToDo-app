@@ -14,7 +14,7 @@ function getContainerItems(elements) {
 
 // КОМПОНЕНТ КОНТЕЙНЕРА / CONTAINER
 // *
-export default function Container({ groups }) {
+export default function Container({ groups, onClickOutsideOfElements }) {
   const groupsElements = groups.reduce((result, group) => {
     const { name, key } = group;
     let elements;
@@ -35,7 +35,21 @@ export default function Container({ groups }) {
   }, []);
 
   return (
-    <div className={style.container}>
+    // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
+    <div
+      className={style.container}
+      onClick={
+        onClickOutsideOfElements
+          ? ({ target, currentTarget }) => {
+              if (
+                target === currentTarget ||
+                target.classList.contains(style.container__group)
+              )
+                onClickOutsideOfElements();
+            }
+          : null
+      }
+    >
       {groupsElements.map(({ items, name, key }, i) => (
         <div className={style.container__group} key={key || `anonymous-${i}`}>
           {name && <div className={style['container__group-name']}>{name}</div>}

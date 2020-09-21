@@ -78,6 +78,7 @@ function NoteContainer({
   onCancelNoteSelection,
   noteRef = React.createRef(),
   neighbourRef,
+  isSelectionMode,
 }) {
   // interacting
   const [isInteracting, setIsInteracting] = useState(false);
@@ -302,18 +303,24 @@ function NoteContainer({
   };
   // a click handler focusing the note
   if (!isAddNote) {
-    eventHandlers.onClick = ({ target }) => {
-      const nonFocusingElementsSelectors = [
-        style.note__check,
-        style.note__cornerButtons,
-        style.note__buttons,
-        style.note__info,
-        checkboxClassname,
-      ].map((s) => `.${s}`);
-      if (nonFocusingElementsSelectors.every((s) => !target.closest(s))) {
-        onNoteFocus();
-      }
-    };
+    if (isSelectionMode) {
+      eventHandlers.onClick = isSelected
+        ? onCancelNoteSelection
+        : onNoteSelection;
+    } else {
+      eventHandlers.onClick = ({ target }) => {
+        const nonFocusingElementsSelectors = [
+          style.note__check,
+          style.note__cornerButtons,
+          style.note__buttons,
+          style.note__info,
+          checkboxClassname,
+        ].map((s) => `.${s}`);
+        if (nonFocusingElementsSelectors.every((s) => !target.closest(s))) {
+          onNoteFocus();
+        }
+      };
+    }
   }
   if (isFocused) {
     eventHandlers.onClose = onClose;
@@ -347,6 +354,7 @@ function NoteContainer({
 
   const noteElem = (
     <Note
+      isSelectionMode={isSelectionMode}
       noteData={{
         headerText,
         text,

@@ -1,6 +1,7 @@
 /* eslint-disable import/no-unresolved */
 import { associativeArrToArr } from '@/utils';
-/* eslint-enable import/no-unresolved */ import {
+/* eslint-enable import/no-unresolved */
+import {
   SET_FOCUSED_NOTE,
   SET_NOTE_PIN,
   ADD_NOTE,
@@ -158,13 +159,22 @@ const handlers = {
   },
   [REMOVE_NOTE]: (state, { ids }) => {
     const notesData = { ...state.notesData };
+    const selectedNotes = { ...state.selectedNotes };
     ids.forEach((id) => {
       delete notesData[id];
+      if (selectedNotes[id]) {
+        delete selectedNotes[id];
+        selectedNotes.length -= 1;
+      }
     });
     return {
       ...state,
       notesData,
       notesOrder: state.notesOrder.filter((id) => notesData[id]),
+      selectedNotes:
+        selectedNotes.length === state.selectedNotes.length
+          ? state.selectedNotes
+          : selectedNotes,
     };
   },
   [ADD_NOTE_LIST_ITEM]: (state, { id, text }) => {

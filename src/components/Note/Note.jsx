@@ -12,6 +12,7 @@ import style from './Note-cfg.module.scss';
 
 function Note(
   {
+    isSelectionMode,
     noteData: {
       headerText,
       text,
@@ -139,6 +140,7 @@ function Note(
         [style.note_focused]: onClose,
         [style.note_interacting]: isInteracting,
         [style.note_selected]: isSelected,
+        [style['note_mode-selection']]: isSelectionMode,
       })}
       onSubmit={(e) => e.preventDefault()}
       onClick={onClick}
@@ -170,7 +172,10 @@ function Note(
             iconSymbol={isPinned ? '\ue801' : '\ue812'}
             titleText={isPinned ? 'Открепить заметку' : 'Закрепить заметку'}
             modificators="icon-button_smaller"
-            onClick={onPin}
+            onClick={(e) => {
+              if (isSelectionMode) e.stopPropagation();
+              onPin();
+            }}
           />
         )}
       </div>

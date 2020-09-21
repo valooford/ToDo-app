@@ -1,5 +1,6 @@
 /* eslint-disable import/no-unresolved */
 import { getPlaces } from '@api/places';
+import { associativeArrToArr } from '@/utils';
 /* eslint-enable import/no-unresolved */
 
 import {
@@ -9,16 +10,20 @@ import {
 } from './actionsTypes';
 
 const handlers = {
-  [SET_REMINDER]: (state, { id, place, date, period }) => {
+  [SET_REMINDER]: (state, { ids, place, date, period }) => {
     return {
       ...state,
       reminders: {
         ...state.reminders,
-        [`note-${id}`]: {
-          place,
-          date,
-          period,
-        },
+        ...ids.reduce((reminders, id) => {
+          // eslint-disable-next-line no-param-reassign
+          reminders[`note-${id}`] = {
+            place,
+            date,
+            period,
+          };
+          return reminders;
+        }, {}),
       },
     };
   },
@@ -62,12 +67,16 @@ export default function notificationReducer(state = initialState, action) {
   return state;
 }
 
-// ADD_NEW_REMINDER
+/* ADD_NEW_REMINDER
+ * id: actual id / array of ids
+ */
 export function setDateReminder(id, date, period) {
-  return { type: SET_REMINDER, id, date, period };
+  const ids = associativeArrToArr(id);
+  return { type: SET_REMINDER, ids, date, period };
 }
 export function setPlaceReminder(id, place) {
-  return { type: SET_REMINDER, id, place };
+  const ids = associativeArrToArr(id);
+  return { type: SET_REMINDER, ids, place };
 }
 
 // REMOVE_REMINDER

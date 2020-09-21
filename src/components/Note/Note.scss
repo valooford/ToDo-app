@@ -35,11 +35,22 @@
     &_selected {
       border: 2px solid #000;
     }
-    &:not(:hover):not(&_focused):not(&_interacting) {
-      .#{$class-name}__check,
-      .#{$class-name}__cornerButtons,
-      .#{$class-name}__buttons {
+    &:not(:hover):not(&_focused):not(&_interacting):not(&_selected) {
+      .#{$class-name}__check {
         opacity: 0;
+      }
+    }
+    &:not(:hover):not(&_focused):not(&_interacting) {
+      .#{$class-name}__buttons,
+      .#{$class-name}__cornerButtons {
+        opacity: 0;
+      }
+    }
+    &_mode {
+      &-selection {
+        .#{$class-name}__buttons {
+          visibility: hidden;
+        }
       }
     }
 

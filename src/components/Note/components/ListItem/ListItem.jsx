@@ -59,7 +59,7 @@ function ListItem(
         <Textarea
           value={value}
           placeholder={isAddItem ? 'Новый пункт' : ''}
-          onChange={onChange}
+          onChange={!isPreview ? onChange : null}
           onMouseUp={onMouseUp}
           tabIndex={isPreview ? -1 : 0}
           ref={ref}
