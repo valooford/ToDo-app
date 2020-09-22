@@ -6,28 +6,37 @@
   $selected-color: #bef2ff
 ) {
   .#{$class-name} {
-    margin-left: -0.7 * $base-unit;
-    line-height: 3 * $bigger-base-unit;
-    color: rgba(0, 0, 0, 0.664);
     font-size: 14px;
     font-weight: bold;
-    border-top-right-radius: 1.5 * $bigger-base-unit;
-    border-bottom-right-radius: 1.5 * $bigger-base-unit;
-    cursor: pointer;
-    &:hover {
-      background-color: rgba(231, 231, 231, 0.5);
-    }
-    // &:focus {
-    //   border: 1px solid #555;
-    // }
+
     &_selected,
     &_selected:hover {
-      background-color: $selected-color;
+      .#{$class-name}__link {
+        background-color: $selected-color;
+      }
     }
     &_selected &__icon {
       color: #000;
     }
 
+    &__link {
+      display: block;
+      margin-left: -0.7 * $base-unit;
+
+      line-height: 3 * $bigger-base-unit;
+      color: rgba(0, 0, 0, 0.664);
+      border: 1px solid transparent;
+      outline: none;
+      border-top-right-radius: 1.5 * $bigger-base-unit;
+      border-bottom-right-radius: 1.5 * $bigger-base-unit;
+      cursor: pointer;
+      &:hover {
+        background-color: rgba(231, 231, 231, 0.5);
+      }
+      &:focus {
+        border-color: rgba(0, 0, 0, 0.668);
+      }
+    }
     &__icon {
       display: inline-block;
       margin-left: 0.7 * $base-unit;

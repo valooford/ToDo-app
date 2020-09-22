@@ -12,7 +12,8 @@
     "plugin:react/recommended",
     // "plugin:react-hooks/recommended",
     "airbnb",
-    "prettier"
+    "prettier",
+    "prettier/react"
   ],
   "globals": {
     "Atomics": "readonly", // global es2017
