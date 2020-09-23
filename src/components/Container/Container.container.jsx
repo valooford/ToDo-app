@@ -1,81 +1,72 @@
 import React from 'react';
-import { connect } from 'react-redux';
-/* eslint-disable import/no-unresolved */
-import AddNote from '@components/Note/AddNote.container';
-import Note from '@components/Note/Note.container';
-
-import { clearSelectedNotes as clearSelectedNotesAC } from '@store/mainReducer';
-/* eslint-enable import/no-unresolved */
 import Container from './Container';
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ CONTAINER
 // *
-function ContainerContainer({
-  pinnedNotes,
-  notesOrder,
-  isSelectionMode,
-  clearSelectedNotes,
+export default function ContainerContainer({
+  elements,
+  groups,
+  onClickOutsideOfElements,
 }) {
   // ELEMENT GROUPS GATHERING
   // *
-  const elementGroups = notesOrder.reduce(
-    (groups, id) => {
+  const groupKeys = Object.keys(groups);
+  const initialElementGroups = groupKeys.reduce(
+    (elementGroups, groupKey) => {
       /* eslint-disable no-param-reassign */
-      if (id === notesOrder[0]) {
-        // first note is used for adding
-        const addNoteRef = React.createRef();
-        groups.addition.push({ id, node: <AddNote addNoteRef={addNoteRef} /> });
-        groups.neighbourRef = addNoteRef;
-        return groups;
-      }
-      const noteRef = React.createRef();
-      const noteElem = {
-        id,
-        node: (
-          <Note
-            id={id}
-            isSelectionMode={isSelectionMode}
-            neighbourRef={groups.neighbourRef}
-            noteRef={noteRef}
-          />
-        ),
-      };
-      groups.neighbourRef = noteRef;
-      if (pinnedNotes[id]) {
-        groups.pinned.push(noteElem);
-      } else {
-        groups.unpinned.push(noteElem);
-      }
-      return groups;
+      elementGroups[groupKey] = [];
+      elementGroups[groupKey].name = groups[groupKey].name;
       /* eslint-enable no-param-reassign */
+      return elementGroups;
     },
-    { addition: [], pinned: [], unpinned: [], neighbourRef: null }
+    { neighbourRef: null }
   );
-  elementGroups.addition.key = 'addition'; // adding key for correct rerender
+  const elementGroups = elements.reduce((elGroups, id) => {
+    /* eslint-disable no-param-reassign */
+    const elemRef = React.createRef();
+    for (let i = 0; i < groupKeys.length; i += 1) {
+      const groupKey = groupKeys[i];
+      const elemProps = {
+        neighbourRef: groups.neighbourRef,
+        [groups[groupKey].refPropName]: elemRef,
+        ...groups[groupKey].extraProps,
+      };
+      if (groups[groupKey].test(id)) {
+        const Component = groups[groupKey].component;
+        elGroups[groupKey].push({
+          id,
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          node: <Component id={id} {...elemProps} />,
+        });
+        elGroups.neighbourRef = elemRef;
+        if (groups[groupKey].unique) break;
+      }
+    }
+    /* eslint-enable no-param-reassign */
+    return elGroups;
+  }, initialElementGroups);
+  delete elementGroups.neighbourRef;
+
+  const namedGroupKeys = groupKeys.filter(
+    (groupKey) => elementGroups[groupKey].name
+  );
+  const namedNotEmptyGroupKeys = namedGroupKeys.filter(
+    (groupKey) => elementGroups[groupKey].length
+  );
+  if (
+    namedNotEmptyGroupKeys.length === 0 ||
+    (namedNotEmptyGroupKeys.length === 1 &&
+      !groups[namedNotEmptyGroupKeys[0]].isNameRequired)
+  ) {
+    namedGroupKeys.forEach((groupKey) => {
+      delete elementGroups[groupKey].name;
+    });
+  }
+
   return (
     <Container
-      groups={[
-        elementGroups.addition,
-        { name: 'Закрепленные', elements: elementGroups.pinned, key: 'pinned' },
-        {
-          name: elementGroups.pinned.length ? 'Другие заметки' : null,
-          elements: elementGroups.unpinned,
-          key: 'unpinned',
-        },
-      ]}
-      onClickOutsideOfElements={isSelectionMode ? clearSelectedNotes : null}
+      groups={elementGroups}
+      onClickOutsideOfElements={onClickOutsideOfElements}
     />
   );
 }
-
-function mapStateToProps(state) {
-  return {
-    pinnedNotes: state.main.pinnedNotes,
-    notesOrder: state.main.notesOrder,
-    isSelectionMode: !!state.main.selectedNotes.length,
-  };
-}
-
-export default connect(mapStateToProps, {
-  clearSelectedNotes: clearSelectedNotesAC,
-})(ContainerContainer);

@@ -15,21 +15,11 @@ function getContainerItems(elements) {
 // КОМПОНЕНТ КОНТЕЙНЕРА / CONTAINER
 // *
 export default function Container({ groups, onClickOutsideOfElements }) {
-  const groupsElements = groups.reduce((result, group) => {
-    const { name, key } = group;
-    let elements;
-    if (group.map) {
-      // an anonymous group
-      if (group.length) {
-        // contains elements
-        elements = group;
-      }
-    } else if (group.elements.length) {
-      // a named group containing elements
-      elements = group.elements;
-    }
-    if (elements) {
-      result.push({ items: getContainerItems(elements), name, key });
+  const groupsElements = Object.keys(groups).reduce((result, groupKey) => {
+    const group = groups[groupKey];
+    const { name } = group;
+    if (group.length > 0) {
+      result.push({ items: getContainerItems(group), name, key: groupKey });
     }
     return result;
   }, []);
@@ -50,8 +40,8 @@ export default function Container({ groups, onClickOutsideOfElements }) {
           : null
       }
     >
-      {groupsElements.map(({ items, name, key }, i) => (
-        <div className={style.container__group} key={key || `anonymous-${i}`}>
+      {groupsElements.map(({ items, name, key }) => (
+        <div className={style.container__group} key={key}>
           {name && <div className={style['container__group-name']}>{name}</div>}
           {items}
         </div>

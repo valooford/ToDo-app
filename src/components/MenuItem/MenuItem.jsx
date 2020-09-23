@@ -5,7 +5,12 @@ import style from './MenuItem-cfg.module.scss';
 
 // КОМПОНЕНТ ПУНКТА МЕНЮ С ИКОНКОЙ / ICONED-MENU-ITEM
 // *
-export default function IconedMenuItem({ to, isSelected, iconSymbol, text }) {
+export default function IconedMenuItem({
+  to = '/',
+  isSelected,
+  iconSymbol,
+  text,
+}) {
   return (
     <li
       className={cn(style['iconed-menu-item'], {
