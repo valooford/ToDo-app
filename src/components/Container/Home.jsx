@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
 import AddNote from '@components/Note/AddNote.container';
 import Note from '@components/Note/Note.container';
 
+import { setPage } from '@store/appReducer';
 import { clearSelectedNotes as clearSelectedNotesAC } from '@store/mainReducer';
 /* eslint-enable import/no-unresolved */
 import Container from './Container.container';
@@ -12,8 +14,12 @@ function Home({
   pinnedNotes,
   notesOrder,
   isSelectionMode,
+  onMount,
   clearSelectedNotes,
 }) {
+  useEffect(() => {
+    onMount();
+  }, []);
   return (
     <Container
       elements={notesOrder}
@@ -52,7 +58,14 @@ function mapStateToProps(state) {
     isSelectionMode: !!state.main.selectedNotes.length,
   };
 }
+function mapDispatchToProps(dispatch, { pageName }) {
+  return bindActionCreators(
+    {
+      onMount: () => setPage(pageName),
+      clearSelectedNotes: clearSelectedNotesAC,
+    },
+    dispatch
+  );
+}
 
-export default connect(mapStateToProps, {
-  clearSelectedNotes: clearSelectedNotesAC,
-})(Home);
+export default connect(mapStateToProps, mapDispatchToProps)(Home);

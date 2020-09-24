@@ -12,8 +12,8 @@ import {
   setPlaceReminder as setPlaceReminderAC,
   findPlaces,
   setFoundPlaces as setFoundPlacesAC,
-  getReminderById,
 } from '@store/notificationReducer';
+import { getReminderById } from '@store/selectors';
 /* eslint-enable import/no-unresolved */
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ POPUP-REMINDER
@@ -64,7 +64,7 @@ function PopupReminderContainer({
 function mapStateToProps(state, { id }) {
   const [noteId] = associativeArrToArr(id);
   return {
-    reminder: getReminderById(state.notification.reminders, noteId),
+    reminder: getReminderById(state, noteId),
     foundPlaces: state.notification.foundPlaces,
   };
 }

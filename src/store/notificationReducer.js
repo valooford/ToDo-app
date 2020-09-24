@@ -13,23 +13,26 @@ const handlers = {
   [SET_REMINDER]: (state, { ids, place, date, period }) => {
     return {
       ...state,
-      reminders: {
-        ...state.reminders,
-        ...ids.reduce((reminders, id) => {
+      noteReminders: {
+        ...state.noteReminders,
+        ...ids.reduce((noteReminders, id) => {
           // eslint-disable-next-line no-param-reassign
-          reminders[`note-${id}`] = {
+          noteReminders[`note-${id}`] = {
             place,
             date,
             period,
           };
-          return reminders;
+          return noteReminders;
         }, {}),
       },
     };
   },
   [REMOVE_REMINDER]: (state, { id }) => {
-    const { [`note-${id}`]: removingReminder, ...reminders } = state.reminders;
-    return { ...state, reminders };
+    const {
+      [`note-${id}`]: removingReminder,
+      ...noteReminders
+    } = state.noteReminders;
+    return { ...state, noteReminders };
   },
   [SET_FOUND_PLACES]: (state, { foundPlaces }) => {
     return { ...state, foundPlaces };
@@ -37,7 +40,7 @@ const handlers = {
 };
 
 const initialState = {
-  reminders: {
+  noteReminders: {
     'note-123456': {
       place: 'shopping mall',
       // or
@@ -82,11 +85,6 @@ export function setPlaceReminder(id, place) {
 // REMOVE_REMINDER
 export function removeReminder(id) {
   return { type: REMOVE_REMINDER, id };
-}
-
-// REMINDER SELECTOR
-export function getReminderById(reminders, id) {
-  return reminders[`note-${id}`];
 }
 
 // SET_FOUND_PLACES

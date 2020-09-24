@@ -8,17 +8,19 @@ import { ModalContext } from '@components/Modal/Modal.container';
 import Header from '@components/Header/Header';
 import SelectionBar from '@components/SelectionBar/SelectionBar.container';
 import Aside from '@components/Aside/Aside';
-// import Container from '@components/Container/Container.container';
 import Home from '@components/Container/Home';
 
 import { clearSelectedNotes as clearSelectedNotesAC } from '@store/mainReducer';
+import { getCurrentPage } from '@store/selectors';
 /* eslint-enable import/no-unresolved */
 import App from './App';
 
 function AppContainer({
+  currentPage,
   // location: { pathname },
   onDirectMainClick, // ---not good--- better to include this in Container
 }) {
+  console.log(currentPage);
   const modalRef = useRef();
   return (
     <ModalContext.Provider value={modalRef}>
@@ -28,7 +30,12 @@ function AppContainer({
         aside={<Aside />}
         main={
           <Switch>
-            <Route path="/reminders">reminders</Route>
+            <Route
+              path="/reminders"
+              render={() => {
+                return 'reminders';
+              }}
+            />
             <Route
               path="/label/:labelID"
               render={({
@@ -47,13 +54,17 @@ function AppContainer({
                 },
               }) => `page with note: ${noteID}`}
             />
-            <Route path="*" render={() => <Home />} />
+            <Route path="*" render={() => <Home pageName="/home" />} />
           </Switch>
         }
         onDirectMainClick={onDirectMainClick}
       />
     </ModalContext.Provider>
   );
+}
+
+function mapStateToProps(state) {
+  return { currentPage: getCurrentPage(state) };
 }
 
 export default compose(
@@ -66,7 +77,7 @@ export default compose(
     );
   },
   withRouter,
-  connect(null, {
+  connect(mapStateToProps, {
     onDirectMainClick: clearSelectedNotesAC,
   })
 )(AppContainer);

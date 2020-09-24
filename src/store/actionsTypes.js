@@ -1,3 +1,6 @@
+// app
+export const SET_APP_PAGE = 'app/set-app-page';
+
 // main
 export const SET_FOCUSED_NOTE = 'main/set-focused-note';
 export const SET_NOTE_PIN = 'main/set-note-pin';
@@ -15,10 +18,6 @@ export const LIST_NOTE_TO_TEXT = 'main/list-note-to-text';
 export const SET_NOTE_POPUP = 'main/set-note-popup'; //! no sense without mount
 export const SET_NOTE_COLOR = 'main/set-note-color';
 export const SET_SELECTED_NOTES = 'main/set-selected-notes';
-
-// modal
-export const NOTIFY = 'modal/notify';
-export const CLOSE = 'modal/close';
 
 // notification
 export const SET_REMINDER = 'notification/set-reminder';
