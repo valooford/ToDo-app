@@ -29,7 +29,7 @@ import {
   setNotePopup,
   selectNote,
   cancelNoteSelection,
-} from '@store/mainReducer';
+} from '@store/notesReducer';
 import { bindActionCreators } from 'redux';
 /* eslint-enable import/no-unresolved */
 import style from './Note-cfg.module.scss';
@@ -398,9 +398,9 @@ function NoteContainer({
 
 function mapStateToProps(state, { id }) {
   return {
-    note: state.main.notesData[id],
+    note: state.main.notes[id],
     isFocused: id === state.main.focusedNoteId,
-    isAddNote: id === state.main.notesOrder[0],
+    isAddNote: id === state.main.regularNotesOrder[0],
     isSelected: state.main.selectedNotes[id],
     isPinned: state.main.pinnedNotes[id],
   };

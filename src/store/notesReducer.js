@@ -26,8 +26,8 @@ const handlers = {
     const newNoteId = Date.now();
     return {
       ...state,
-      notesData: {
-        ...state.notesData,
+      notes: {
+        ...state.notes,
         [newNoteId]: {
           id: newNoteId,
           type: text ? 'default' : 'list',
@@ -50,10 +50,10 @@ const handlers = {
           color: 'default',
         },
       },
-      notesOrder: [
-        state.notesOrder[0],
+      regularNotesOrder: [
+        state.regularNotesOrder[0],
         newNoteId,
-        ...state.notesOrder.slice(1),
+        ...state.regularNotesOrder.slice(1),
       ],
     };
   },
@@ -61,15 +61,15 @@ const handlers = {
     const newNoteId = Date.now();
     // first note is used for adding
     if (add) {
-      const note = state.notesData[state.notesOrder[0]];
+      const note = state.notes[state.regularNotesOrder[0]];
       // no headerText and no text/items or items array is empty
       if (!note.headerText && !note.text && (!note.items || !note.items[0])) {
         return state; // nothing to add
       }
       return {
         ...state,
-        notesData: {
-          ...state.notesData,
+        notes: {
+          ...state.notes,
           [newNoteId]: {
             id: newNoteId,
             type: 'default',
@@ -81,15 +81,15 @@ const handlers = {
             color: 'default',
           },
         },
-        notesOrder: [newNoteId, ...state.notesOrder],
+        regularNotesOrder: [newNoteId, ...state.regularNotesOrder],
       };
     }
     const noteCopies = ids.reduce(
       (copies, id, i) => {
-        const note = state.notesData[id];
+        const note = state.notes[id];
         const noteId = `${newNoteId}-${i}`;
         /* eslint-disable no-param-reassign */
-        copies.notesData[noteId] = {
+        copies.notes[noteId] = {
           id: noteId,
           type: note.type,
           headerText: note.headerText,
@@ -112,56 +112,56 @@ const handlers = {
           color: note.color,
         };
         /* eslint-enable no-param-reassign */
-        copies.notesOrder.push(noteId);
+        copies.regularNotesOrder.push(noteId);
         return copies;
       },
-      { notesData: {}, notesOrder: [] }
+      { notes: {}, regularNotesOrder: [] }
     );
     return {
       ...state,
-      notesData: {
-        ...state.notesData,
-        ...noteCopies.notesData,
+      notes: {
+        ...state.notes,
+        ...noteCopies.notes,
       },
-      notesOrder: [
-        state.notesOrder[0],
-        ...noteCopies.notesOrder,
-        ...state.notesOrder.slice(1),
+      regularNotesOrder: [
+        state.regularNotesOrder[0],
+        ...noteCopies.regularNotesOrder,
+        ...state.regularNotesOrder.slice(1),
       ],
     };
   },
   [UPDATE_NOTE]: (state, { id, headerText, text, itemId, itemText }) => {
     return {
       ...state,
-      notesData: {
-        ...state.notesData,
+      notes: {
+        ...state.notes,
         [id]: {
-          ...state.notesData[id],
+          ...state.notes[id],
           headerText:
             typeof headerText === 'string'
               ? headerText
-              : state.notesData[id].headerText,
-          text: typeof text === 'string' ? text : state.notesData[id].text,
+              : state.notes[id].headerText,
+          text: typeof text === 'string' ? text : state.notes[id].text,
           items:
             itemId != null
               ? {
-                  ...state.notesData[id].items,
+                  ...state.notes[id].items,
                   [itemId]: {
-                    ...state.notesData[id].items[itemId],
+                    ...state.notes[id].items[itemId],
                     text: itemText,
                   },
                 }
-              : state.notesData[id].items,
+              : state.notes[id].items,
           editingDate: new Date(),
         },
       },
     };
   },
   [REMOVE_NOTE]: (state, { ids }) => {
-    const notesData = { ...state.notesData };
+    const notes = { ...state.notes };
     const selectedNotes = { ...state.selectedNotes };
     ids.forEach((id) => {
-      delete notesData[id];
+      delete notes[id];
       if (selectedNotes[id]) {
         delete selectedNotes[id];
         selectedNotes.length -= 1;
@@ -169,8 +169,8 @@ const handlers = {
     });
     return {
       ...state,
-      notesData,
-      notesOrder: state.notesOrder.filter((id) => notesData[id]),
+      notes,
+      regularNotesOrder: state.regularNotesOrder.filter((id) => notes[id]),
       selectedNotes:
         selectedNotes.length === state.selectedNotes.length
           ? state.selectedNotes
@@ -181,34 +181,34 @@ const handlers = {
     const newItemId = Date.now();
     return {
       ...state,
-      notesData: {
-        ...state.notesData,
+      notes: {
+        ...state.notes,
         [id]: {
-          ...state.notesData[id],
+          ...state.notes[id],
           items: {
-            ...state.notesData[id].items,
+            ...state.notes[id].items,
             [newItemId]: {
               id: newItemId,
               text,
               sub: [],
             },
           },
-          itemsOrder: [...state.notesData[id].itemsOrder, newItemId],
+          itemsOrder: [...state.notes[id].itemsOrder, newItemId],
           editingDate: new Date(),
         },
       },
     };
   },
   [REMOVE_NOTE_LIST_ITEM]: (state, { id, itemId }) => {
-    const { [itemId]: removingItem, ...items } = state.notesData[id].items;
+    const { [itemId]: removingItem, ...items } = state.notes[id].items;
     return {
       ...state,
-      notesData: {
-        ...state.notesData,
+      notes: {
+        ...state.notes,
         [id]: {
-          ...state.notesData[id],
+          ...state.notes[id],
           items,
-          itemsOrder: state.notesData[id].itemsOrder.filter(
+          itemsOrder: state.notes[id].itemsOrder.filter(
             (iId) => iId !== itemId
           ),
           editingDate: new Date(),
@@ -219,14 +219,14 @@ const handlers = {
   [SET_CHECK_NOTE_LIST_ITEM]: (state, { id, itemId, isMarked }) => {
     return {
       ...state,
-      notesData: {
-        ...state.notesData,
+      notes: {
+        ...state.notes,
         [id]: {
-          ...state.notesData[id],
+          ...state.notes[id],
           items: {
-            ...state.notesData[id].items,
+            ...state.notes[id].items,
             [itemId]: {
-              ...state.notesData[id].items[itemId],
+              ...state.notes[id].items[itemId],
               isMarked,
             },
           },
@@ -238,14 +238,14 @@ const handlers = {
   [UNCHECK_ALL_LIST_ITEMS]: (state, { id }) => {
     return {
       ...state,
-      notesData: {
-        ...state.notesData,
+      notes: {
+        ...state.notes,
         [id]: {
-          ...state.notesData[id],
-          items: Object.keys(state.notesData[id].items).reduce(
+          ...state.notes[id],
+          items: Object.keys(state.notes[id].items).reduce(
             (uncheckedItems, itemId) => {
               /* eslint-disable no-param-reassign */
-              const item = state.notesData[id].items[itemId];
+              const item = state.notes[id].items[itemId];
               if (item.isMarked)
                 uncheckedItems[itemId] = { ...item, isMarked: false };
               else uncheckedItems[itemId] = item;
@@ -262,22 +262,22 @@ const handlers = {
   [REMOVE_CHECKED_LIST_ITEMS]: (state, { id }) => {
     return {
       ...state,
-      notesData: {
-        ...state.notesData,
+      notes: {
+        ...state.notes,
         [id]: {
-          ...state.notesData[id],
-          items: Object.keys(state.notesData[id].items).reduce(
+          ...state.notes[id],
+          items: Object.keys(state.notes[id].items).reduce(
             (filteredItems, itemId) => {
               /* eslint-disable no-param-reassign */
-              const item = state.notesData[id].items[itemId];
+              const item = state.notes[id].items[itemId];
               if (!item.isMarked) filteredItems[itemId] = item;
               return filteredItems;
               /* eslint-enable no-param-reassign */
             },
             {}
           ),
-          itemsOrder: state.notesData[id].itemsOrder.filter(
-            (itemId) => !state.notesData[id].items[itemId].isMarked
+          itemsOrder: state.notes[id].itemsOrder.filter(
+            (itemId) => !state.notes[id].items[itemId].isMarked
           ),
           editingDate: new Date(),
         },
@@ -285,7 +285,7 @@ const handlers = {
     };
   },
   [TEXT_NOTE_TO_LIST]: (state, { id }) => {
-    const { text, ...note } = state.notesData[id];
+    const { text, ...note } = state.notes[id];
     const itemsId = Date.now();
     const items = text.split('\n').reduce((itemsFromText, itemText, i) => {
       const itemId = `${itemsId}-${i}`;
@@ -299,8 +299,8 @@ const handlers = {
     }, {});
     return {
       ...state,
-      notesData: {
-        ...state.notesData,
+      notes: {
+        ...state.notes,
         [id]: {
           ...note,
           type: 'list',
@@ -312,11 +312,11 @@ const handlers = {
     };
   },
   [LIST_NOTE_TO_TEXT]: (state, { id }) => {
-    const { items, itemsOrder, ...note } = state.notesData[id];
+    const { items, itemsOrder, ...note } = state.notes[id];
     return {
       ...state,
-      notesData: {
-        ...state.notesData,
+      notes: {
+        ...state.notes,
         [id]: {
           ...note,
           type: 'default',
@@ -331,10 +331,10 @@ const handlers = {
       ...state,
       focusedNoteId: focusedId,
     };
-    if (focusedId === state.notesOrder[0]) {
+    if (focusedId === state.regularNotesOrder[0]) {
       const date = new Date();
-      newState.notesData[focusedId].creationDate = date;
-      newState.notesData[focusedId].editingDate = date;
+      newState.notes[focusedId].creationDate = date;
+      newState.notes[focusedId].editingDate = date;
     }
     return newState;
   },
@@ -353,28 +353,28 @@ const handlers = {
   [SET_NOTE_POPUP]: (state, { id, popupName }) => {
     return {
       ...state,
-      notesData: {
-        ...state.notesData,
+      notes: {
+        ...state.notes,
         [id]: {
-          ...state.notesData[id],
+          ...state.notes[id],
           popupName,
         },
       },
     };
   },
   [SET_NOTE_COLOR]: (state, { ids, color }) => {
-    const coloredNotes = ids.reduce((notesData, id) => {
+    const coloredNotes = ids.reduce((notes, id) => {
       // eslint-disable-next-line no-param-reassign
-      notesData[id] = {
-        ...state.notesData[id],
+      notes[id] = {
+        ...state.notes[id],
         color,
       };
-      return notesData;
+      return notes;
     }, {});
     return {
       ...state,
-      notesData: {
-        ...state.notesData,
+      notes: {
+        ...state.notes,
         ...coloredNotes,
       },
     };
@@ -410,7 +410,7 @@ const handlers = {
 };
 
 const normalizedInitialState = {
-  notesData: {
+  notes: {
     '000': {
       id: '000',
       type: 'default',
@@ -461,20 +461,26 @@ const normalizedInitialState = {
       color: 'blue',
     },
   },
+  pinnedNotes: {
+    // '222': true,
+  },
+  regularNotesOrder: ['000', '111', '222'],
+  archivedNotes: {
+    // '111': true,
+  },
+  archivedNotesOrder: [],
+  removedNotes: {
+    // '111': true,
+  },
+  removedNotesOrder: [],
   focusedNoteId: null,
-  notesOrder: ['000', '111', '222'],
   selectedNotes: {
     // '111': true,
     length: 0,
   },
-  pinnedNotes: {
-    // '222': true,
-    length: 0,
-  },
-  removedNotes: [],
 };
 
-export default function mainReducer(state = normalizedInitialState, action) {
+export default function notesReducer(state = normalizedInitialState, action) {
   if (handlers[action.type]) return handlers[action.type](state, action);
   return state;
 }

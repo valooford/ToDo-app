@@ -10,7 +10,7 @@ import SelectionBar from '@components/SelectionBar/SelectionBar.container';
 import Aside from '@components/Aside/Aside';
 import Home from '@components/Container/Home';
 
-import { clearSelectedNotes as clearSelectedNotesAC } from '@store/mainReducer';
+import { clearSelectedNotes as clearSelectedNotesAC } from '@store/notesReducer';
 import { getCurrentPage } from '@store/selectors';
 /* eslint-enable import/no-unresolved */
 import App from './App';

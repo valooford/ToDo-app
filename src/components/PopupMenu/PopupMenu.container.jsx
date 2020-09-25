@@ -13,7 +13,7 @@ import {
   removeCheckedListItems,
   textNoteToList,
   listNoteToText,
-} from '@store/mainReducer';
+} from '@store/notesReducer';
 /* eslint-enable import/no-unresolved */
 
 // функция получения элементов всплывающего меню
@@ -154,10 +154,10 @@ function PopupMenuContainer({
 function mapStateToProps(state, { id }) {
   const [noteId] = associativeArrToArr(id);
   return {
-    noteType: state.main.notesData[noteId].type,
-    noteHeader: state.main.notesData[noteId].headerText,
-    noteText: state.main.notesData[noteId].type,
-    noteItemsOrder: state.main.notesData[noteId].itemsOrder,
+    noteType: state.main.notes[noteId].type,
+    noteHeader: state.main.notes[noteId].headerText,
+    noteText: state.main.notes[noteId].type,
+    noteItemsOrder: state.main.notes[noteId].itemsOrder,
   };
 }
 

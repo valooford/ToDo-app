@@ -6,7 +6,7 @@ import { associativeArrToArr } from '@/utils';
 
 import PopupColors from '@components/PopupColors/PopupColors';
 
-import { setNoteColor } from '@store/mainReducer';
+import { setNoteColor } from '@store/notesReducer';
 /* eslint-enable import/no-unresolved */
 
 function PopupColorsContainer({
@@ -55,7 +55,7 @@ function PopupColorsContainer({
 function mapStateToProps(state, { id }) {
   const [noteId] = associativeArrToArr(id);
   return {
-    currentColor: state.main.notesData[noteId].color,
+    currentColor: state.main.notes[noteId].color,
   };
 }
 

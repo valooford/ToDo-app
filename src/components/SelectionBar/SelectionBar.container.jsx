@@ -10,7 +10,7 @@ import {
   pinNote as pinNoteAC,
   unpinNote as unpinNoteAC,
   clearSelectedNotes as clearSelectedNotesAC,
-} from '@store/mainReducer';
+} from '@store/notesReducer';
 /* eslint-enable import/no-unresolved */
 import SelectionBar from './SelectionBar';
 

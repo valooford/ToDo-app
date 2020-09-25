@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
 /* eslint-disable import/no-unresolved */
-import { setNotePopup as setNotePopupAC } from '@store/mainReducer';
+import { setNotePopup as setNotePopupAC } from '@store/notesReducer';
 import { removeReminder as removeReminderAC } from '@store/notificationReducer';
 import { getReminderById } from '@store/selectors';
 /* eslint-enable import/no-unresolved */

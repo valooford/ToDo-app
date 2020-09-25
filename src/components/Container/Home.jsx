@@ -6,13 +6,13 @@ import AddNote from '@components/Note/AddNote.container';
 import Note from '@components/Note/Note.container';
 
 import { setPage } from '@store/appReducer';
-import { clearSelectedNotes as clearSelectedNotesAC } from '@store/mainReducer';
+import { clearSelectedNotes as clearSelectedNotesAC } from '@store/notesReducer';
 /* eslint-enable import/no-unresolved */
 import Container from './Container.container';
 
 function Home({
   pinnedNotes,
-  notesOrder,
+  regularNotesOrder,
   isSelectionMode,
   onMount,
   clearSelectedNotes,
@@ -22,10 +22,10 @@ function Home({
   }, []);
   return (
     <Container
-      elements={notesOrder}
+      elements={regularNotesOrder}
       groups={{
         addition: {
-          test: (noteId) => noteId === notesOrder[0],
+          test: (noteId) => noteId === regularNotesOrder[0],
           component: AddNote,
           refPropName: 'addNoteRef',
           unique: true,
@@ -54,7 +54,7 @@ function Home({
 function mapStateToProps(state) {
   return {
     pinnedNotes: state.main.pinnedNotes,
-    notesOrder: state.main.notesOrder,
+    regularNotesOrder: state.main.regularNotesOrder,
     isSelectionMode: !!state.main.selectedNotes.length,
   };
 }
