@@ -9,6 +9,7 @@ import Header from '@components/Header/Header';
 import SelectionBar from '@components/SelectionBar/SelectionBar.container';
 import Aside from '@components/Aside/Aside';
 import Home from '@components/Container/Home';
+import Reminiscent from '@components/Container/Reminiscent';
 
 import { clearSelectedNotes as clearSelectedNotesAC } from '@store/notesReducer';
 import { getCurrentPage } from '@store/selectors';
@@ -33,7 +34,7 @@ function AppContainer({
             <Route
               path="/reminders"
               render={() => {
-                return 'reminders';
+                return <Reminiscent pageName="/home" />;
               }}
             />
             <Route

@@ -4,8 +4,11 @@ import { connect } from 'react-redux';
 
 /* eslint-disable import/no-unresolved */
 import { setNotePopup as setNotePopupAC } from '@store/notesReducer';
-import { removeReminder as removeReminderAC } from '@store/notificationReducer';
-import { getReminderById } from '@store/selectors';
+import {
+  removeReminder as removeReminderAC,
+  getReminderIdByNoteId,
+} from '@store/notificationReducer';
+import { getReminder } from '@store/selectors';
 /* eslint-enable import/no-unresolved */
 import Reminder from './Reminder';
 
@@ -23,7 +26,7 @@ function ReminderContainer({ reminder, setNotePopup, removeReminder }) {
 
 function mapStateToProps(state, { id }) {
   return {
-    reminder: getReminderById(state, id),
+    reminder: getReminder(state, getReminderIdByNoteId(id)),
   };
 }
 

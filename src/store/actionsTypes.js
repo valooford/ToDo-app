@@ -1,25 +1,29 @@
 // app
 export const SET_APP_PAGE = 'app/set-app-page';
 
-// main
-export const SET_FOCUSED_NOTE = 'main/set-focused-note';
-export const SET_NOTE_PIN = 'main/set-note-pin';
-export const ADD_NOTE = 'main/add-note';
-export const COPY_NOTE = 'main/copy-note';
-export const UPDATE_NOTE = 'main/update-note';
-export const REMOVE_NOTE = 'main/remove-note';
-export const ADD_NOTE_LIST_ITEM = 'main/add-note-list-item';
-export const REMOVE_NOTE_LIST_ITEM = 'main/remove-note-list-item';
-export const SET_CHECK_NOTE_LIST_ITEM = 'main/set-check-note-list-item';
-export const UNCHECK_ALL_LIST_ITEMS = 'main/uncheck-all-list-items';
-export const REMOVE_CHECKED_LIST_ITEMS = 'main/remove-checked-list-items';
-export const TEXT_NOTE_TO_LIST = 'main/text-note-to-list';
-export const LIST_NOTE_TO_TEXT = 'main/list-note-to-text';
-export const SET_NOTE_POPUP = 'main/set-note-popup'; //! no sense without mount
-export const SET_NOTE_COLOR = 'main/set-note-color';
-export const SET_SELECTED_NOTES = 'main/set-selected-notes';
+// notes
+export const SET_FOCUSED_NOTE = 'notes/set-focused-note';
+export const SET_NOTE_PIN = 'notes/set-note-pin';
+export const SET_NOTE_AS_REGULAR = 'notes/set-note-as-regular';
+export const SET_NOTE_AS_ARCHIVED = 'notes/set-note-as-archived';
+export const ADD_NOTE = 'notes/add-note';
+export const COPY_NOTE = 'notes/copy-note';
+export const UPDATE_NOTE = 'notes/update-note';
+export const REMOVE_NOTE = 'notes/remove-note';
+export const RESTORE_NOTE = 'notes/restore-note';
+export const DELETE_NOTE = 'notes/delete-note';
+export const ADD_NOTE_LIST_ITEM = 'notes/add-note-list-item';
+export const REMOVE_NOTE_LIST_ITEM = 'notes/remove-note-list-item';
+export const SET_CHECK_NOTE_LIST_ITEM = 'notes/set-check-note-list-item';
+export const UNCHECK_ALL_LIST_ITEMS = 'notes/uncheck-all-list-items';
+export const REMOVE_CHECKED_LIST_ITEMS = 'notes/remove-checked-list-items';
+export const TEXT_NOTE_TO_LIST = 'notes/text-note-to-list';
+export const LIST_NOTE_TO_TEXT = 'notes/list-note-to-text';
+export const SET_NOTE_POPUP = 'notes/set-note-popup'; //! no sense without mount
+export const SET_NOTE_COLOR = 'notes/set-note-color';
+export const SET_SELECTED_NOTES = 'notes/set-selected-notes';
 
 // notification
-export const SET_REMINDER = 'notification/set-reminder';
+export const SET_NOTE_REMINDER = 'notification/set-note-reminder';
 export const REMOVE_REMINDER = 'notification/remove-reminder';
 export const SET_FOUND_PLACES = 'notification/set-found-places';

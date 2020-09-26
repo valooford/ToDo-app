@@ -400,7 +400,7 @@ function mapStateToProps(state, { id }) {
   return {
     note: state.main.notes[id],
     isFocused: id === state.main.focusedNoteId,
-    isAddNote: id === state.main.regularNotesOrder[0],
+    isAddNote: id === state.main.regularNotes.order[0],
     isSelected: state.main.selectedNotes[id],
     isPinned: state.main.pinnedNotes[id],
   };

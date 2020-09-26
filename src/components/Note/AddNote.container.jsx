@@ -37,7 +37,7 @@ function AddNoteContainer({ id, isFocused, onNoteFocus, onInput, addNoteRef }) {
 }
 
 function mapStateToProps(state) {
-  const id = state.main.regularNotesOrder[0];
+  const id = state.main.regularNotes.order[0];
   return {
     id,
     isFocused: state.main.focusedNoteId === id,

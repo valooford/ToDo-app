@@ -4,10 +4,14 @@ import { associativeArrToArr } from '@/utils';
 import {
   SET_FOCUSED_NOTE,
   SET_NOTE_PIN,
+  SET_NOTE_AS_REGULAR,
+  SET_NOTE_AS_ARCHIVED,
   ADD_NOTE,
   COPY_NOTE,
   UPDATE_NOTE,
   REMOVE_NOTE,
+  RESTORE_NOTE,
+  DELETE_NOTE,
   ADD_NOTE_LIST_ITEM,
   REMOVE_NOTE_LIST_ITEM,
   SET_CHECK_NOTE_LIST_ITEM,
@@ -50,18 +54,22 @@ const handlers = {
           color: 'default',
         },
       },
-      regularNotesOrder: [
-        state.regularNotesOrder[0],
-        newNoteId,
-        ...state.regularNotesOrder.slice(1),
-      ],
+      regularNotes: {
+        ...state.regularNotes,
+        [newNoteId]: true,
+        order: [
+          state.regularNotes.order[0],
+          newNoteId,
+          ...state.regularNotes.order.slice(1),
+        ],
+      },
     };
   },
   [COPY_NOTE]: (state, { add, ids }) => {
     const newNoteId = Date.now();
     // first note is used for adding
     if (add) {
-      const note = state.notes[state.regularNotesOrder[0]];
+      const note = state.notes[state.regularNotes.order[0]];
       // no headerText and no text/items or items array is empty
       if (!note.headerText && !note.text && (!note.items || !note.items[0])) {
         return state; // nothing to add
@@ -81,7 +89,11 @@ const handlers = {
             color: 'default',
           },
         },
-        regularNotesOrder: [newNoteId, ...state.regularNotesOrder],
+        regularNotes: {
+          ...state.regularNotes,
+          [newNoteId]: true,
+          order: [newNoteId, ...state.regularNotes.order],
+        },
       };
     }
     const noteCopies = ids.reduce(
@@ -111,11 +123,12 @@ const handlers = {
           editingDate: new Date(),
           color: note.color,
         };
-        /* eslint-enable no-param-reassign */
-        copies.regularNotesOrder.push(noteId);
+        copies.regularNotes[noteId] = true;
+        copies.regularNotes.order.push(noteId);
         return copies;
+        /* eslint-enable no-param-reassign */
       },
-      { notes: {}, regularNotesOrder: [] }
+      { notes: {}, regularNotes: { order: [] } }
     );
     return {
       ...state,
@@ -123,11 +136,15 @@ const handlers = {
         ...state.notes,
         ...noteCopies.notes,
       },
-      regularNotesOrder: [
-        state.regularNotesOrder[0],
-        ...noteCopies.regularNotesOrder,
-        ...state.regularNotesOrder.slice(1),
-      ],
+      regularNotes: {
+        ...state.regularNotes,
+        ...noteCopies.regularNotes,
+        order: [
+          state.regularNotes.order[0],
+          ...noteCopies.regularNotes.order,
+          ...state.regularNotes.order.slice(1),
+        ],
+      },
     };
   },
   [UPDATE_NOTE]: (state, { id, headerText, text, itemId, itemText }) => {
@@ -158,23 +175,51 @@ const handlers = {
     };
   },
   [REMOVE_NOTE]: (state, { ids }) => {
+    const removedNotes = { ...state.removedNotes };
+    ids.forEach((id) => {
+      removedNotes[id] = true;
+    });
+    const { notes } = state;
+    removedNotes.order = [...ids, ...removedNotes.order].sort(
+      (noteId1, noteId2) =>
+        notes[noteId2].creationDate - notes[noteId1].creationDate
+    );
+    return { ...state, removedNotes, selectedNotes: { length: 0 } };
+  },
+  [RESTORE_NOTE]: (state, { ids }) => {
+    const removedNotes = { ...state.removedNotes };
+    ids.forEach((id) => {
+      delete removedNotes[id];
+    });
+    return { ...state, removedNotes };
+  },
+  [DELETE_NOTE]: (state, { ids }) => {
     const notes = { ...state.notes };
-    const selectedNotes = { ...state.selectedNotes };
+    const regularNotes = { ...state.regularNotes };
+    const archivedNotes = { ...state.archivedNotes };
+    const removedNotes = { ...state.removedNotes };
+    const touchedFields = {};
     ids.forEach((id) => {
       delete notes[id];
-      if (selectedNotes[id]) {
-        delete selectedNotes[id];
-        selectedNotes.length -= 1;
+      if (regularNotes[id]) {
+        delete regularNotes[id];
+        touchedFields.regularNotes = true;
       }
+      if (archivedNotes[id]) {
+        delete archivedNotes[id];
+        archivedNotes.archivedNotes = true;
+      }
+      delete removedNotes[id];
     });
     return {
       ...state,
-      notes,
-      regularNotesOrder: state.regularNotesOrder.filter((id) => notes[id]),
-      selectedNotes:
-        selectedNotes.length === state.selectedNotes.length
-          ? state.selectedNotes
-          : selectedNotes,
+      regularNotes: touchedFields.regularNotes
+        ? regularNotes
+        : state.regularNotes,
+      archivedNotes: touchedFields.archivedNotes
+        ? archivedNotes
+        : state.archivedNotes,
+      removedNotes,
     };
   },
   [ADD_NOTE_LIST_ITEM]: (state, { id, text }) => {
@@ -331,7 +376,7 @@ const handlers = {
       ...state,
       focusedNoteId: focusedId,
     };
-    if (focusedId === state.regularNotesOrder[0]) {
+    if (focusedId === state.regularNotes.order[0]) {
       const date = new Date();
       newState.notes[focusedId].creationDate = date;
       newState.notes[focusedId].editingDate = date;
@@ -348,6 +393,28 @@ const handlers = {
       }
     });
     return { ...state, pinnedNotes };
+  },
+  [SET_NOTE_AS_REGULAR]: (state, { ids }) => {
+    const archivedNotes = { ...state.archivedNotes };
+    const regularNotes = { ...state.regularNotes };
+    ids.forEach((id) => {
+      delete archivedNotes[id];
+      regularNotes[id] = true;
+    });
+    archivedNotes.order = archivedNotes.order.filter((id) => archivedNotes[id]);
+    regularNotes.order = [...regularNotes.order].splice(1, 0, ...ids);
+    return { ...state, regularNotes, archivedNotes };
+  },
+  [SET_NOTE_AS_ARCHIVED]: (state, { ids }) => {
+    const regularNotes = { ...state.regularNotes };
+    const archivedNotes = { ...state.archivedNotes };
+    ids.forEach((id) => {
+      delete regularNotes[id];
+      archivedNotes[id] = true;
+    });
+    regularNotes.order = archivedNotes.order.filter((id) => archivedNotes[id]);
+    archivedNotes.order = [...regularNotes.order].splice(1, 0, ...ids);
+    return { ...state, regularNotes, archivedNotes };
   },
   // ---unnecessary---
   [SET_NOTE_POPUP]: (state, { id, popupName }) => {
@@ -461,18 +528,23 @@ const normalizedInitialState = {
       color: 'blue',
     },
   },
+  regularNotes: {
+    '000': true, // an adding note (always first)
+    111: true,
+    222: true,
+    order: ['000', '111', '222'],
+  },
   pinnedNotes: {
     // '222': true,
   },
-  regularNotesOrder: ['000', '111', '222'],
   archivedNotes: {
     // '111': true,
+    order: [],
   },
-  archivedNotesOrder: [],
   removedNotes: {
     // '111': true,
+    order: [],
   },
-  removedNotesOrder: [],
   focusedNoteId: null,
   selectedNotes: {
     // '111': true,
@@ -505,6 +577,21 @@ export function pinNote(id) {
 export function unpinNote(id) {
   const ids = associativeArrToArr(id);
   return { type: SET_NOTE_PIN, ids, isPinned: false };
+}
+
+/* SET_NOTE_AS_REGULAR
+ * id: actual id / array of ids
+ */
+export function setNoteAsRegular(id) {
+  const ids = associativeArrToArr(id);
+  return { type: SET_NOTE_AS_REGULAR, ids };
+}
+/* SET_NOTE_AS_ARCHIVED
+ * id: actual id / array of ids
+ */
+export function setNoteAsArchived(id) {
+  const ids = associativeArrToArr(id);
+  return { type: SET_NOTE_AS_ARCHIVED, ids };
 }
 
 // ---unused--- ADD_NOTE
