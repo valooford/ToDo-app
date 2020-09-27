@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
 import { focusNote, updateNoteText } from '@store/notesReducer';
+import { getAddingNoteId } from '@store/selectors';
 /* eslint-enable import/no-unresolved */
 import Note from './Note.container';
 import AddNote from './AddNote';
@@ -37,7 +38,7 @@ function AddNoteContainer({ id, isFocused, onNoteFocus, onInput, addNoteRef }) {
 }
 
 function mapStateToProps(state) {
-  const id = state.main.regularNotes.order[0];
+  const id = getAddingNoteId(state);
   return {
     id,
     isFocused: state.main.focusedNoteId === id,

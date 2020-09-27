@@ -21,20 +21,19 @@ function AppContainer({
   // location: { pathname },
   onDirectMainClick, // ---not good--- better to include this in Container
 }) {
-  console.log(currentPage);
   const modalRef = useRef();
   return (
     <ModalContext.Provider value={modalRef}>
       <App
         prepend={<div id="modal" ref={modalRef} />}
         header={[<Header key="header" />, <SelectionBar key="bar" />]}
-        aside={<Aside />}
+        aside={<Aside currentPage={currentPage} />}
         main={
           <Switch>
             <Route
               path="/reminders"
               render={() => {
-                return <Reminiscent pageName="/home" />;
+                return <Reminiscent pageName="/reminders" />;
               }}
             />
             <Route

@@ -9,37 +9,43 @@ import {
   SET_FOUND_PLACES,
 } from './actionsTypes';
 
-export function getReminderIdByNoteId(noteId) {
-  return `note-${noteId}`;
-}
-
 const handlers = {
   [SET_NOTE_REMINDER]: (state, { noteIds, place, date, period }) => {
     const noteRemindersData = noteIds.reduce(
       (data, noteId) => {
         /* eslint-disable no-param-reassign */
-        const reminderId = getReminderIdByNoteId(noteId);
+        const reminderId = `note-${noteId}`;
         data.reminders[reminderId] = {
           id: reminderId,
+          noteId,
           place,
           date,
           period,
         };
-        data.noteReminders[reminderId] = noteId;
-        data.noteReminders.order.push(reminderId);
+        if (!data.noteReminders[noteId]) {
+          data.noteReminders.order.push(noteId);
+        }
+        data.noteReminders[noteId] = reminderId;
         return data;
         /* eslint-enable no-param-reassign */
       },
       {
         reminders: { ...state.reminders },
-        noteReminders: { ...state.noteReminders },
+        noteReminders: {
+          ...state.noteReminders,
+          order: [...state.noteReminders.order],
+        },
       }
     );
-    const { reminders } = state;
-    noteRemindersData.noteReminders.order.sort((reminderId1, reminderId2) => {
+    const { reminders } = noteRemindersData;
+    noteRemindersData.noteReminders.order.sort((noteId1, noteId2) => {
+      const {
+        [noteId1]: reminderId1,
+        [noteId2]: reminderId2,
+      } = noteRemindersData.noteReminders;
       if (reminders[reminderId1].date) {
         if (reminders[reminderId2].date)
-          return reminders[reminderId2].date - reminders[reminderId1].date;
+          return reminders[reminderId1].date - reminders[reminderId2].date;
         return -1;
       }
       if (reminders[reminderId2].date) return -1;
@@ -47,14 +53,17 @@ const handlers = {
     });
     return {
       ...state,
-      reminders: noteRemindersData.reminders,
+      reminders,
       noteReminders: noteRemindersData.noteReminders,
     };
   },
   [REMOVE_REMINDER]: (state, { reminderId }) => {
     const { [reminderId]: removingReminder, ...reminders } = state.reminders;
     const noteReminders = { ...state.noteReminders };
-    delete noteReminders[reminderId];
+    delete noteReminders[removingReminder.noteId];
+    noteReminders.order = noteReminders.order.filter(
+      (noteId) => noteReminders[noteId]
+    );
     return { ...state, reminders, noteReminders };
   },
   [SET_FOUND_PLACES]: (state, { foundPlaces }) => {
@@ -64,25 +73,25 @@ const handlers = {
 
 const initialState = {
   reminders: {
-    'note-123456': {
-      id: 'note-123456',
-      place: 'shopping mall',
+    'note-111': {
+      id: 'note-111',
+      noteId: 111,
+      // place: 'shopping mall',
       // or
       date: new Date(2020, 7, 1, 1),
-      period: {
-        every: 365,
-        end: {
-          count: 2,
-          // or
-          date: new Date(2022, 7, 1),
-        },
-      },
+      // period: {
+      //   every: 365,
+      //   end: {
+      //     count: 2,
+      //     // or
+      //     date: new Date(2022, 7, 1),
+      //   },
+      // },
     },
   },
   noteReminders: {
-    // 'note-123456': 123456,
-    // order: ['note-123456'],
-    order: [],
+    111: 'note-111',
+    order: [111],
   },
   foundPlaces: [
     // {

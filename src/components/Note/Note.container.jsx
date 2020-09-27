@@ -3,6 +3,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
 import { useEffectOnMouseDownOutside } from '@/utils';
@@ -30,7 +31,7 @@ import {
   selectNote,
   cancelNoteSelection,
 } from '@store/notesReducer';
-import { bindActionCreators } from 'redux';
+import { getAddingNoteId } from '@store/selectors';
 /* eslint-enable import/no-unresolved */
 import style from './Note-cfg.module.scss';
 import listItemStyle from './components/ListItem/ListItem-cfg.module.scss';
@@ -400,7 +401,7 @@ function mapStateToProps(state, { id }) {
   return {
     note: state.main.notes[id],
     isFocused: id === state.main.focusedNoteId,
-    isAddNote: id === state.main.regularNotes.order[0],
+    isAddNote: id === getAddingNoteId(state),
     isSelected: state.main.selectedNotes[id],
     isPinned: state.main.pinnedNotes[id],
   };

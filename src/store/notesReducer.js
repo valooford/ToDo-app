@@ -26,76 +26,50 @@ import {
 
 const handlers = {
   // ---unused---
-  [ADD_NOTE]: (state, { headerText, text, itemsArr }) => {
-    const newNoteId = Date.now();
+  [ADD_NOTE]: (state) => {
+    const newAddingNoteId = Date.now();
+    const addingNote = state.notes[state.addingNoteId];
+    const newNoteId = addingNote.id; // using an addingNote previous id
+    // no headerText and no text/items or items array is empty
+    if (
+      !addingNote.headerText &&
+      !addingNote.text &&
+      (!addingNote.items || !addingNote.items[0])
+    ) {
+      return state; // nothing to add
+    }
     return {
       ...state,
       notes: {
         ...state.notes,
-        [newNoteId]: {
-          id: newNoteId,
-          type: text ? 'default' : 'list',
-          headerText,
-          text,
-          items: itemsArr
-            ? itemsArr.reduce((items, itemText, i) => {
-                const itemId = `${newNoteId}-${i}`;
-                // eslint-disable-next-line no-param-reassign
-                items[itemId] = {
-                  id: itemId,
-                  text: itemText,
-                  sub: [],
-                };
-                return items;
-              })
-            : null,
-          creationDate: new Date(),
-          editingDate: new Date(),
+        [newAddingNoteId]: {
+          id: newAddingNoteId,
+          type: 'default',
+          headerText: '',
+          text: '',
           color: 'default',
         },
+        [newNoteId]: {
+          id: newNoteId,
+          type: addingNote.type,
+          headerText: addingNote.headerText,
+          text: addingNote.text,
+          items: addingNote.items,
+          creationDate: new Date(),
+          editingDate: new Date(),
+          color: addingNote.color,
+        },
       },
+      addingNoteId: newAddingNoteId,
       regularNotes: {
         ...state.regularNotes,
         [newNoteId]: true,
-        order: [
-          state.regularNotes.order[0],
-          newNoteId,
-          ...state.regularNotes.order.slice(1),
-        ],
+        order: [newNoteId, ...state.regularNotes.order],
       },
     };
   },
-  [COPY_NOTE]: (state, { add, ids }) => {
+  [COPY_NOTE]: (state, { ids }) => {
     const newNoteId = Date.now();
-    // first note is used for adding
-    if (add) {
-      const note = state.notes[state.regularNotes.order[0]];
-      // no headerText and no text/items or items array is empty
-      if (!note.headerText && !note.text && (!note.items || !note.items[0])) {
-        return state; // nothing to add
-      }
-      return {
-        ...state,
-        notes: {
-          ...state.notes,
-          [newNoteId]: {
-            id: newNoteId,
-            type: 'default',
-            headerText: '',
-            text: '',
-            popup: null,
-            creationDate: new Date(),
-            editingDate: new Date(),
-            color: 'default',
-          },
-        },
-        regularNotes: {
-          ...state.regularNotes,
-          [newNoteId]: true,
-          order: [newNoteId, ...state.regularNotes.order],
-        },
-      };
-    }
     const noteCopies = ids.reduce(
       (copies, id, i) => {
         const note = state.notes[id];
@@ -528,11 +502,11 @@ const normalizedInitialState = {
       color: 'blue',
     },
   },
+  addingNoteId: '000',
   regularNotes: {
-    '000': true, // an adding note (always first)
     111: true,
     222: true,
-    order: ['000', '111', '222'],
+    order: ['111', '222'],
   },
   pinnedNotes: {
     // '222': true,
@@ -594,20 +568,14 @@ export function setNoteAsArchived(id) {
   return { type: SET_NOTE_AS_ARCHIVED, ids };
 }
 
-// ---unused--- ADD_NOTE
-export function addTextNote(headerText = '', text) {
-  return { type: ADD_NOTE, headerText, text };
-}
-export function addListNote(headerText = '', itemsArr) {
-  return { type: ADD_NOTE, headerText, itemsArr };
+// ADD_NOTE
+export function addNewNote() {
+  return { type: ADD_NOTE };
 }
 
 /* COPY_NOTE
  * id: actual id / array of ids
  */
-export function addNewNote() {
-  return { type: COPY_NOTE, add: true };
-}
 export function copyNote(id) {
   const ids = associativeArrToArr(id);
   return { type: COPY_NOTE, ids };

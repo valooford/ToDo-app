@@ -61,14 +61,16 @@ export default function Reminder({ date, period, place, onRemove, onClick }) {
     >
       <span className={style.reminder__icon}>{iconSymbol}</span>
       {text}
-      <span className={style.reminder__close}>
-        <IconButton
-          iconSymbol="&#xe80c;"
-          titleText="Удалить напоминание"
-          modificators="icon-button_reminder"
-          onClick={onRemove}
-        />
-      </span>
+      {onRemove && (
+        <span className={style.reminder__close}>
+          <IconButton
+            iconSymbol="&#xe80c;"
+            titleText="Удалить напоминание"
+            modificators="icon-button_reminder"
+            onClick={onRemove}
+          />
+        </span>
+      )}
       {!date && commaIndex !== -1 && (
         <span className={style.reminder__title}>
           <Title text={fullText} />

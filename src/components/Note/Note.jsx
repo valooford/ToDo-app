@@ -262,7 +262,7 @@ function Note(
         </div>
       )}
       <div className={style.note__info}>
-        {onClose && (
+        {onClose && creationDate && editingDate && (
           <span className={style.note__creationTime}>
             <CreationTime
               creationDate={creationDate}
