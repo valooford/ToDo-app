@@ -1,12 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
 import AddNote from '@components/Note/AddNote.container';
 import Note from '@components/Note/Note.container';
 
-import { setPage as setPageAC } from '@store/appReducer';
-import { clearSelectedNotes as clearSelectedNotesAC } from '@store/notesReducer';
 import {
   setDateReminder,
   removeReminder as removeReminderAC,
@@ -21,34 +19,36 @@ import Container from './Container.container';
 
 function Reminiscent({
   addingNoteId,
-  // addingNoteReminderId,
+  addingNoteReminderId,
   reminders,
   noteReminders,
+  removedNotes,
   isSelectionMode,
   setReminder,
-  setPage,
-  // removeReminder,
-  clearSelectedNotes,
+  removeReminder,
+  onClickOutsideOfElements,
 }) {
-  useEffect(() => {
-    setPage();
-  }, []);
   // setting reminder on addingNote
   useEffect(() => {
     setReminder();
   }, [addingNoteId]);
   // cleaning up on page switching
-  // useEffect(() => {
-  //   return () => {
-  //     if (addingNoteReminderId) {
-  //       removeReminder(addingNoteReminderId);
-  //     }
-  //   };
-  // }, [addingNoteReminderId]);
+  const [storedAddingNoteReminderId] = useState({
+    id: addingNoteReminderId,
+  });
+  useEffect(() => {
+    storedAddingNoteReminderId.id = addingNoteReminderId;
+  }, [addingNoteReminderId]);
+  useEffect(() => {
+    return () => {
+      removeReminder(storedAddingNoteReminderId.id);
+    };
+  }, []);
+
   const noteRemindersOrder = noteReminders.order;
   return (
     <Container
-      elements={[...noteRemindersOrder]} // will contain addingNoteId
+      elements={noteRemindersOrder} // will contain addingNoteId
       groups={{
         addition: {
           test: (noteId) => noteId === addingNoteId,
@@ -57,7 +57,9 @@ function Reminiscent({
           unique: true,
         },
         past: {
-          test: (noteId) => reminders[noteReminders[noteId]].date <= Date.now(),
+          test: (noteId) =>
+            reminders[noteReminders[noteId]].date <= Date.now() &&
+            !removedNotes[noteId],
           name: 'Прошедшие',
           isNameRequired: true,
           component: Note,
@@ -65,14 +67,17 @@ function Reminiscent({
           extraProps: { isSelectionMode },
         },
         coming: {
-          test: (noteId) => reminders[noteReminders[noteId]].date > Date.now(),
+          test: (noteId) =>
+            (reminders[noteReminders[noteId]].place ||
+              reminders[noteReminders[noteId]].date > Date.now()) &&
+            !removedNotes[noteId],
           name: 'Предстоящие',
           component: Note,
           refPropName: 'noteRef',
           extraProps: { isSelectionMode },
         },
       }}
-      onClickOutsideOfElements={isSelectionMode ? clearSelectedNotes : null}
+      onClickOutsideOfElements={onClickOutsideOfElements}
     />
   );
 }
@@ -84,7 +89,7 @@ function mapStateToProps(state) {
     addingNoteReminderId: getReminderIdByNoteId(state, addingNoteId),
     reminders: getReminders(state),
     noteReminders: state.notification.noteReminders,
-    isSelectionMode: !!state.main.selectedNotes.length,
+    removedNotes: state.main.removedNotes,
   };
 }
 function getClosestDate() {
@@ -105,21 +110,17 @@ function getClosestDate() {
   }
   return closestDate;
 }
-function mapDispatchToProps(dispatch, { addingNoteId, pageName }) {
+function mapDispatchToProps(dispatch, { addingNoteId }) {
   return bindActionCreators(
     {
       setReminder: () => setDateReminder(addingNoteId, getClosestDate()),
-      setPage: () => setPageAC(pageName),
       removeReminder: (addingNoteReminderId) =>
         removeReminderAC(addingNoteReminderId),
     },
     dispatch
   );
 }
-
 export default compose(
-  connect(mapStateToProps, {
-    clearSelectedNotes: clearSelectedNotesAC,
-  }),
+  connect(mapStateToProps),
   connect(null, mapDispatchToProps)
 )(Reminiscent);

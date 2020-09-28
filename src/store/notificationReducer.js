@@ -37,6 +37,7 @@ const handlers = {
         },
       }
     );
+    // sorting note reminders
     const { reminders } = noteRemindersData;
     noteRemindersData.noteReminders.order.sort((noteId1, noteId2) => {
       const {

@@ -8,8 +8,11 @@ import { ModalContext } from '@components/Modal/Modal.container';
 import Header from '@components/Header/Header';
 import SelectionBar from '@components/SelectionBar/SelectionBar.container';
 import Aside from '@components/Aside/Aside';
+import Page from '@components/Container/Page';
 import Home from '@components/Container/Home';
 import Reminiscent from '@components/Container/Reminiscent';
+import Archived from '@components/Container/Archived';
+import Removed from '@components/Container/Removed';
 
 import { clearSelectedNotes as clearSelectedNotesAC } from '@store/notesReducer';
 import { getCurrentPage } from '@store/selectors';
@@ -33,7 +36,13 @@ function AppContainer({
             <Route
               path="/reminders"
               render={() => {
-                return <Reminiscent pageName="/reminders" />;
+                return (
+                  <Page
+                    pageName="/reminders"
+                    key="/reminders"
+                    component={Reminiscent}
+                  />
+                );
               }}
             />
             <Route
@@ -44,8 +53,20 @@ function AppContainer({
                 },
               }) => `label: ${labelID}`}
             />
-            <Route path="/archive">archive</Route>
-            <Route path="/trash">trash</Route>
+            <Route
+              path="/archive"
+              render={() => (
+                <Page pageName="/archive" key="/archive" component={Archived} />
+              )}
+            />
+            <Route
+              path="/trash"
+              render={() => {
+                return (
+                  <Page pageName="/trash" key="/trash" component={Removed} />
+                );
+              }}
+            />
             <Route
               path={['/NOTE/:noteID', '/LIST/:noteID']}
               render={({
@@ -54,7 +75,12 @@ function AppContainer({
                 },
               }) => `page with note: ${noteID}`}
             />
-            <Route path="*" render={() => <Home pageName="/home" />} />
+            <Route
+              path="*"
+              render={() => (
+                <Page pageName="/home" key="/home" component={Home} />
+              )}
+            />
           </Switch>
         }
         onDirectMainClick={onDirectMainClick}
