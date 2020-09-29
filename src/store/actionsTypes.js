@@ -26,4 +26,5 @@ export const SET_SELECTED_NOTES = 'notes/set-selected-notes';
 // notification
 export const SET_NOTE_REMINDER = 'notification/set-note-reminder';
 export const REMOVE_REMINDER = 'notification/remove-reminder';
+export const UPDATE_REMINDER = 'notification/update-reminder';
 export const SET_FOUND_PLACES = 'notification/set-found-places';

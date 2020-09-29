@@ -19,6 +19,7 @@ function Note(
       items,
       markedItems,
       isPinned,
+      isReminderPassed,
       creationDate,
       editingDate,
       color,
@@ -63,8 +64,10 @@ function Note(
 ) {
   const buttons = [
     {
-      iconSymbol: '\uf0f3',
-      titleText: 'Сохранить напоминание',
+      iconSymbol: isReminderPassed ? '\ue800' : '\uf0f3',
+      titleText: isReminderPassed
+        ? 'Отметить как выполненное'
+        : 'Сохранить напоминание',
       modificators: 'icon-button_smaller',
       onClick: onReminderButtonClick,
       append: popup.reminder,

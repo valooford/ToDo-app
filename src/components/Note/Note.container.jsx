@@ -3,7 +3,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { bindActionCreators } from 'redux';
+import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
 import { useEffectOnMouseDownOutside } from '@/utils';
@@ -31,7 +31,12 @@ import {
   selectNote,
   cancelNoteSelection,
 } from '@store/notesReducer';
-import { getAddingNoteId } from '@store/selectors';
+import { updateReminder } from '@store/notificationReducer';
+import {
+  getAddingNoteId,
+  getReminderIdByNoteId,
+  hasPassedReminder,
+} from '@store/selectors';
 /* eslint-enable import/no-unresolved */
 import style from './Note-cfg.module.scss';
 import listItemStyle from './components/ListItem/ListItem-cfg.module.scss';
@@ -47,6 +52,7 @@ function NoteContainer({
   isAddNote,
   isSelected,
   isPinned,
+  isReminderPassed,
   note: {
     type,
     headerText,
@@ -63,6 +69,7 @@ function NoteContainer({
   onNoteBlur,
   onNotePin,
   onNoteUnpin,
+  onNoteReminderUpdate,
   onNoteAdd,
   onHeaderChange,
   onTextFieldChange,
@@ -297,11 +304,17 @@ function NoteContainer({
             }, 1000);
           }
         : null,
-    onReminderButtonClick: () => {
+  };
+  if (isReminderPassed) {
+    eventHandlers.onReminderButtonClick = () => {
+      onNoteReminderUpdate();
+    };
+  } else {
+    eventHandlers.onReminderButtonClick = () => {
       clearTimeout(colorsButtonMouseLeaveTimerId);
       setReminderPopup();
-    },
-  };
+    };
+  }
   // a click handler focusing the note
   if (!isAddNote) {
     if (isSelectionMode) {
@@ -361,8 +374,8 @@ function NoteContainer({
         text,
         items: itemsOrder && itemsWithHandlersGroups.unmarked,
         markedItems: itemsOrder && itemsWithHandlersGroups.marked,
-        isFocused,
         isPinned,
+        isReminderPassed,
         creationDate,
         editingDate,
         color,
@@ -400,20 +413,24 @@ function NoteContainer({
 function mapStateToProps(state, { id }) {
   return {
     note: state.main.notes[id],
+    reminderId: getReminderIdByNoteId(state, id),
     isFocused: id === state.main.focusedNoteId,
     isAddNote: id === getAddingNoteId(state),
     isSelected: state.main.selectedNotes[id],
     isPinned: state.main.pinnedNotes[id],
+    isReminderPassed:
+      state.app.page === '/reminders' && hasPassedReminder(state, id),
   };
 }
 
-function mapDispatchToProps(dispatch, { id }) {
+function mapDispatchToProps(dispatch, { id, reminderId }) {
   return bindActionCreators(
     {
       onNoteFocus: () => focusNote(id),
       onNoteBlur: blurNote,
       onNotePin: () => pinNote(id),
       onNoteUnpin: () => unpinNote(id),
+      onNoteReminderUpdate: () => updateReminder(reminderId),
       onNoteAdd: addNewNote,
       onHeaderChange: (headerText) => updateNoteHeader(id, headerText),
       onTextFieldChange: (text) => updateNoteText(id, text),
@@ -434,4 +451,7 @@ function mapDispatchToProps(dispatch, { id }) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(NoteContainer);
+export default compose(
+  connect(mapStateToProps),
+  connect(null, mapDispatchToProps)
+)(NoteContainer);

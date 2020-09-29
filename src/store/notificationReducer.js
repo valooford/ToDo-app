@@ -6,6 +6,7 @@ import { associativeArrToArr } from '@/utils';
 import {
   SET_NOTE_REMINDER,
   REMOVE_REMINDER,
+  UPDATE_REMINDER,
   SET_FOUND_PLACES,
 } from './actionsTypes';
 
@@ -67,6 +68,45 @@ const handlers = {
     );
     return { ...state, reminders, noteReminders };
   },
+  [UPDATE_REMINDER]: (state, { reminderId }) => {
+    const hasNoPeriod = !state.reminders[reminderId].period;
+    const passed = {};
+    const { end } = state.reminders[reminderId];
+    if (end) {
+      if (end.count === 0) passed.count = true;
+      else if (end.date && end.date - Date.now() < 0) passed.endDate = true;
+    }
+
+    if (hasNoPeriod || passed.count || passed.endDate) {
+      const newState = {};
+      const {
+        [reminderId]: { noteId },
+        ...reminders
+      } = state.reminders;
+      newState.reminders = reminders;
+      if (noteId) {
+        const noteReminders = { ...state.noteReminders };
+        delete noteReminders[noteId];
+        noteReminders.order = noteReminders.order.filter((id) => id !== noteId);
+        newState.noteReminders = noteReminders;
+      }
+      return { ...state, ...newState };
+    }
+    const newReminder = { ...state.reminders[reminderId] };
+    const {
+      date,
+      period: { every },
+    } = newReminder;
+    newReminder.date = new Date(+date + every);
+
+    if (end && end.count) {
+      newReminder.period.count -= 1;
+    }
+    return {
+      ...state,
+      reminders: { ...state.reminders, [reminderId]: newReminder },
+    };
+  },
   [SET_FOUND_PLACES]: (state, { foundPlaces }) => {
     return { ...state, foundPlaces };
   },
@@ -124,6 +164,11 @@ export function setPlaceReminder(noteId, place) {
 // REMOVE_REMINDER
 export function removeReminder(reminderId) {
   return { type: REMOVE_REMINDER, reminderId };
+}
+
+// UPDATE_REMINDER
+export function updateReminder(reminderId) {
+  return { type: UPDATE_REMINDER, reminderId };
 }
 
 // SET_FOUND_PLACES

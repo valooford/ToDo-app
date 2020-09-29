@@ -19,3 +19,10 @@ export function getReminder(state, reminderId) {
 export function getReminderIdByNoteId(state, noteId) {
   return state.notification.noteReminders[noteId];
 }
+export function hasPassedReminder(state, noteId) {
+  const reminderId = state.notification.noteReminders[noteId];
+  if (!reminderId) return false;
+  const { date } = state.notification.reminders[reminderId];
+  if (!date) return false;
+  return date - Date.now() < 0;
+}
