@@ -97,8 +97,23 @@ const handlers = {
       date,
       period: { every },
     } = newReminder;
-    newReminder.date = new Date(+date + every);
-
+    const { method, count } = every;
+    newReminder.date = new Date(date);
+    switch (method) {
+      case 'daily':
+        newReminder.date.setDate(date.getDate() + count);
+        break;
+      case 'weekly':
+        newReminder.date.setDate(date.getDate() + count * 7);
+        break;
+      case 'monthly':
+        newReminder.date.setMonth(date.getMonth() + count);
+        break;
+      case 'yearly':
+        newReminder.date.setFullYear(date.getFullYear() + count);
+        break;
+      default:
+    }
     if (end && end.count) {
       newReminder.period.count -= 1;
     }
@@ -120,14 +135,15 @@ const initialState = {
       // place: 'shopping mall',
       // or
       date: new Date(2020, 7, 1, 1),
-      // period: {
-      //   every: 365,
-      //   end: {
-      //     count: 2,
-      //     // or
-      //     date: new Date(2022, 7, 1),
-      //   },
-      // },
+      period: {
+        // every: 365,
+        every: { method: 'yearly', count: 1 },
+        // end: {
+        //   count: 2,
+        //   // or
+        //   date: new Date(2022, 7, 1),
+        // },
+      },
     },
   },
   noteReminders: {

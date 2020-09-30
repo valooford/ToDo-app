@@ -514,7 +514,8 @@ export default function PopupReminder({
               <Button
                 disabled={!fieldsetData.isValid}
                 onClick={() => {
-                  setDate(fieldsetData.date, fieldsetData.period);
+                  // setDate(fieldsetData.date, fieldsetData.period);
+                  setDate(fieldsetData.date, periodFieldsetData);
                   onClose();
                   resetFoundPlaces();
                 }}
