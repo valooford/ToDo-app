@@ -260,10 +260,43 @@ export default function PopupReminder({
     case 'date':
       fieldset.content = (
         <DateFieldset
+          fieldsetData={fieldsetData}
+          setDate={(date, month, year) => {
+            setFieldsetData((prev) => {
+              const { date: dateObj } = prev;
+              const newDate = new Date(dateObj);
+              newDate.setFullYear(year, month, date);
+              return {
+                ...prev,
+                date: newDate,
+              };
+            });
+          }}
+          setTime={(hours, minutes) => {
+            setFieldsetData((prev) => {
+              const { date } = prev;
+              const newDate = new Date(date);
+              newDate.setHours(hours, minutes);
+              return {
+                ...prev,
+                date: newDate,
+              };
+            });
+          }}
+          setPeriod={(period) => {
+            setFieldsetData((prev) => ({
+              ...prev,
+              period,
+            }));
+          }}
+          setValid={() => {
+            setFieldsetData((prev) => ({ ...prev, isValid: true }));
+          }}
+          setInvalid={() => {
+            setFieldsetData((prev) => ({ ...prev, isValid: false }));
+          }}
           dateValidator={dateValidator}
           autofocusRef={autofocusRef}
-          fieldsetData={fieldsetData}
-          setFieldsetData={setFieldsetData}
           onSave={() => {
             // setDate(fieldsetData.date, fieldsetData.period);
             setDate(fieldsetData.date, periodFieldsetData);
@@ -306,7 +339,7 @@ export default function PopupReminder({
     case 'period':
       fieldset.content = (
         <PeriodFieldset
-          fieldsetData={fieldsetData}
+          isValid={fieldsetData.isValid}
           setFieldsetData={setFieldsetData}
           periodFieldsetData={periodFieldsetData}
           setPeriodFieldsetData={setPeriodFieldsetData}

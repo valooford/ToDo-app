@@ -1,6 +1,5 @@
 import React from 'react';
 import cn from 'classnames';
-
 /* eslint-disable import/no-unresolved */
 import Option from '@components/Option/Option';
 import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
