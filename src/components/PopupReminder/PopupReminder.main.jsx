@@ -11,6 +11,7 @@ export default function PopupReminderMain({
   onClose,
   onChoosingDate,
   onChoosingPlace,
+  autofocusRef,
 }) {
   const optionParams = [
     {
@@ -28,6 +29,7 @@ export default function PopupReminderMain({
         setDate(date);
         onClose();
       },
+      ref: autofocusRef,
     },
     {
       details: '08:00',
@@ -88,6 +90,7 @@ export default function PopupReminderMain({
               disabled={params.disabled}
               onClick={params.onClick}
               key={params.text}
+              ref={params.ref}
             >
               {params.text}
             </Option>

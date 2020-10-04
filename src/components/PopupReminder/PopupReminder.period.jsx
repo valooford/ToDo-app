@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import cn from 'classnames';
 
 /* eslint-disable import/no-unresolved */
-import { getFormattedDate, getFormattedPeriod } from '@/utils';
+import { getFormattedDate, getPeriodString } from '@/utils';
 
 import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
 import IconButton from '@components/IconButton/IconButton';
@@ -12,6 +12,22 @@ import Calendar from '@components/Calendar/Calendar';
 import Button from '@components/Button/Button';
 /* eslint-enable import/no-unresolved */
 import style from './PopupReminder-cfg.module.scss';
+
+const everyFieldsetUnitsOptions = [
+  { children: 'дн.', value: 'daily', key: 'days' },
+  { children: 'нед.', value: 'weekly', key: 'weeks' },
+  { children: 'мес.', value: 'monthly', key: 'months' },
+  { children: 'г.', value: 'yearly', key: 'years' },
+];
+const daysOfTheWeek = [
+  { text: 'пн', day: 1 },
+  { text: 'вт', day: 2 },
+  { text: 'ср', day: 3 },
+  { text: 'чт', day: 4 },
+  { text: 'пт', day: 5 },
+  { text: 'сб', day: 6 },
+  { text: 'вс', day: 0 },
+];
 
 // transforming method into units
 const getUnitsByMethod = (method) => {
@@ -29,69 +45,49 @@ const getUnitsByMethod = (method) => {
   }
 };
 export default function PopupReminderPeriod({
-  isValid, //+
-  setFieldsetData,
+  isValid,
   periodFieldsetData,
-  setPeriodFieldsetData,
-  setPeriodEveryCount,
+  cleanPeriod,
+  onEveryFieldsetUnitInput,
+  onEndFieldsetDateInput,
+  togglePeriodEveryDays,
   isPeriodEveryCountInvalid,
-  setIsPeriodEveryCountInvalid,
-  setPeriodEveryKeep,
-  setPeriodEndType,
-  setPeriodEndCount,
   isPeriodEndCountInvalid,
-  setIsPeriodEndCountInvalid,
-  dateValidator, //+
-  autofocusRef, //+
-  keepDateRadioButtonRef,
-  keepDayRadioButtonRef,
-  neverRadioButtonRef,
-  countRadioButtonRef,
-  dateRadioButtonRef,
-  onReady, //+
-  onBack, //+
-  getCleanPeriod, //-
+  onEveryFieldsetInputChange,
+  onEndFieldsetInputChange,
+  setPeriodEveryKeep, // ~
+  setPeriodEndType,
+  dateValidator,
+  autofocusRef,
+  onReady,
+  onBack,
 }) {
-  const onEveryFieldsetInputChange = (e) => {
-    const isInvalid =
-      Number.isNaN(Number(e.target.value)) || e.target.value.trim() === '';
-    setIsPeriodEveryCountInvalid(isInvalid);
-    setFieldsetData((prev) => ({
-      ...prev,
-      isValid: !isInvalid,
-    }));
-    if (!isInvalid) {
-      setPeriodEveryCount(Number(e.target.value));
+  const neverRadioButtonRef = React.createRef();
+  const countRadioButtonRef = React.createRef();
+  const dateRadioButtonRef = React.createRef();
+  const keepDateRadioButtonRef = React.createRef();
+  const keepDayRadioButtonRef = React.createRef();
+
+  // autofocusing the radio buttons
+  useEffect(() => {
+    if (periodFieldsetData.end.type === 'never')
+      neverRadioButtonRef.current.checked = true;
+    else if (periodFieldsetData.end.type === 'count')
+      countRadioButtonRef.current.checked = true;
+    else if (periodFieldsetData.end.type === 'date')
+      dateRadioButtonRef.current.checked = true;
+  }, []);
+  useEffect(() => {
+    if (periodFieldsetData.every.method !== 'monthly') return;
+    const { keep } = periodFieldsetData.every;
+    if (keep === 'date') {
+      keepDateRadioButtonRef.current.checked = true;
+    } else if (keep === 'day') {
+      keepDayRadioButtonRef.current.checked = true;
     }
-  };
-  const onEveryFieldsetUnitInput = (method) => {
-    setPeriodFieldsetData((prev) => ({
-      ...prev,
-      every: {
-        method,
-        count: prev.every.count,
-        days: prev.every.days,
-        keep: prev.every.keep,
-      },
-    }));
-  };
-  const everyFieldsetUnitsOptions = [
-    { children: 'дн.', value: 'daily', key: 'days' },
-    { children: 'нед.', value: 'weekly', key: 'weeks' },
-    { children: 'мес.', value: 'monthly', key: 'months' },
-    { children: 'г.', value: 'yearly', key: 'years' },
-  ];
+  }, [periodFieldsetData.every.method]);
 
-  const daysOfTheWeek = [
-    { text: 'пн', day: 1 },
-    { text: 'вт', day: 2 },
-    { text: 'ср', day: 3 },
-    { text: 'чт', day: 4 },
-    { text: 'пт', day: 5 },
-    { text: 'сб', day: 6 },
-    { text: 'вс', day: 0 },
-  ];
-
+  // handling radio buttons selection
   const onEndFieldsetClick = ({ target }) => {
     if (target === neverRadioButtonRef.current) {
       setPeriodEndType('never');
@@ -101,37 +97,15 @@ export default function PopupReminderPeriod({
       setPeriodEndType('date');
     }
   };
-
   const onEndFieldsetInputFocus = () => {
     // eslint-disable-next-line no-param-reassign
     countRadioButtonRef.current.checked = true;
     setPeriodEndType('count');
   };
-  const onEndFieldsetInputChange = (e) => {
-    const isInvalid =
-      Number.isNaN(Number(e.target.value)) || e.target.value.trim() === '';
-    setIsPeriodEndCountInvalid(isInvalid);
-    setFieldsetData((prev) => ({
-      ...prev,
-      isValid: !isInvalid,
-    }));
-    if (!isInvalid) {
-      setPeriodEndCount(Number(e.target.value));
-    }
-  };
-  const onEndFieldsetDateInput = (date, month, year) => {
-    setPeriodFieldsetData((prev) => {
-      const { date: dateObj } = prev;
-      const newDate = new Date(dateObj);
-      newDate.setFullYear(year, month, date);
-      return {
-        ...prev,
-        end: {
-          ...prev.end,
-          date: newDate,
-        },
-      };
-    });
+  const onEndFieldsetDateFocus = () => {
+    // eslint-disable-next-line no-param-reassign
+    dateRadioButtonRef.current.checked = true;
+    setPeriodEndType('date');
   };
 
   return (
@@ -165,7 +139,7 @@ export default function PopupReminderPeriod({
               })}
               type="text"
               defaultValue={periodFieldsetData.every.count}
-              onChange={onEveryFieldsetInputChange}
+              onChange={(e) => onEveryFieldsetInputChange(e.target.value)}
               ref={autofocusRef}
             />
             <Dropdown
@@ -187,19 +161,7 @@ export default function PopupReminderPeriod({
                           periodFieldsetData.every.days.indexOf(day) !== -1,
                       })}
                       type="button"
-                      onClick={() => {
-                        setPeriodFieldsetData((prev) => {
-                          const period = { ...prev };
-                          period.every.days = [...period.every.days];
-                          const dayIndex = period.every.days.indexOf(day);
-                          if (dayIndex !== -1) {
-                            period.every.days.splice(dayIndex, 1);
-                          } else {
-                            period.every.days.push(day);
-                          }
-                          return period;
-                        });
-                      }}
+                      onClick={togglePeriodEveryDays(day)}
                       key={day}
                     >
                       {text}
@@ -273,7 +235,7 @@ export default function PopupReminderPeriod({
                 type="text"
                 defaultValue={periodFieldsetData.end.count || 2}
                 onFocus={onEndFieldsetInputFocus}
-                onChange={onEndFieldsetInputChange}
+                onChange={(e) => onEndFieldsetInputChange(e.target.value)}
               />
               повт.
             </label>
@@ -294,11 +256,7 @@ export default function PopupReminderPeriod({
                 titleText="Выбрать дату окончания"
                 validate={dateValidator}
                 onInput={onEndFieldsetDateInput}
-                onFocus={() => {
-                  // eslint-disable-next-line no-param-reassign
-                  dateRadioButtonRef.current.checked = true;
-                  setPeriodEndType('date');
-                }}
+                onFocus={onEndFieldsetDateFocus}
                 component={Calendar}
                 componentsParams={[
                   { date: periodFieldsetData.end.date, key: 'calendar' },
@@ -310,7 +268,7 @@ export default function PopupReminderPeriod({
           </div>
         </fieldset>
         <div className={style['popup-reminder__description']}>
-          {getFormattedPeriod(getCleanPeriod(periodFieldsetData))}
+          {getPeriodString(cleanPeriod)}
         </div>
         <span className={style['popup-reminder__ready-button']}>
           <Button disabled={!isValid} onClick={onReady}>

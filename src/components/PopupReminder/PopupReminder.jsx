@@ -41,15 +41,9 @@ export default function PopupReminder({
 
   // a currentFieldset is used to show a different content inside the PopupReminder
   const [currentFieldset, setCurrentFieldset] = useState(() => {
-    let initialFieldset;
-    if (reminderDate) {
-      initialFieldset = 'date';
-    } else if (reminderPlace != null) {
-      initialFieldset = 'place';
-    } else {
-      initialFieldset = 'main';
-    }
-    return initialFieldset;
+    if (reminderDate) return 'date';
+    if (reminderPlace != null) return 'place';
+    return 'main';
   });
 
   // an Esc keydown handlers
@@ -59,22 +53,14 @@ export default function PopupReminder({
   // autofocus on fieldset change
   const autofocusRef = useRef(null);
   useEffect(() => {
-    if (autofocusRef.current) {
-      autofocusRef.current.focus();
-    }
+    autofocusRef.current.focus();
   }, [currentFieldset]);
 
   // data to add/set a reminder
-  const [fieldsetData, setFieldsetData] = useState({
-    date: reminderDate,
-    period: reminderPeriod,
-    place: reminderPlace,
-    isValid: true,
-  });
-  // fieldsetData correction on fieldset change
-  useEffect(() => {
+  const [fieldsetData, setFieldsetData] = useState(() => {
     let date;
     if (!reminderDate) {
+      // setting closest reminder date if it's undefined
       const currentDate = new Date();
       let hours = Math.ceil(currentDate.getHours()) + 1;
       if (currentDate.getMinutes() > 30) {
@@ -85,16 +71,18 @@ export default function PopupReminder({
     } else {
       date = reminderDate;
     }
-    setFieldsetData((prev) => ({
-      ...prev,
+    return {
       date,
+      period: reminderPeriod,
+      place: reminderPlace,
       isValid: true,
-    }));
-  }, [currentFieldset]);
+    };
+  });
 
   // implement all the stuff from here in the notificationReducer
   // refactor the PopupReminder's dumb&smart components
-  // perion field of fieldsetData
+
+  // period field of fieldsetData with full information
   const [periodFieldsetData, setPeriodFieldsetData] = useState({
     every: { method: 'daily', count: 1, days: [], keep: 'date' },
     end: { type: 'never', count: 2 },
@@ -133,6 +121,13 @@ export default function PopupReminder({
     setPeriodFieldsetData(period);
   }, [fieldsetData.period]);
 
+  const setIsValid = (isValid) => {
+    setFieldsetData((prev) => ({
+      ...prev,
+      isValid,
+    }));
+  };
+
   // function wrappers for specific period fields setting
   const setPeriodEveryKeep = (keep) => {
     setPeriodFieldsetData((prev) => {
@@ -165,34 +160,6 @@ export default function PopupReminder({
 
   const fieldset = {};
 
-  const neverRadioButtonRef = useRef(null);
-  const countRadioButtonRef = useRef(null);
-  const dateRadioButtonRef = useRef(null);
-
-  // autochecking radio buttons on fieldset change
-  useEffect(() => {
-    if (currentFieldset === 'period') {
-      if (periodFieldsetData.end.type === 'never')
-        neverRadioButtonRef.current.checked = true;
-      else if (periodFieldsetData.end.type === 'count')
-        countRadioButtonRef.current.checked = true;
-      else if (periodFieldsetData.end.type === 'date')
-        dateRadioButtonRef.current.checked = true;
-    }
-  }, [currentFieldset]);
-  const keepDateRadioButtonRef = useRef(null);
-  const keepDayRadioButtonRef = useRef(null);
-  useEffect(() => {
-    if (currentFieldset !== 'period') return;
-    if (periodFieldsetData.every.method !== 'monthly') return;
-    const { keep } = periodFieldsetData.every;
-    if (keep === 'date') {
-      keepDateRadioButtonRef.current.checked = true;
-    } else if (keep === 'day') {
-      keepDayRadioButtonRef.current.checked = true;
-    }
-  }, [currentFieldset, periodFieldsetData.every.method]);
-
   // validator for a Dropdown
   const dateValidator = (date) => {
     const dateParams = getDateParamsFromString(date);
@@ -216,7 +183,7 @@ export default function PopupReminder({
   );
   const [isPeriodEndCountInvalid, setIsPeriodEndCountInvalid] = useState(false);
 
-  // cleaning a period
+  // cleaning a period (removing unused periodFieldsetData fields)
   const getCleanPeriod = (period) => {
     const cleanPeriod = { every: { ...period.every }, end: { ...period.end } };
     const { method } = cleanPeriod.every;
@@ -245,7 +212,7 @@ export default function PopupReminder({
     case 'main':
       fieldset.content = (
         <MainFieldset
-          setDate={setDate}
+          setDate={(date) => setDate(date)}
           onClose={onClose}
           onChoosingDate={() => {
             setCurrentFieldset('date');
@@ -253,6 +220,7 @@ export default function PopupReminder({
           onChoosingPlace={() => {
             setCurrentFieldset('place');
           }}
+          autofocusRef={autofocusRef}
         />
       );
       fieldset.onKeyDown = onKeyDown;
@@ -261,7 +229,7 @@ export default function PopupReminder({
       fieldset.content = (
         <DateFieldset
           fieldsetData={fieldsetData}
-          setDate={(date, month, year) => {
+          onDateInput={(date, month, year) => {
             setFieldsetData((prev) => {
               const { date: dateObj } = prev;
               const newDate = new Date(dateObj);
@@ -272,7 +240,7 @@ export default function PopupReminder({
               };
             });
           }}
-          setTime={(hours, minutes) => {
+          onTimeInput={(hours, minutes) => {
             setFieldsetData((prev) => {
               const { date } = prev;
               const newDate = new Date(date);
@@ -283,23 +251,23 @@ export default function PopupReminder({
               };
             });
           }}
-          setPeriod={(period) => {
+          onPeriodInput={(period) => {
             setFieldsetData((prev) => ({
               ...prev,
               period,
             }));
           }}
-          setValid={() => {
+          setAsValid={() => {
             setFieldsetData((prev) => ({ ...prev, isValid: true }));
           }}
-          setInvalid={() => {
+          setAsInvalid={() => {
             setFieldsetData((prev) => ({ ...prev, isValid: false }));
           }}
           dateValidator={dateValidator}
           autofocusRef={autofocusRef}
           onSave={() => {
-            // setDate(fieldsetData.date, fieldsetData.period);
-            setDate(fieldsetData.date, periodFieldsetData);
+            setDate(fieldsetData.date, fieldsetData.period);
+            // setDate(fieldsetData.date, periodFieldsetData);
             onClose();
             resetFoundPlaces();
           }}
@@ -340,24 +308,62 @@ export default function PopupReminder({
       fieldset.content = (
         <PeriodFieldset
           isValid={fieldsetData.isValid}
-          setFieldsetData={setFieldsetData}
           periodFieldsetData={periodFieldsetData}
-          setPeriodFieldsetData={setPeriodFieldsetData}
-          setPeriodEveryCount={setPeriodEveryCount}
+          cleanPeriod={getCleanPeriod(periodFieldsetData)}
+          onEveryFieldsetUnitInput={(method) => {
+            setPeriodFieldsetData((prev) => ({
+              ...prev,
+              every: { ...prev.every, method },
+            }));
+          }}
+          onEndFieldsetDateInput={(date, month, year) => {
+            setPeriodFieldsetData((prev) => {
+              const { date: dateObj } = prev;
+              const newDate = new Date(dateObj);
+              newDate.setFullYear(year, month, date);
+              return {
+                ...prev,
+                end: { ...prev.end, date: newDate },
+              };
+            });
+          }}
+          togglePeriodEveryDays={(day) => () => {
+            setPeriodFieldsetData((prev) => {
+              const period = { ...prev };
+              period.every.days = [...period.every.days];
+              const dayIndex = period.every.days.indexOf(day);
+              if (dayIndex !== -1) {
+                period.every.days.splice(dayIndex, 1);
+              } else {
+                period.every.days.push(day);
+              }
+              return period;
+            });
+          }}
           isPeriodEveryCountInvalid={isPeriodEveryCountInvalid}
-          setIsPeriodEveryCountInvalid={setIsPeriodEveryCountInvalid}
+          onEveryFieldsetInputChange={(count) => {
+            const isInvalid =
+              Number.isNaN(Number(count)) || count.trim() === '';
+            setIsPeriodEveryCountInvalid(isInvalid);
+            setIsValid(!isInvalid);
+            if (!isInvalid) {
+              setPeriodEveryCount(Number(count));
+            }
+          }}
           setPeriodEveryKeep={setPeriodEveryKeep}
           setPeriodEndType={setPeriodEndType}
-          setPeriodEndCount={setPeriodEndCount}
           isPeriodEndCountInvalid={isPeriodEndCountInvalid}
-          setIsPeriodEndCountInvalid={setIsPeriodEndCountInvalid}
+          onEndFieldsetInputChange={(count) => {
+            const isInvalid =
+              Number.isNaN(Number(count)) || count.trim() === '';
+            setIsPeriodEndCountInvalid(isInvalid);
+            setIsValid(!isInvalid);
+            if (!isInvalid) {
+              setPeriodEndCount(Number(count));
+            }
+          }}
           dateValidator={dateValidator}
           autofocusRef={autofocusRef}
-          keepDateRadioButtonRef={keepDateRadioButtonRef}
-          keepDayRadioButtonRef={keepDayRadioButtonRef}
-          neverRadioButtonRef={neverRadioButtonRef}
-          countRadioButtonRef={countRadioButtonRef}
-          dateRadioButtonRef={dateRadioButtonRef}
           onReady={() => {
             setFieldsetData((prev) => ({
               ...prev,
@@ -368,7 +374,6 @@ export default function PopupReminder({
           onBack={() => {
             setCurrentFieldset('date');
           }}
-          getCleanPeriod={getCleanPeriod} //-
         />
       );
       fieldset.onKeyDown = switchToDateOnEsc;

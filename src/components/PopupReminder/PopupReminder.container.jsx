@@ -20,17 +20,17 @@ import { getReminder, getReminderIdByNoteId } from '@store/selectors';
 // *
 function PopupReminderContainer({
   handleClose,
-  reminder,
+  reminder: {
+    date: reminderDate,
+    period: reminderPeriod,
+    place: reminderPlace,
+  } = {},
   foundPlaces,
   setDateReminder,
   setPlaceReminder,
   findPlacesByQuery,
   resetFoundPlaces,
 }) {
-  const reminderDate = reminder && reminder.date;
-  const reminderPeriod = reminder && reminder.period;
-  const reminderPlace = reminder && reminder.place;
-
   // detecting click inside popupMenu
   const setIsTouched = useEffectOnMouseDownOutside(handleClose, []);
 

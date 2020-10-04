@@ -196,7 +196,7 @@ period: {
 }, 
 */
 
-export function getFormattedPeriod(period) {
+export function getPeriodString(period) {
   let formattedPeriod;
   if (!period || !period.every) return 'Не повторять';
   const { every, end } = period;

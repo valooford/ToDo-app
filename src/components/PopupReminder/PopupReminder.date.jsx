@@ -4,7 +4,7 @@ import cn from 'classnames';
 /* eslint-disable import/no-unresolved */
 import {
   getFormattedDate,
-  getFormattedPeriod,
+  getPeriodString,
   getDateParamsFromString,
   isTimePassed,
 } from '@/utils';
@@ -22,11 +22,11 @@ export default function PopupReminderDate({
   fieldsetData,
   dateValidator,
   autofocusRef,
-  setDate,
-  setTime,
-  setPeriod,
-  setValid,
-  setInvalid,
+  onDateInput,
+  onTimeInput,
+  onPeriodInput,
+  setAsValid,
+  setAsInvalid,
   onSave,
   onBack,
   onChoosingPeriod,
@@ -36,17 +36,15 @@ export default function PopupReminderDate({
     if (dateParams && dateParams.type === 'time') {
       const { type, ...params } = dateParams;
       if (isTimePassed(fieldsetData.date, ...Object.values(params))) {
-        setInvalid();
+        setAsInvalid();
         return false;
       }
-      setValid();
+      setAsValid();
       return Object.values(params);
     }
-    setInvalid();
+    setAsInvalid();
     return false;
   };
-  const onDateInput = setDate;
-  const onTimeInput = setTime;
   const timeOptions = [
     {
       details: '08:00',
@@ -78,7 +76,6 @@ export default function PopupReminderDate({
     },
     { children: 'Другое', key: 'other', focusOnClick: true },
   ];
-  const onPeriodInput = setPeriod;
   const periodOptions = [
     { children: 'Не повторять', key: 'no period' },
     {
@@ -161,12 +158,12 @@ export default function PopupReminderDate({
           />
           <Dropdown
             noInput
-            defaultValue={getFormattedPeriod(fieldsetData.period)}
+            defaultValue={getPeriodString(fieldsetData.period)}
             titleText="Выбрать частоту"
             onInput={onPeriodInput}
             component={Option}
             componentsParams={periodOptions}
-            componentActionValueParser={getFormattedPeriod}
+            componentActionValueParser={getPeriodString}
             extraordinaryFocusRef={setPeriodRef}
             ref={setPeriodRef}
           />
