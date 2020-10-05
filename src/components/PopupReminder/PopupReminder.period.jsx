@@ -47,7 +47,7 @@ const getUnitsByMethod = (method) => {
 export default function PopupReminderPeriod({
   isValid,
   periodFieldsetData,
-  cleanPeriod,
+  period,
   onEveryFieldsetUnitInput,
   onEndFieldsetDateInput,
   togglePeriodEveryDays,
@@ -268,7 +268,7 @@ export default function PopupReminderPeriod({
           </div>
         </fieldset>
         <div className={style['popup-reminder__description']}>
-          {getPeriodString(cleanPeriod)}
+          {getPeriodString(period)}
         </div>
         <span className={style['popup-reminder__ready-button']}>
           <Button disabled={!isValid} onClick={onReady}>

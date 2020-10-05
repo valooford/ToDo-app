@@ -17,6 +17,30 @@ function handleEscWith(cb) {
   };
 }
 
+// cleaning a period (removing unused periodFieldsetData fields)
+const getCleanPeriod = (period) => {
+  const cleanPeriod = { every: { ...period.every }, end: { ...period.end } };
+  const { method } = cleanPeriod.every;
+  if (method === 'daily' || method === 'yearly') {
+    delete cleanPeriod.every.days;
+    delete cleanPeriod.every.keep;
+  } else if (method === 'weekly') {
+    delete cleanPeriod.every.keep;
+  } else if (method === 'monthly') {
+    delete cleanPeriod.every.days;
+  }
+  const { type } = cleanPeriod.end;
+  delete cleanPeriod.end.type;
+  if (type === 'never') {
+    delete cleanPeriod.end;
+  } else if (type === 'count') {
+    delete cleanPeriod.end.date;
+  } else if (type === 'date') {
+    delete cleanPeriod.end.count;
+  }
+  return cleanPeriod;
+};
+
 // КОМПОНЕНТ ВСПЛЫВАЮЩЕГО МЕНЮ НАСТРОЙКИ НАПОМИНАНИЙ / POPUP-REMINDER
 // *
 export default function PopupReminder({
@@ -83,44 +107,29 @@ export default function PopupReminder({
   // refactor the PopupReminder's dumb&smart components
 
   // period field of fieldsetData with full information
-  const [periodFieldsetData, setPeriodFieldsetData] = useState({
-    every: { method: 'daily', count: 1, days: [], keep: 'date' },
-    end: { type: 'never', count: 2 },
-  });
-  // periodFieldsetData correction
-  useEffect(() => {
-    const period = {
-      every: { method: 'daily', count: 1, days: [], keep: 'date' },
-      end: { type: 'never', count: 2 },
+  const [periodFieldsetData, setPeriodFieldsetData] = useState(() => {
+    const { every, end = {} } = fieldsetData.period;
+    let type;
+    if (end.count) {
+      type = 'count';
+    } else if (end.date) {
+      type = 'date';
+    } else {
+      type = 'never';
+    }
+    return {
+      every: { method: 'daily', count: 1, days: [], keep: 'date', ...every },
+      end: { type, count: 2, date: new Date(), ...end },
     };
-    if (fieldsetData.period) {
-      // period = { ...period, ...fieldsetData.period };
-      let { every } = fieldsetData.period;
-      if (typeof every === 'number') {
-        every = { method: 'daily', count: period.every };
-      } else if (typeof every === 'string') {
-        let method;
-        if (every === 'day') method = 'daily';
-        else if (every === 'week') method = 'weekly';
-        else if (every === 'month') method = 'monthly';
-        else if (every === 'year') method = 'yearly';
-        every = { method, count: 1 };
-      }
-      period.every = { ...period.every, ...every };
-      if (fieldsetData.period.end)
-        period.end = {
-          ...fieldsetData.period.end,
-          type: fieldsetData.period.end.count ? 'count' : 'date',
-        };
-    }
-    if (!period.end.date) {
-      const endDate = new Date();
-      endDate.setMonth(endDate.getMonth() + 1);
-      period.end.date = endDate;
-    }
-    setPeriodFieldsetData(period);
-  }, [fieldsetData.period]);
+  });
+  useEffect(() => {
+    setFieldsetData((prev) => ({
+      ...prev,
+      period: getCleanPeriod(periodFieldsetData),
+    }));
+  }, [periodFieldsetData]);
 
+  // function wrapper for setting isValid property of fieldsetData
   const setIsValid = (isValid) => {
     setFieldsetData((prev) => ({
       ...prev,
@@ -130,32 +139,28 @@ export default function PopupReminder({
 
   // function wrappers for specific period fields setting
   const setPeriodEveryKeep = (keep) => {
-    setPeriodFieldsetData((prev) => {
-      const period = { ...prev };
-      period.every.keep = keep;
-      return period;
-    });
+    setPeriodFieldsetData((prev) => ({
+      ...prev,
+      every: { ...prev.every, keep },
+    }));
   };
   const setPeriodEveryCount = (count) => {
-    setPeriodFieldsetData((prev) => {
-      const period = { ...prev };
-      period.every.count = count;
-      return period;
-    });
+    setPeriodFieldsetData((prev) => ({
+      ...prev,
+      every: { ...prev.every, count },
+    }));
   };
   const setPeriodEndCount = (count) => {
-    setPeriodFieldsetData((prev) => {
-      const period = { ...prev };
-      period.end.count = count;
-      return period;
-    });
+    setPeriodFieldsetData((prev) => ({
+      ...prev,
+      end: { ...prev.end, count },
+    }));
   };
   const setPeriodEndType = (type) => {
-    setPeriodFieldsetData((prev) => {
-      const period = { ...prev };
-      period.end.type = type;
-      return period;
-    });
+    setPeriodFieldsetData((prev) => ({
+      ...prev,
+      end: { ...prev.end, type },
+    }));
   };
 
   const fieldset = {};
@@ -177,35 +182,12 @@ export default function PopupReminder({
     return false;
   };
 
-  // a period fields validation
+  // the period field's validity states
+  // ~ it's better to include this into the PeriodFieldset
   const [isPeriodEveryCountInvalid, setIsPeriodEveryCountInvalid] = useState(
     false
   );
   const [isPeriodEndCountInvalid, setIsPeriodEndCountInvalid] = useState(false);
-
-  // cleaning a period (removing unused periodFieldsetData fields)
-  const getCleanPeriod = (period) => {
-    const cleanPeriod = { every: { ...period.every }, end: { ...period.end } };
-    const { method } = cleanPeriod.every;
-    if (method === 'daily' || method === 'yearly') {
-      delete cleanPeriod.every.days;
-      delete cleanPeriod.every.keep;
-    } else if (method === 'weekly') {
-      delete cleanPeriod.every.keep;
-    } else if (method === 'monthly') {
-      delete cleanPeriod.every.days;
-    }
-    const { type } = cleanPeriod.end;
-    delete cleanPeriod.end.type;
-    if (type === 'never') {
-      delete cleanPeriod.end;
-    } else if (type === 'count') {
-      delete cleanPeriod.end.date;
-    } else if (type === 'date') {
-      delete cleanPeriod.end.count;
-    }
-    return cleanPeriod;
-  };
 
   // forming a content by current fieldset
   switch (currentFieldset) {
@@ -267,7 +249,6 @@ export default function PopupReminder({
           autofocusRef={autofocusRef}
           onSave={() => {
             setDate(fieldsetData.date, fieldsetData.period);
-            // setDate(fieldsetData.date, periodFieldsetData);
             onClose();
             resetFoundPlaces();
           }}
@@ -309,7 +290,7 @@ export default function PopupReminder({
         <PeriodFieldset
           isValid={fieldsetData.isValid}
           periodFieldsetData={periodFieldsetData}
-          cleanPeriod={getCleanPeriod(periodFieldsetData)}
+          period={fieldsetData.period}
           onEveryFieldsetUnitInput={(method) => {
             setPeriodFieldsetData((prev) => ({
               ...prev,

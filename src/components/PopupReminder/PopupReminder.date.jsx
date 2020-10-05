@@ -80,22 +80,22 @@ export default function PopupReminderDate({
     { children: 'Не повторять', key: 'no period' },
     {
       children: 'Каждый день',
-      value: { every: 'day' },
+      value: { every: { method: 'daily', count: 1 } },
       key: 'daily',
     },
     {
       children: 'Каждую неделю',
-      value: { every: 'week' },
+      value: { every: { method: 'weekly', count: 1 } },
       key: 'weekly',
     },
     {
       children: 'Каждый месяц',
-      value: { every: 'month' },
+      value: { every: { method: 'monthly', count: 1 } },
       key: 'monthly',
     },
     {
       children: 'Каждый год',
-      value: { every: 'year' },
+      value: { every: { method: 'yearly', count: 1 } },
       key: 'yearly',
     },
     {
