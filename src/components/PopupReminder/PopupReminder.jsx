@@ -182,13 +182,6 @@ export default function PopupReminder({
     return false;
   };
 
-  // the period field's validity states
-  // ~ it's better to include this into the PeriodFieldset
-  const [isPeriodEveryCountInvalid, setIsPeriodEveryCountInvalid] = useState(
-    false
-  );
-  const [isPeriodEndCountInvalid, setIsPeriodEndCountInvalid] = useState(false);
-
   // forming a content by current fieldset
   switch (currentFieldset) {
     case 'main':
@@ -321,27 +314,27 @@ export default function PopupReminder({
               return period;
             });
           }}
-          isPeriodEveryCountInvalid={isPeriodEveryCountInvalid}
           onEveryFieldsetInputChange={(count) => {
             const isInvalid =
-              Number.isNaN(Number(count)) || count.trim() === '';
-            setIsPeriodEveryCountInvalid(isInvalid);
+              !(Number.isInteger(Number(count)) && Number(count) > 0) ||
+              count.trim() === '';
             setIsValid(!isInvalid);
             if (!isInvalid) {
               setPeriodEveryCount(Number(count));
             }
+            return isInvalid;
           }}
           setPeriodEveryKeep={setPeriodEveryKeep}
           setPeriodEndType={setPeriodEndType}
-          isPeriodEndCountInvalid={isPeriodEndCountInvalid}
           onEndFieldsetInputChange={(count) => {
             const isInvalid =
-              Number.isNaN(Number(count)) || count.trim() === '';
-            setIsPeriodEndCountInvalid(isInvalid);
+              !(Number.isInteger(Number(count)) && Number(count) > 0) ||
+              count.trim() === '';
             setIsValid(!isInvalid);
             if (!isInvalid) {
               setPeriodEndCount(Number(count));
             }
+            return isInvalid;
           }}
           dateValidator={dateValidator}
           autofocusRef={autofocusRef}

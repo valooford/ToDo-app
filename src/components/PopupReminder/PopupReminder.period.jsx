@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import cn from 'classnames';
 
 /* eslint-disable import/no-unresolved */
@@ -51,8 +51,6 @@ export default function PopupReminderPeriod({
   onEveryFieldsetUnitInput,
   onEndFieldsetDateInput,
   togglePeriodEveryDays,
-  isPeriodEveryCountInvalid,
-  isPeriodEndCountInvalid,
   onEveryFieldsetInputChange,
   onEndFieldsetInputChange,
   setPeriodEveryKeep, // ~
@@ -86,6 +84,12 @@ export default function PopupReminderPeriod({
       keepDayRadioButtonRef.current.checked = true;
     }
   }, [periodFieldsetData.every.method]);
+
+  // the period field's validity states
+  const [isPeriodEveryCountInvalid, setIsPeriodEveryCountInvalid] = useState(
+    false
+  );
+  const [isPeriodEndCountInvalid, setIsPeriodEndCountInvalid] = useState(false);
 
   // handling radio buttons selection
   const onEndFieldsetClick = ({ target }) => {
@@ -139,7 +143,10 @@ export default function PopupReminderPeriod({
               })}
               type="text"
               defaultValue={periodFieldsetData.every.count}
-              onChange={(e) => onEveryFieldsetInputChange(e.target.value)}
+              onChange={(e) => {
+                const isInvalid = onEveryFieldsetInputChange(e.target.value);
+                setIsPeriodEveryCountInvalid(isInvalid);
+              }}
               ref={autofocusRef}
             />
             <Dropdown
@@ -235,7 +242,10 @@ export default function PopupReminderPeriod({
                 type="text"
                 defaultValue={periodFieldsetData.end.count || 2}
                 onFocus={onEndFieldsetInputFocus}
-                onChange={(e) => onEndFieldsetInputChange(e.target.value)}
+                onChange={(e) => {
+                  const isInvalid = onEndFieldsetInputChange(e.target.value);
+                  setIsPeriodEndCountInvalid(isInvalid);
+                }}
               />
               повт.
             </label>

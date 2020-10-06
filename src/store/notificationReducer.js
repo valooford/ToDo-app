@@ -97,17 +97,34 @@ const handlers = {
       date,
       period: { every },
     } = newReminder;
-    const { method, count } = every;
+    const { method, count, days, keep } = every;
     newReminder.date = new Date(date);
     switch (method) {
       case 'daily':
         newReminder.date.setDate(date.getDate() + count);
         break;
       case 'weekly':
-        newReminder.date.setDate(date.getDate() + count * 7);
+        if (!days.length) {
+          newReminder.date.setDate(date.getDate() + count * 7);
+        } else {
+          const dayOfTheWeek = newReminder.date.getDay();
+          const daysUntilNextDate = days.reduce((daysCount, day) => {
+            if (day === dayOfTheWeek) return daysCount;
+            const dayInterval = day > dayOfTheWeek ? day : day + 7;
+            const result = dayInterval - dayOfTheWeek;
+            return result < daysCount ? result : daysCount;
+          }, 7);
+          newReminder.date.setDate(date.getDate() + daysUntilNextDate);
+        }
         break;
       case 'monthly':
-        newReminder.date.setMonth(date.getMonth() + count);
+        newReminder.date.setMonth(date.getMonth() + count); // keep === 'date'
+        if (keep === 'day') {
+          const dayOfTheWeek = date.getDay();
+          const currentDayOfTheWeek = newReminder.date.getDay();
+          const dayInterval = dayOfTheWeek - currentDayOfTheWeek;
+          newReminder.date.setDate(date.getDate() + dayInterval);
+        }
         break;
       case 'yearly':
         newReminder.date.setFullYear(date.getFullYear() + count);
@@ -115,6 +132,7 @@ const handlers = {
       default:
     }
     if (end && end.count) {
+      // update counter
       newReminder.period.count -= 1;
     }
     return {
@@ -136,8 +154,9 @@ const initialState = {
       // or
       date: new Date(2020, 7, 1, 1),
       period: {
-        // every: 365,
-        every: { method: 'yearly', count: 1 },
+        every: { method: 'monthly', count: 2, keep: 'day' },
+        // or
+        // every: { method: 'weekly', count: 1, days: [0, 1] },
         // end: {
         //   count: 2,
         //   // or
