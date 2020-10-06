@@ -227,6 +227,30 @@
       "css": "left",
       "code": 59425,
       "src": "fontawesome"
+    },
+    {
+      "uid": "f156d14a32cd7d5bc5a5f70382ab04ec",
+      "css": "archive-d",
+      "code": 59426,
+      "src": "typicons"
+    },
+    {
+      "uid": "7ssl5z5jrhu13tb13cd3gb4bdfkzbfzw",
+      "css": "print",
+      "code": 59427,
+      "src": "modernpics"
+    },
+    {
+      "uid": "6079b9663aede6ed5882db16bb04da3b",
+      "css": "restore",
+      "code": 59428,
+      "src": "elusive"
+    },
+    {
+      "uid": "fd32deda7b2f5b8cad46d13897c19ae8",
+      "css": "delete",
+      "code": 59429,
+      "src": "elusive"
     }
   ]
 }

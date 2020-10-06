@@ -19,6 +19,8 @@ import {
   blurNote,
   pinNote,
   unpinNote,
+  setNoteAsArchived,
+  setNoteAsRegular,
   addNewNote,
   updateNoteHeader,
   updateNoteText,
@@ -52,6 +54,7 @@ function NoteContainer({
   isAddNote,
   isSelected,
   isPinned,
+  isArchived,
   isReminderPassed,
   note: {
     type,
@@ -69,6 +72,8 @@ function NoteContainer({
   onNoteBlur,
   onNotePin,
   onNoteUnpin,
+  onNoteArchive,
+  onNoteSetRegular,
   onNoteReminderUpdate,
   onNoteAdd,
   onHeaderChange,
@@ -278,6 +283,7 @@ function NoteContainer({
   const eventHandlers = {
     onMouseDown,
     onPin: isPinned ? onNoteUnpin : onNotePin,
+    onArchive: isArchived ? onNoteSetRegular : onNoteArchive,
     onMoreButtonClick: () => {
       clearTimeout(colorsButtonMouseLeaveTimerId);
       setMenuPopup();
@@ -375,6 +381,7 @@ function NoteContainer({
         items: itemsOrder && itemsWithHandlersGroups.unmarked,
         markedItems: itemsOrder && itemsWithHandlersGroups.marked,
         isPinned,
+        isArchived,
         isReminderPassed,
         creationDate,
         editingDate,
@@ -418,6 +425,7 @@ function mapStateToProps(state, { id }) {
     isAddNote: id === getAddingNoteId(state),
     isSelected: state.main.selectedNotes[id],
     isPinned: state.main.pinnedNotes[id],
+    isArchived: state.main.archivedNotes[id],
     isReminderPassed:
       state.app.page === '/reminders' && hasPassedReminder(state, id),
   };
@@ -430,6 +438,8 @@ function mapDispatchToProps(dispatch, { id, reminderId }) {
       onNoteBlur: blurNote,
       onNotePin: () => pinNote(id),
       onNoteUnpin: () => unpinNote(id),
+      onNoteArchive: () => setNoteAsArchived(id),
+      onNoteSetRegular: () => setNoteAsRegular(id),
       onNoteReminderUpdate: () => updateReminder(reminderId),
       onNoteAdd: addNewNote,
       onHeaderChange: (headerText) => updateNoteHeader(id, headerText),

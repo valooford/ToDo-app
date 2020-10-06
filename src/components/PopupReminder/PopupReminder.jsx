@@ -103,9 +103,6 @@ export default function PopupReminder({
     };
   });
 
-  // implement all the stuff from here in the notificationReducer
-  // refactor the PopupReminder's dumb&smart components
-
   // period field of fieldsetData with full information
   const [periodFieldsetData, setPeriodFieldsetData] = useState(() => {
     const { every, end = {} } = fieldsetData.period;

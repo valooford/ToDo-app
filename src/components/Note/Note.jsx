@@ -19,6 +19,7 @@ function Note(
       items,
       markedItems,
       isPinned,
+      isArchived,
       isReminderPassed,
       creationDate,
       editingDate,
@@ -33,6 +34,7 @@ function Note(
       onClose, // on close button click / pressing Esc
       onSelection,
       onPin,
+      onArchive,
       onHeaderChange,
       onTextFieldChange,
       onListItemAdd,
@@ -94,9 +96,10 @@ function Note(
       modificators: 'icon-button_smaller',
     },
     {
-      iconSymbol: '\ue805',
-      titleText: 'Архивировать',
+      iconSymbol: isArchived ? '\ue822' : '\ue805',
+      titleText: isArchived ? 'Вернуть из архива' : 'Архивировать',
       modificators: 'icon-button_smaller',
+      onClick: onArchive,
     },
     {
       iconSymbol: '\ue81f',

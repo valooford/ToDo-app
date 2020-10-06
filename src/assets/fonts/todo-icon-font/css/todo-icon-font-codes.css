@@ -33,6 +33,10 @@
 .icon-more:before { content: '\e81f'; } /* '' */
 .icon-repeat:before { content: '\e820'; } /* '' */
 .icon-left:before { content: '\e821'; } /* '' */
+.icon-archive-d:before { content: '\e822'; } /* '' */
+.icon-print:before { content: '\e823'; } /* '' */
+.icon-restore:before { content: '\e824'; } /* '' */
+.icon-delete:before { content: '\e825'; } /* '' */
 .icon-menu:before { content: '\f0c9'; } /* '' */
 .icon-bell:before { content: '\f0f3'; } /* '' */
 .icon-brush:before { content: '\f1fc'; } /* '' */

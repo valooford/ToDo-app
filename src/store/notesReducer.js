@@ -376,7 +376,7 @@ const handlers = {
       regularNotes[id] = true;
     });
     archivedNotes.order = archivedNotes.order.filter((id) => archivedNotes[id]);
-    regularNotes.order = [...regularNotes.order].splice(1, 0, ...ids);
+    regularNotes.order = [...ids, ...regularNotes.order];
     return { ...state, regularNotes, archivedNotes };
   },
   [SET_NOTE_AS_ARCHIVED]: (state, { ids }) => {
@@ -386,8 +386,8 @@ const handlers = {
       delete regularNotes[id];
       archivedNotes[id] = true;
     });
-    regularNotes.order = archivedNotes.order.filter((id) => archivedNotes[id]);
-    archivedNotes.order = [...regularNotes.order].splice(1, 0, ...ids);
+    regularNotes.order = regularNotes.order.filter((id) => regularNotes[id]);
+    archivedNotes.order = [...ids, ...archivedNotes.order];
     return { ...state, regularNotes, archivedNotes };
   },
   // ---unnecessary---
