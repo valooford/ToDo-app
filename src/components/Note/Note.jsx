@@ -35,6 +35,8 @@ function Note(
       onSelection,
       onPin,
       onArchive,
+      onRestore,
+      onDelete,
       onHeaderChange,
       onTextFieldChange,
       onListItemAdd,
@@ -64,8 +66,25 @@ function Note(
   },
   ref
 ) {
-  const buttons = [
-    {
+  const buttons = [];
+  if (onDelete) {
+    buttons.push({
+      iconSymbol: '\ue825',
+      titleText: 'Удалить навсегда',
+      modificators: 'icon-button_smaller',
+      onClick: onDelete,
+    });
+  }
+  if (onRestore) {
+    buttons.push({
+      iconSymbol: '\ue824',
+      titleText: 'Восстановить',
+      modificators: 'icon-button_smaller',
+      onClick: onRestore,
+    });
+  }
+  if (onReminderButtonClick) {
+    buttons.push({
       iconSymbol: isReminderPassed ? '\ue800' : '\uf0f3',
       titleText: isReminderPassed
         ? 'Отметить как выполненное'
@@ -74,13 +93,15 @@ function Note(
       onClick: onReminderButtonClick,
       append: popup.reminder,
       ref: reminderButtonRef,
-    },
-    {
-      iconSymbol: '\ue803',
-      titleText: 'Соавторы',
-      modificators: 'icon-button_smaller',
-    },
-    {
+    });
+  }
+  // buttons.push({
+  //   iconSymbol: '\ue803',
+  //   titleText: 'Соавторы',
+  //   modificators: 'icon-button_smaller',
+  // });
+  if (onColorsButtonClick) {
+    buttons.push({
       iconSymbol: '\ue804',
       titleText: 'Изменить цвет',
       modificators: 'icon-button_smaller',
@@ -89,40 +110,45 @@ function Note(
       onMouseLeave: onColorsButtonMouseLeave,
       append: popup.colors,
       ref: colorsButtonRef,
-    },
-    {
-      iconSymbol: '\ue802',
-      titleText: 'Добавить картинку',
-      modificators: 'icon-button_smaller',
-    },
-    {
+    });
+  }
+  // buttons.push({
+  //   iconSymbol: '\ue802',
+  //   titleText: 'Добавить картинку',
+  //   modificators: 'icon-button_smaller',
+  // });
+  if (onArchive) {
+    buttons.push({
       iconSymbol: isArchived ? '\ue822' : '\ue805',
       titleText: isArchived ? 'Вернуть из архива' : 'Архивировать',
       modificators: 'icon-button_smaller',
       onClick: onArchive,
-    },
-    {
+    });
+  }
+  if (onMoreButtonClick) {
+    buttons.push({
       iconSymbol: '\ue81f',
       titleText: 'Ещё',
       modificators: 'icon-button_smaller',
       onClick: onMoreButtonClick,
       append: popup.menu,
       ref: moreButtonRef,
-    },
-    {
-      iconSymbol: '\ue807',
-      titleText: 'Отменить',
-      modificators: 'icon-button_smaller',
-      disabled: true,
-    },
-    {
-      iconSymbol: '\ue808',
-      titleText: 'Повторить',
-      modificators: 'icon-button_smaller',
-      disabled: true,
-    },
-  ]
-    // +
+    });
+  }
+  // buttons.push({
+  //   iconSymbol: '\ue807',
+  //   titleText: 'Отменить',
+  //   modificators: 'icon-button_smaller',
+  //   disabled: true,
+  // });
+  // buttons.push({
+  //   iconSymbol: '\ue808',
+  //   titleText: 'Повторить',
+  //   modificators: 'icon-button_smaller',
+  //   disabled: true,
+  // });
+  // +
+  const iconButtons = buttons
     .filter((params) => !params.disabled) // + add notes change history
     .map((params) => (
       <span key={params.titleText}>
@@ -284,7 +310,7 @@ function Note(
             <Button onClick={onClose}>Закрыть</Button>
           </span>
         )}
-        {buttons}
+        {iconButtons}
       </div>
     </form>
   );

@@ -6,6 +6,7 @@ import { associativeArrToArr } from '@/utils';
 import {
   SET_NOTE_REMINDER,
   REMOVE_REMINDER,
+  REMOVE_NOTE,
   UPDATE_REMINDER,
   SET_FOUND_PLACES,
 } from './actionsTypes';
@@ -66,6 +67,20 @@ const handlers = {
     noteReminders.order = noteReminders.order.filter(
       (noteId) => noteReminders[noteId]
     );
+    return { ...state, reminders, noteReminders };
+  },
+  [REMOVE_NOTE]: (state, { ids }) => {
+    const reminders = { ...state.reminders };
+    const noteReminders = { ...state.noteReminders };
+    let isTouched;
+    ids.forEach((noteId) => {
+      const reminderId = state.noteReminders[noteId];
+      if (!reminderId) return;
+      isTouched = true;
+      delete noteReminders[noteId];
+      delete reminders[reminderId];
+    });
+    if (!isTouched) return state;
     return { ...state, reminders, noteReminders };
   },
   [UPDATE_REMINDER]: (state, { reminderId }) => {

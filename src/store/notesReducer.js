@@ -165,6 +165,7 @@ const handlers = {
     ids.forEach((id) => {
       delete removedNotes[id];
     });
+    removedNotes.order = removedNotes.order.filter((id) => removedNotes[id]);
     return { ...state, removedNotes };
   },
   [DELETE_NOTE]: (state, { ids }) => {
@@ -185,8 +186,18 @@ const handlers = {
       }
       delete removedNotes[id];
     });
+    removedNotes.order = removedNotes.order.filter((id) => removedNotes[id]);
+    if (touchedFields.regularNotes) {
+      regularNotes.order = regularNotes.order.filter((id) => regularNotes[id]);
+    }
+    if (touchedFields.archivedNotes) {
+      archivedNotes.order = archivedNotes.order.filter(
+        (id) => archivedNotes[id]
+      );
+    }
     return {
       ...state,
+      notes,
       regularNotes: touchedFields.regularNotes
         ? regularNotes
         : state.regularNotes,
@@ -600,6 +611,20 @@ export function updateNoteListItem(id, itemId, itemText) {
 export function removeNote(id) {
   const ids = associativeArrToArr(id);
   return { type: REMOVE_NOTE, ids };
+}
+/* RESTORE_NOTE
+ * id: actual id / array of ids
+ */
+export function restoreNote(id) {
+  const ids = associativeArrToArr(id);
+  return { type: RESTORE_NOTE, ids };
+}
+/* DELETE_NOTE
+ * id: actual id / array of ids
+ */
+export function deleteNote(id) {
+  const ids = associativeArrToArr(id);
+  return { type: DELETE_NOTE, ids };
 }
 
 // LIST ITEM ACTION CREATORS

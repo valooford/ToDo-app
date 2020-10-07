@@ -7,8 +7,8 @@ import notificationReducer from './notificationReducer';
 const store = createStore(
   combineReducers({
     app: appReducer,
-    main: notesReducer,
     notification: notificationReducer,
+    main: notesReducer,
   }),
   applyMiddleware(thunkMiddleware)
 );

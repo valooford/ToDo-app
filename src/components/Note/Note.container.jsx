@@ -19,6 +19,8 @@ import {
   blurNote,
   pinNote,
   unpinNote,
+  restoreNote,
+  deleteNote,
   setNoteAsArchived,
   setNoteAsRegular,
   addNewNote,
@@ -55,6 +57,7 @@ function NoteContainer({
   isSelected,
   isPinned,
   isArchived,
+  isRemoved,
   isReminderPassed,
   note: {
     type,
@@ -72,6 +75,8 @@ function NoteContainer({
   onNoteBlur,
   onNotePin,
   onNoteUnpin,
+  onNoteRestore,
+  onNoteDelete,
   onNoteArchive,
   onNoteSetRegular,
   onNoteReminderUpdate,
@@ -282,45 +287,23 @@ function NoteContainer({
 
   const eventHandlers = {
     onMouseDown,
-    onPin: isPinned ? onNoteUnpin : onNotePin,
-    onArchive: isArchived ? onNoteSetRegular : onNoteArchive,
-    onMoreButtonClick: () => {
-      clearTimeout(colorsButtonMouseLeaveTimerId);
-      setMenuPopup();
-    },
-    onColorsButtonClick: () => {
-      clearTimeout(colorsButtonMouseLeaveTimerId);
-      setColorsPopup();
-      setTimeout(() => {
-        popupColorsItemToFocusRef.current.focus();
-      }, 0);
-    },
-    onColorsButtonHover:
-      popupName == null || popupName === 'colors'
-        ? () => {
-            clearTimeout(colorsButtonMouseLeaveTimerId);
-            setColorsPopup();
-          }
-        : null,
-    onColorsButtonMouseLeave:
-      popupName === 'colors'
-        ? () => {
-            colorsButtonMouseLeaveTimerId = setTimeout(() => {
-              clearPopup();
-            }, 1000);
-          }
-        : null,
   };
-  if (isReminderPassed) {
-    eventHandlers.onReminderButtonClick = () => {
-      onNoteReminderUpdate();
-    };
+
+  if (isFocused) {
+    eventHandlers.onClose = onClose;
   } else {
-    eventHandlers.onReminderButtonClick = () => {
-      clearTimeout(colorsButtonMouseLeaveTimerId);
-      setReminderPopup();
+    // !isFocused
+    eventHandlers.onSelection = isSelected
+      ? onCancelNoteSelection
+      : onNoteSelection;
+    eventHandlers.onKeyDown = (e) => {
+      // Enter
+      if (e.target === e.currentTarget && e.keyCode === 13) {
+        onNoteFocus();
+      }
     };
   }
+
   // a click handler focusing the note
   if (!isAddNote) {
     if (isSelectionMode) {
@@ -342,34 +325,70 @@ function NoteContainer({
       };
     }
   }
-  if (isFocused) {
-    eventHandlers.onClose = onClose;
-    eventHandlers.onHeaderChange = onHeaderChange;
-    eventHandlers.onTextFieldChange = onTextFieldChange;
-    eventHandlers.onListItemAdd = onListItemAdd;
+
+  if (isRemoved) {
+    eventHandlers.onRestore = onNoteRestore;
+    eventHandlers.onDelete = onNoteDelete;
   } else {
-    // !isFocused
-    eventHandlers.onKeyDown = (e) => {
-      // Enter
-      if (e.target === e.currentTarget && e.keyCode === 13) {
-        onNoteFocus();
-      }
+    eventHandlers.onPin = isPinned ? onNoteUnpin : onNotePin;
+    eventHandlers.onArchive = isArchived ? onNoteSetRegular : onNoteArchive;
+    eventHandlers.onMoreButtonClick = () => {
+      clearTimeout(colorsButtonMouseLeaveTimerId);
+      setMenuPopup();
     };
-    eventHandlers.onSelection = isSelected
-      ? onCancelNoteSelection
-      : onNoteSelection;
-    eventHandlers.onHeaderFocus = ({ target }) => {
-      setFocusInfo({
-        fieldRef: headerRef,
-        caret: target.selectionStart,
-      });
+    eventHandlers.onColorsButtonClick = () => {
+      clearTimeout(colorsButtonMouseLeaveTimerId);
+      setColorsPopup();
+      setTimeout(() => {
+        popupColorsItemToFocusRef.current.focus();
+      }, 0);
     };
-    eventHandlers.onTextFieldFocus = ({ target }) => {
-      setFocusInfo({
-        fieldRef: textFieldRef,
-        caret: target.selectionStart,
-      });
-    };
+    eventHandlers.onColorsButtonHover =
+      popupName == null || popupName === 'colors'
+        ? () => {
+            clearTimeout(colorsButtonMouseLeaveTimerId);
+            setColorsPopup();
+          }
+        : null;
+    eventHandlers.onColorsButtonMouseLeave =
+      popupName === 'colors'
+        ? () => {
+            colorsButtonMouseLeaveTimerId = setTimeout(() => {
+              clearPopup();
+            }, 1000);
+          }
+        : null;
+
+    if (isReminderPassed) {
+      eventHandlers.onReminderButtonClick = () => {
+        onNoteReminderUpdate();
+      };
+    } else {
+      eventHandlers.onReminderButtonClick = () => {
+        clearTimeout(colorsButtonMouseLeaveTimerId);
+        setReminderPopup();
+      };
+    }
+
+    if (isFocused) {
+      eventHandlers.onHeaderChange = onHeaderChange;
+      eventHandlers.onTextFieldChange = onTextFieldChange;
+      eventHandlers.onListItemAdd = onListItemAdd;
+    } else {
+      // !isFocused
+      eventHandlers.onHeaderFocus = ({ target }) => {
+        setFocusInfo({
+          fieldRef: headerRef,
+          caret: target.selectionStart,
+        });
+      };
+      eventHandlers.onTextFieldFocus = ({ target }) => {
+        setFocusInfo({
+          fieldRef: textFieldRef,
+          caret: target.selectionStart,
+        });
+      };
+    }
   }
 
   const noteElem = (
@@ -426,6 +445,7 @@ function mapStateToProps(state, { id }) {
     isSelected: state.main.selectedNotes[id],
     isPinned: state.main.pinnedNotes[id],
     isArchived: state.main.archivedNotes[id],
+    isRemoved: state.main.removedNotes[id],
     isReminderPassed:
       state.app.page === '/reminders' && hasPassedReminder(state, id),
   };
@@ -438,6 +458,8 @@ function mapDispatchToProps(dispatch, { id, reminderId }) {
       onNoteBlur: blurNote,
       onNotePin: () => pinNote(id),
       onNoteUnpin: () => unpinNote(id),
+      onNoteRestore: () => restoreNote(id),
+      onNoteDelete: () => deleteNote(id),
       onNoteArchive: () => setNoteAsArchived(id),
       onNoteSetRegular: () => setNoteAsRegular(id),
       onNoteReminderUpdate: () => updateReminder(reminderId),
