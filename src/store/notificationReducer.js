@@ -81,6 +81,9 @@ const handlers = {
       delete reminders[reminderId];
     });
     if (!isTouched) return state;
+    noteReminders.order = noteReminders.order.filter(
+      (noteId) => noteReminders[noteId]
+    );
     return { ...state, reminders, noteReminders };
   },
   [UPDATE_REMINDER]: (state, { reminderId }) => {

@@ -299,6 +299,10 @@ function Note(
             <CreationTime
               creationDate={creationDate}
               editingDate={editingDate}
+              extraText={
+                (onRestore && 'Заметка в корзине') ||
+                (isArchived && 'Заметка в архиве')
+              }
             />
           </span>
         )}

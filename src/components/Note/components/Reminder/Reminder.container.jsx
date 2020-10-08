@@ -15,6 +15,7 @@ import Reminder from './Reminder';
 
 function ReminderContainer({
   reminder,
+  isPassed,
   isUnremovable,
   setNotePopup,
   removeReminder,
@@ -24,6 +25,7 @@ function ReminderContainer({
       date={reminder.date}
       period={reminder.period}
       place={reminder.place}
+      isPassed={isPassed}
       onRemove={isUnremovable ? null : removeReminder}
       onClick={setNotePopup}
     />

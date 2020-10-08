@@ -8,7 +8,6 @@ import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
 import { useEffectOnMouseDownOutside } from '@/utils';
 
-import Note from '@components/Note/Note';
 import PopupMenu from '@components/PopupMenu/PopupMenu.container';
 import PopupColors from '@components/PopupColors/PopupColors.container';
 import PopupReminder from '@components/PopupReminder/PopupReminder.container';
@@ -42,6 +41,7 @@ import {
   hasPassedReminder,
 } from '@store/selectors';
 /* eslint-enable import/no-unresolved */
+import Note from './Note';
 import style from './Note-cfg.module.scss';
 import listItemStyle from './components/ListItem/ListItem-cfg.module.scss';
 // ---replace--- insert in Note as tag/reminder general-purpose component
@@ -59,6 +59,7 @@ function NoteContainer({
   isArchived,
   isRemoved,
   isReminderPassed,
+  isReminderReadyToUpdate,
   note: {
     type,
     headerText,
@@ -359,7 +360,7 @@ function NoteContainer({
           }
         : null;
 
-    if (isReminderPassed) {
+    if (isReminderReadyToUpdate) {
       eventHandlers.onReminderButtonClick = () => {
         onNoteReminderUpdate();
       };
@@ -401,7 +402,7 @@ function NoteContainer({
         markedItems: itemsOrder && itemsWithHandlersGroups.marked,
         isPinned,
         isArchived,
-        isReminderPassed,
+        isReminderPassed: isReminderReadyToUpdate,
         creationDate,
         editingDate,
         color,
@@ -421,7 +422,7 @@ function NoteContainer({
       }}
       ref={noteRef}
     >
-      <Reminder id={id} />
+      <Reminder id={id} isPassed={isReminderPassed} />
     </Note>
   );
 
@@ -437,6 +438,7 @@ function NoteContainer({
 }
 
 function mapStateToProps(state, { id }) {
+  const isReminderPassed = hasPassedReminder(state, id);
   return {
     note: state.main.notes[id],
     reminderId: getReminderIdByNoteId(state, id),
@@ -446,8 +448,9 @@ function mapStateToProps(state, { id }) {
     isPinned: state.main.pinnedNotes[id],
     isArchived: state.main.archivedNotes[id],
     isRemoved: state.main.removedNotes[id],
-    isReminderPassed:
-      state.app.page === '/reminders' && hasPassedReminder(state, id),
+    isReminderPassed,
+    isReminderReadyToUpdate:
+      isReminderPassed && state.app.page === '/reminders',
   };
 }
 

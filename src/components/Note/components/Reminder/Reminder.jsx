@@ -10,7 +10,14 @@ import style from './Reminder-cfg.module.scss';
 
 // КОМПОНЕНТ НАПОМИНАНИЯ / REMINDER
 // *
-export default function Reminder({ date, period, place, onRemove, onClick }) {
+export default function Reminder({
+  date,
+  period,
+  place,
+  isPassed,
+  onRemove,
+  onClick,
+}) {
   const fullText = (date && getFormattedDate(date)) || place;
   let text = fullText;
   const commaIndex = text.indexOf(',');
@@ -36,7 +43,10 @@ export default function Reminder({ date, period, place, onRemove, onClick }) {
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions
     <span
-      className={cn(style.reminder, { [style.reminder_focused]: isFocused })}
+      className={cn(style.reminder, {
+        [style.reminder_passed]: isPassed,
+        [style.reminder_focused]: isFocused,
+      })}
       // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
       tabIndex={0}
       onClick={handleClick}

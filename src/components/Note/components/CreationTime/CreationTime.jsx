@@ -8,7 +8,7 @@ import style from './CreationTime-cfg.module.scss';
 
 // КОМПОНЕНТ ВРЕМЕНИ СОЗДАНИЯ / CREATION-TIME
 // *
-export default function CreationTime({ creationDate, editingDate }) {
+export default function CreationTime({ creationDate, editingDate, extraText }) {
   const dateFormanCfg = {
     todayText: '',
     yesterdayText: 'вчера в ',
@@ -18,7 +18,7 @@ export default function CreationTime({ creationDate, editingDate }) {
   const formattedEditingDate = getFormattedDate(editingDate, dateFormanCfg);
   return (
     <span className={style['creation-time']}>
-      {`Изменено: ${formattedEditingDate}`}
+      {`${extraText ? `${extraText} • ` : ''}Изменено: ${formattedEditingDate}`}
       <br />
       <span className={style['creation-time__title']}>
         <Title text={`Создано: ${formattedCreationDate}`} />

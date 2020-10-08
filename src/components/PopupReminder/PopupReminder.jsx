@@ -105,7 +105,8 @@ export default function PopupReminder({
 
   // period field of fieldsetData with full information
   const [periodFieldsetData, setPeriodFieldsetData] = useState(() => {
-    const { every, end = {} } = fieldsetData.period;
+    const period = fieldsetData.period || {};
+    const { every, end = {} } = period;
     let type;
     if (end.count) {
       type = 'count';
