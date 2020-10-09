@@ -7,6 +7,7 @@ import Container from './Container.container';
 
 function Archived({
   archivedNotesOrder,
+  removedNotes,
   isSelectionMode,
   onClickOutsideOfElements,
 }) {
@@ -15,7 +16,7 @@ function Archived({
       elements={archivedNotesOrder}
       groups={{
         removed: {
-          test: () => true,
+          test: (noteId) => !removedNotes[noteId],
           component: Note,
           refPropName: 'noteRef',
           extraProps: { isSelectionMode },
@@ -29,6 +30,7 @@ function Archived({
 function mapStateToProps(state) {
   return {
     archivedNotesOrder: state.main.archivedNotes.order,
+    removedNotes: state.main.removedNotes,
   };
 }
 export default connect(mapStateToProps)(Archived);
