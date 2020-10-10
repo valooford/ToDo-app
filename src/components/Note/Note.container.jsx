@@ -12,6 +12,7 @@ import PopupMenu from '@components/PopupMenu/PopupMenu.container';
 import PopupColors from '@components/PopupColors/PopupColors.container';
 import PopupReminder from '@components/PopupReminder/PopupReminder.container';
 import Modal from '@components/Modal/Modal.container';
+import IconButtonTitled from '@components/IconButton/IconButton.titled';
 
 import {
   focusNote,
@@ -344,7 +345,7 @@ function NoteContainer({
         popupColorsItemToFocusRef.current.focus();
       }, 0);
     };
-    eventHandlers.onColorsButtonHover =
+    eventHandlers.onColorsButtonMouseEnter =
       popupName == null || popupName === 'colors'
         ? () => {
             clearTimeout(colorsButtonMouseLeaveTimerId);
@@ -411,6 +412,7 @@ function NoteContainer({
       }}
       popup={popup}
       eventHandlers={eventHandlers}
+      IconButton={IconButtonTitled}
       refs={{
         moreButtonRef,
         colorsButtonRef,

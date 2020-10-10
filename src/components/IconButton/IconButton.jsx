@@ -1,8 +1,5 @@
 import React from 'react';
 import cn from 'classnames';
-/* eslint-disable import/no-unresolved */
-import Title from '@components/Title/Title';
-/* eslint-enable import/no-unresolved */
 import style from './IconButton-cfg.module.scss';
 
 // КОМПОНЕНТ КНОПКИ С ИКОНКОЙ / ICON-BUTTON
@@ -10,12 +7,13 @@ import style from './IconButton-cfg.module.scss';
 function IconButton(
   {
     iconSymbol = '',
-    titleText = '',
     modificators = [],
     disabled,
     onClick,
-    onHover,
+    onMouseEnter,
     onMouseLeave,
+    onFocus,
+    onBlur,
   },
   ref
 ) {
@@ -30,16 +28,14 @@ function IconButton(
           : style[modificators]
       )}
       onClick={onClick}
-      onMouseEnter={onHover}
+      onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
+      onFocus={onFocus}
+      onBlur={onBlur}
       disabled={disabled}
       ref={ref}
     >
       <span className={style['icon-button__icon']}>{iconSymbol}</span>
-      <br />
-      <span className={style['icon-button__title']}>
-        {titleText && <Title text={titleText} />}
-      </span>
     </button>
   );
 }

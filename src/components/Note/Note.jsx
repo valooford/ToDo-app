@@ -2,7 +2,7 @@ import React from 'react';
 import cn from 'classnames';
 /* eslint-disable import/no-unresolved */
 import Button from '@components/Button/Button';
-import IconButton from '@components/IconButton/IconButton';
+import IconButtonComponent from '@components/IconButton/IconButton';
 import Textarea from '@components/Textarea/Textarea';
 /* eslint-enable import/no-unresolved */
 import ListItem from './components/ListItem/ListItem';
@@ -42,13 +42,14 @@ function Note(
       onListItemAdd,
       onMoreButtonClick,
       onColorsButtonClick,
-      onColorsButtonHover,
+      onColorsButtonMouseEnter,
       onColorsButtonMouseLeave,
       onReminderButtonClick,
 
       onHeaderFocus,
       onTextFieldFocus,
     },
+    IconButton = IconButtonComponent,
     refs: {
       moreButtonRef,
       colorsButtonRef,
@@ -106,7 +107,7 @@ function Note(
       titleText: 'Изменить цвет',
       modificators: 'icon-button_smaller',
       onClick: onColorsButtonClick,
-      onHover: onColorsButtonHover,
+      onMouseEnter: onColorsButtonMouseEnter,
       onMouseLeave: onColorsButtonMouseLeave,
       append: popup.colors,
       ref: colorsButtonRef,
@@ -157,7 +158,7 @@ function Note(
           titleText={params.titleText}
           modificators={params.modificators}
           onClick={params.onClick}
-          onHover={params.onHover}
+          onMuseEnter={params.onMuseEnter}
           onMouseLeave={params.onMouseLeave}
           disabled={params.disabled}
           ref={params.ref || null}

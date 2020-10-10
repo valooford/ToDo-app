@@ -7,10 +7,13 @@
 ) {
   .#{$class-name} {
     // parent must have: 'display: inline-block'
-    position: relative;
-    visibility: hidden;
-    right: $title-width / 2;
-    width: $title-width;
+    // position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
+    // visibility: hidden;
+    // right: $title-width / 2;
+    // width: $title-width;
     height: 1.8 * $base-unit;
     line-height: 1.8 * $base-unit;
     text-align: center;
