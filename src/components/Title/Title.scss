@@ -1,37 +1,22 @@
 @mixin titleStylesheet(
   $class-name: 'title',
   $base-unit: 15px,
-  $title-width: 500%,
   $font-family: #{MyFont,
   serif}
 ) {
   .#{$class-name} {
-    // parent must have: 'display: inline-block'
-    // position: relative;
     position: absolute;
     top: 0;
     left: 0;
-    // visibility: hidden;
-    // right: $title-width / 2;
-    // width: $title-width;
-    height: 1.8 * $base-unit;
+    padding: 0 7px;
     line-height: 1.8 * $base-unit;
+    background-color: rgba(0, 0, 0, 0.68);
+    border-radius: 3px;
+    color: rgba(255, 255, 255, 0.9);
+    font-family: $font-family;
+    font-size: 12px;
     text-align: center;
-    z-index: 10;
-
-    > * {
-      display: inline-block;
-      visibility: visible;
-      margin-right: -100% * (100% / $title-width);
-
-      padding: 0 7px;
-      color: rgba(255, 255, 255, 0.9);
-      font-family: $font-family;
-      font-size: 12px;
-      white-space: nowrap;
-      vertical-align: top;
-      background-color: rgba(0, 0, 0, 0.68);
-      border-radius: 3px;
-    }
+    white-space: nowrap;
+    z-index: 15;
   }
 }

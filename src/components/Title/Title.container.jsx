@@ -15,9 +15,7 @@ function TitleContainer({ children, onUnmount }) {
     []
   );
   const titleRef = useContext(TitleContext);
-  // return <Title text={children} />;
-  // unable to create portal until everything mounted
-  // because titleRef.current is still null
+  // titleRef.current must be mounted
   return ReactDOM.createPortal(<Title text={children} />, titleRef.current);
 }
 export default TitleContainer;
@@ -27,13 +25,15 @@ export function withTitle(Component) {
   // some onHover etc. logic
   const WrappedComponent = (
     { titleText, onMouseEnter, onMouseLeave, onFocus, onBlur, ...props },
-    ref
+    ref = React.createRef()
   ) => {
     const [isHovered, setIsHovered] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
+    const isVisible = isHovered || isFocused;
     // useEffect(() => {
-    //   console.log(`${titleText}: ${isHovered}, ${isFocused}`);
-    // }, [isHovered, isFocused]);
+    //   if (isVisible) {
+    //   }
+    // }, [isVisible]);
     return (
       <>
         <Component
@@ -49,15 +49,15 @@ export function withTitle(Component) {
           }}
           onFocus={(e) => {
             if (onFocus) onFocus(e);
-            // setIsFocused(true);
+            setIsFocused(true);
           }}
           onBlur={(e) => {
             if (onBlur) onBlur(e);
-            // setIsFocused(false);
+            setIsFocused(false);
           }}
           ref={ref}
         />
-        {(isHovered || isFocused) && (
+        {isVisible && (
           <TitleContainer
             onUnmount={() => {
               setIsHovered(false);

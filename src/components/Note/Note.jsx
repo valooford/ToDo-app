@@ -158,7 +158,7 @@ function Note(
           titleText={params.titleText}
           modificators={params.modificators}
           onClick={params.onClick}
-          onMuseEnter={params.onMuseEnter}
+          onMouseEnter={params.onMouseEnter}
           onMouseLeave={params.onMouseLeave}
           disabled={params.disabled}
           ref={params.ref || null}

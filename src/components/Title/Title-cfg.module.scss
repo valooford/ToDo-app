@@ -4,6 +4,5 @@
 @include titleStylesheet(
   $class-name: $titleClassName,
   $base-unit: $base-unit,
-  $title-width: $title-width,
   $font-family: $font-family
 );
