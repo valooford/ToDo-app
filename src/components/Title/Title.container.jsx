@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import ReactDOM from 'react-dom';
 
 import Title from './Title';
@@ -7,17 +7,22 @@ export const TitleContext = React.createContext();
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ TITLE
 // *
-function TitleContainer({ children, onUnmount }) {
-  useEffect(
-    () => () => {
-      onUnmount();
-    },
-    []
-  );
-  const titleRef = useContext(TitleContext);
-  // titleRef.current must be mounted
-  return ReactDOM.createPortal(<Title text={children} />, titleRef.current);
-}
+const TitleContainer = React.forwardRef(
+  ({ children, isHidden, onUnmount }, ref) => {
+    useEffect(
+      () => () => {
+        onUnmount();
+      },
+      []
+    );
+    const titleRef = useContext(TitleContext);
+    // titleRef.current must be mounted
+    return ReactDOM.createPortal(
+      <Title text={children} isHidden={isHidden} ref={ref} />,
+      titleRef.current
+    );
+  }
+);
 export default TitleContainer;
 
 // HOC for adding Titles to components
@@ -27,13 +32,25 @@ export function withTitle(Component) {
     { titleText, onMouseEnter, onMouseLeave, onFocus, onBlur, ...props },
     ref = React.createRef()
   ) => {
+    const componentRef = ref || React.createRef();
     const [isHovered, setIsHovered] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
     const isVisible = isHovered || isFocused;
-    // useEffect(() => {
-    //   if (isVisible) {
-    //   }
-    // }, [isVisible]);
+    const [isPlaced, setIsPlaced] = useState(false);
+    const componentTitleRef = useRef(null);
+    useEffect(() => {
+      if (!isVisible) {
+        setIsPlaced(false);
+        return;
+      }
+      const coords = componentRef.current.getBoundingClientRect();
+      const { left, bottom, width } = coords;
+      const title = componentTitleRef.current;
+      const titleWidth = title.offsetWidth;
+      title.style.top = `${bottom}px`;
+      title.style.left = `${left + width / 2 - titleWidth / 2}px`;
+      setIsPlaced(true);
+    }, [isVisible]);
     return (
       <>
         <Component
@@ -55,14 +72,16 @@ export function withTitle(Component) {
             if (onBlur) onBlur(e);
             setIsFocused(false);
           }}
-          ref={ref}
+          ref={componentRef}
         />
         {isVisible && (
           <TitleContainer
+            isHidden={!isPlaced}
             onUnmount={() => {
               setIsHovered(false);
               setIsFocused(false);
             }}
+            ref={componentTitleRef}
           >
             {titleText}
           </TitleContainer>

@@ -33,9 +33,7 @@ function AppContainer({
         <App
           prepend={[
             <div ref={modalRef} key="modal" />,
-            <div ref={titleRef} key="title">
-              One Two Three
-            </div>,
+            <div ref={titleRef} key="title" />,
           ]}
           header={[<Header key="header" />, <SelectionBar key="bar" />]}
           aside={<Aside currentPage={currentPage} />}

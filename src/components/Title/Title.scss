@@ -17,6 +17,10 @@
     font-size: 12px;
     text-align: center;
     white-space: nowrap;
-    z-index: 15;
+    z-index: 30;
+
+    &_hidden {
+      visibility: hidden;
+    }
   }
 }
