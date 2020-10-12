@@ -1,6 +1,6 @@
 import React from 'react';
 /* eslint-disable import/no-unresolved */
-import IconButton from '@components/IconButton/IconButton';
+import IconButtonComponent from '@components/IconButton/IconButton';
 import Search from '@components/Search/Search';
 /* eslint-enable import/no-unresolved */
 import style from './Header-cfg.module.scss';
@@ -33,7 +33,7 @@ const buttonsParams = [
 
 // КОМПОНЕНТ ШАПКИ / HEADER
 // *
-export default function Header() {
+export default function Header({ IconButton = IconButtonComponent }) {
   return (
     <div className={style.header}>
       <IconButton
@@ -46,7 +46,7 @@ export default function Header() {
         ToDo
       </span>
       <span className={style.header__search}>
-        <Search />
+        <Search IconButton={IconButton} />
       </span>
       <span className={style.header__buttons}>
         {buttonsParams.map((params) => (

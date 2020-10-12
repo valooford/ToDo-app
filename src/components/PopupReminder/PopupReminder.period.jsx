@@ -5,8 +5,8 @@ import cn from 'classnames';
 import { getFormattedDate, getPeriodString } from '@/utils';
 
 import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
-import IconButton from '@components/IconButton/IconButton';
-import Dropdown from '@components/Dropdown/Dropdown';
+import IconButtonComponent from '@components/IconButton/IconButton';
+import DropdownComponent from '@components/Dropdown/Dropdown';
 import Option from '@components/Option/Option';
 import Calendar from '@components/Calendar/Calendar';
 import Button from '@components/Button/Button';
@@ -59,6 +59,8 @@ export default function PopupReminderPeriod({
   autofocusRef,
   onReady,
   onBack,
+  IconButton = IconButtonComponent,
+  Dropdown = DropdownComponent,
 }) {
   const neverRadioButtonRef = React.createRef();
   const countRadioButtonRef = React.createRef();

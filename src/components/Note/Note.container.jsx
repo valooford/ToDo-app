@@ -46,6 +46,7 @@ import Note from './Note';
 import style from './Note-cfg.module.scss';
 import listItemStyle from './components/ListItem/ListItem-cfg.module.scss';
 // ---replace--- insert in Note as tag/reminder general-purpose component
+import CreationTimeTitled from './components/CreationTime/CreationTime.titled';
 import Reminder from './components/Reminder/Reminder.container';
 
 const checkboxClassname = listItemStyle.listItem__checkbox;
@@ -413,6 +414,7 @@ function NoteContainer({
       popup={popup}
       eventHandlers={eventHandlers}
       IconButton={IconButtonTitled}
+      CreationTime={CreationTimeTitled}
       refs={{
         moreButtonRef,
         colorsButtonRef,

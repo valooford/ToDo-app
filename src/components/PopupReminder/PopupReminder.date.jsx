@@ -10,8 +10,8 @@ import {
 } from '@/utils';
 
 import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
-import IconButton from '@components/IconButton/IconButton';
-import Dropdown from '@components/Dropdown/Dropdown';
+import IconButtonComponent from '@components/IconButton/IconButton';
+import DropdownComponent from '@components/Dropdown/Dropdown';
 import Calendar from '@components/Calendar/Calendar';
 import Option from '@components/Option/Option';
 import Button from '@components/Button/Button';
@@ -30,6 +30,8 @@ export default function PopupReminderDate({
   onSave,
   onBack,
   onChoosingPeriod,
+  IconButton = IconButtonComponent,
+  Dropdown = { DropdownComponent },
 }) {
   const timeValidator = (time) => {
     const dateParams = getDateParamsFromString(time);

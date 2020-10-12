@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import ReactDOM from 'react-dom';
 
 import Title from './Title';
 
@@ -7,22 +6,43 @@ export const TitleContext = React.createContext();
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ TITLE
 // *
-const TitleContainer = React.forwardRef(
-  ({ children, isHidden, onUnmount }, ref) => {
-    useEffect(
-      () => () => {
-        onUnmount();
-      },
-      []
-    );
-    const titleRef = useContext(TitleContext);
-    // titleRef.current must be mounted
-    return ReactDOM.createPortal(
-      <Title text={children} isHidden={isHidden} ref={ref} />,
-      titleRef.current
-    );
-  }
-);
+const TitleContainer = ({ children, coords }) => {
+  const ref = useRef(null);
+  const [isInitialized, setIsInitialized] = useState(false);
+  useEffect(() => {
+    setIsInitialized(true);
+  }, []);
+  useEffect(() => {
+    const { left, top, bottom, width } = coords;
+    const title = ref.current;
+
+    const leftToCenter = left + width / 2;
+    const titleHalfWidth = title.offsetWidth / 2;
+    const leftBorder = leftToCenter - titleHalfWidth;
+    const rightBorder = leftToCenter + titleHalfWidth;
+    if (leftBorder < 0) {
+      title.style.left = '0px';
+    } else if (rightBorder > document.documentElement.clientWidth) {
+      title.style.right = '0px';
+    } else {
+      title.style.left = `${leftBorder}px`;
+    }
+
+    const titleHeight = title.offsetHeight;
+    const bottomBorder = bottom + titleHeight;
+    if (
+      bottomBorder - window.pageYOffset >
+      document.documentElement.clientHeight
+    ) {
+      title.style.top = `${top - titleHeight}px`;
+    } else {
+      title.style.top = `${bottom}px`;
+    }
+  }, [children, coords]);
+
+  return <Title text={children} isHidden={!isInitialized} ref={ref} />;
+};
+
 export default TitleContainer;
 
 // HOC for adding Titles to components
@@ -30,63 +50,34 @@ export function withTitle(Component) {
   // some onHover etc. logic
   const WrappedComponent = (
     { titleText, onMouseEnter, onMouseLeave, onFocus, onBlur, ...props },
-    ref = React.createRef()
+    ref
   ) => {
+    const { setTitleData, clearTitleData } = useContext(TitleContext);
+    useEffect(() => clearTitleData, []);
     const componentRef = ref || React.createRef();
-    const [isHovered, setIsHovered] = useState(false);
-    const [isFocused, setIsFocused] = useState(false);
-    const isVisible = isHovered || isFocused;
-    const [isPlaced, setIsPlaced] = useState(false);
-    const componentTitleRef = useRef(null);
-    useEffect(() => {
-      if (!isVisible) {
-        setIsPlaced(false);
-        return;
-      }
-      const coords = componentRef.current.getBoundingClientRect();
-      const { left, bottom, width } = coords;
-      const title = componentTitleRef.current;
-      const titleWidth = title.offsetWidth;
-      title.style.top = `${bottom}px`;
-      title.style.left = `${left + width / 2 - titleWidth / 2}px`;
-      setIsPlaced(true);
-    }, [isVisible]);
+
     return (
-      <>
-        <Component
-          // eslint-disable-next-line react/jsx-props-no-spreading
-          {...props}
-          onMouseEnter={(e) => {
-            if (onMouseEnter) onMouseEnter(e);
-            setIsHovered(true);
-          }}
-          onMouseLeave={(e) => {
-            if (onMouseLeave) onMouseLeave(e);
-            setIsHovered(false);
-          }}
-          onFocus={(e) => {
-            if (onFocus) onFocus(e);
-            setIsFocused(true);
-          }}
-          onBlur={(e) => {
-            if (onBlur) onBlur(e);
-            setIsFocused(false);
-          }}
-          ref={componentRef}
-        />
-        {isVisible && (
-          <TitleContainer
-            isHidden={!isPlaced}
-            onUnmount={() => {
-              setIsHovered(false);
-              setIsFocused(false);
-            }}
-            ref={componentTitleRef}
-          >
-            {titleText}
-          </TitleContainer>
-        )}
-      </>
+      <Component
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...props}
+        onMouseEnter={(e) => {
+          if (onMouseEnter) onMouseEnter(e);
+          setTitleData(titleText, componentRef.current.getBoundingClientRect());
+        }}
+        onMouseLeave={(e) => {
+          if (onMouseLeave) onMouseLeave(e);
+          clearTitleData();
+        }}
+        onFocus={(e) => {
+          if (onFocus) onFocus(e);
+          setTitleData(titleText, componentRef.current.getBoundingClientRect());
+        }}
+        onBlur={(e) => {
+          if (onBlur) onBlur(e);
+          clearTitleData();
+        }}
+        ref={componentRef}
+      />
     );
   };
   return React.forwardRef(WrappedComponent);

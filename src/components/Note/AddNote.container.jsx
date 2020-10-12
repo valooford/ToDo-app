@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
 import { focusNote, updateNoteText } from '@store/notesReducer';
 import { getAddingNoteId } from '@store/selectors';
+
+import IconButtonTitled from '@components/IconButton/IconButton.titled';
 /* eslint-enable import/no-unresolved */
 import Note from './Note.container';
 import AddNote from './AddNote';
@@ -32,6 +34,7 @@ function AddNoteContainer({ id, isFocused, onNoteFocus, onInput, addNoteRef }) {
         onNoteFocus(id);
         onInput(id, text);
       }}
+      IconButton={IconButtonTitled}
       ref={inputRef}
     />
   );

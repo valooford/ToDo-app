@@ -1,12 +1,9 @@
 import React from 'react';
-/* eslint-disable import/no-unresolved */
-import IconButton from '@components/IconButton/IconButton';
-/* eslint-enable import/no-unresolved */
 import style from './Search-cfg.module.scss';
 
 // КОМПОНЕНТ ПОЛЯ ДЛЯ ПОИСКА / SEARCH
 // *
-export default function Search() {
+export default function Search({ IconButton }) {
   return (
     <span className={style.search}>
       <i className={style.search__icon}>

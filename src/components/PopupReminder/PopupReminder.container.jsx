@@ -5,6 +5,8 @@ import { connect } from 'react-redux';
 import { useEffectOnMouseDownOutside, associativeArrToArr } from '@/utils';
 
 import PopupReminder from '@components/PopupReminder/PopupReminder';
+import IconButtonTitled from '@components/IconButton/IconButton.titled';
+import Dropdown from '@components/Dropdown/Dropdown.container';
 
 import {
   // AC - action creator
@@ -57,6 +59,8 @@ function PopupReminderContainer({
       findPlacesByQuery={findPlacesByQuery}
       foundPlaces={foundPlaces}
       resetFoundPlaces={resetFoundPlaces}
+      IconButton={IconButtonTitled}
+      Dropdown={Dropdown}
     />
   );
 }

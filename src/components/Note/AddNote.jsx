@@ -1,13 +1,16 @@
 import React from 'react';
 import cn from 'classnames';
 /* eslint-disable import/no-unresolved */
-import IconButton from '@components/IconButton/IconButton';
+import IconButtonComponent from '@components/IconButton/IconButton';
 /* eslint-enable import/no-unresolved */
 import style from './Note-cfg.module.scss';
 
 // КОМПОНЕНТ БЛОКА ДОБАВЛЕНИЯ ЗАМЕТКИ / ADD-NOTE
 // *
-function AddNote({ onClick, onInput }, inputRef) {
+function AddNote(
+  { onClick, onInput, IconButton = IconButtonComponent },
+  inputRef
+) {
   const inputHandler = ({ target: { value: text }, keyCode }) => {
     // IE trigger an input event on creation
     if (text === '' && !keyCode) return;

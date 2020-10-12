@@ -55,6 +55,8 @@ export default function PopupReminder({
   findPlacesByQuery,
   foundPlaces = [],
   resetFoundPlaces,
+  IconButton,
+  Dropdown,
 }) {
   // resetting found places on mount
   useEffect(() => {
@@ -249,6 +251,8 @@ export default function PopupReminder({
           onChoosingPeriod={() => {
             setCurrentFieldset('period');
           }}
+          IconButton={IconButton}
+          Dropdown={Dropdown}
         />
       );
       fieldset.onKeyDown = switchToMainOnEsc;
@@ -272,6 +276,7 @@ export default function PopupReminder({
             setFieldsetData({ place });
             findPlacesByQuery(place);
           }}
+          IconButton={IconButton}
         />
       );
       fieldset.onKeyDown = switchToMainOnEsc;
@@ -346,6 +351,8 @@ export default function PopupReminder({
           onBack={() => {
             setCurrentFieldset('date');
           }}
+          IconButton={IconButton}
+          Dropdown={Dropdown}
         />
       );
       fieldset.onKeyDown = switchToDateOnEsc;

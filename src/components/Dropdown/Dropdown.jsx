@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import cn from 'classnames';
 
 /* eslint-disable import/no-unresolved */
-import IconButton from '@components/IconButton/IconButton';
+import IconButtonComponent from '@components/IconButton/IconButton';
 import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
 
 import { useEffectOnMouseDownOutside } from '@/utils';
@@ -26,6 +26,7 @@ function Dropdown(
     componentActionPropertyName = 'onClick',
     componentActionValueParser,
     extraordinaryFocusRef,
+    IconButton = IconButtonComponent,
   },
   ref
 ) {

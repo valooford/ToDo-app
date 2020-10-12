@@ -6,7 +6,7 @@ import IconButtonComponent from '@components/IconButton/IconButton';
 import Textarea from '@components/Textarea/Textarea';
 /* eslint-enable import/no-unresolved */
 import ListItem from './components/ListItem/ListItem';
-import CreationTime from './components/CreationTime/CreationTime';
+import CreationTimeComponent from './components/CreationTime/CreationTime';
 // ...add some tag/reminder general-purpose component
 import style from './Note-cfg.module.scss';
 
@@ -50,6 +50,7 @@ function Note(
       onTextFieldFocus,
     },
     IconButton = IconButtonComponent,
+    CreationTime = CreationTimeComponent,
     refs: {
       moreButtonRef,
       colorsButtonRef,

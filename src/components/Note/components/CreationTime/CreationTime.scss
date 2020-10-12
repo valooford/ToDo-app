@@ -3,15 +3,5 @@
     color: rgba(0, 0, 0, 0.46);
     font-size: 13px;
     font-weight: normal;
-
-    &__title {
-      display: none;
-    }
-    &:hover &__title {
-      display: block;
-      &:hover {
-        display: none;
-      }
-    }
   }
 }

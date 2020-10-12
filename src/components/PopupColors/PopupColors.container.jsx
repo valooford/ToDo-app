@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { associativeArrToArr } from '@/utils';
 
 import PopupColors from '@components/PopupColors/PopupColors';
+import IconButtonTitled from '@components/IconButton/IconButton.titled';
 
 import { setNoteColor } from '@store/notesReducer';
 /* eslint-enable import/no-unresolved */
@@ -48,6 +49,7 @@ function PopupColorsContainer({
       onMouseQuit={() => {
         handleClose(true);
       }}
+      IconButton={IconButtonTitled}
     />
   );
 }

@@ -10,6 +10,8 @@ import {
   getReminderIdByNoteId,
   getAddingNoteId,
 } from '@store/selectors';
+
+import IconButtonTitled from '@components/IconButton/IconButton.titled';
 /* eslint-enable import/no-unresolved */
 import Reminder from './Reminder';
 
@@ -28,6 +30,7 @@ function ReminderContainer({
       isPassed={isPassed}
       onRemove={isUnremovable ? null : removeReminder}
       onClick={setNotePopup}
+      IconButton={IconButtonTitled}
     />
   ) : null;
 }

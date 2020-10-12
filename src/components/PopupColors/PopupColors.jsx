@@ -1,6 +1,6 @@
 import React from 'react';
 /* eslint-disable import/no-unresolved */
-import IconButton from '@components/IconButton/IconButton';
+import IconButtonComponent from '@components/IconButton/IconButton';
 /* eslint-enable import/no-unresolved */
 
 import style from './PopupColors-cfg.module.scss';
@@ -64,6 +64,7 @@ export default function PopupColors({
   onKeyDown,
   onHover,
   onMouseQuit,
+  IconButton = IconButtonComponent,
 }) {
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/mouse-events-have-key-events

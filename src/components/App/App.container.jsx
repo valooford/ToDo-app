@@ -1,12 +1,12 @@
 import { hot } from 'react-hot-loader/root';
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { HashRouter, Route, Switch, withRouter } from 'react-router-dom';
 /* eslint-disable import/no-unresolved */
 import { ModalContext } from '@components/Modal/Modal.container';
-import { TitleContext } from '@components/Title/Title.container';
-import Header from '@components/Header/Header';
+import Title, { TitleContext } from '@components/Title/Title.container';
+import Header from '@components/Header/Header.container';
 import SelectionBar from '@components/SelectionBar/SelectionBar.container';
 import Aside from '@components/Aside/Aside';
 import Page from '@components/Container/Page';
@@ -26,14 +26,28 @@ function AppContainer({
   onDirectMainClick, // ---not good--- better to include this in Container
 }) {
   const modalRef = useRef(null);
-  const titleRef = useRef(null);
+  // const titleRef = useRef(null);
+  const [titleData, setTitleData] = useState(null);
   return (
     <ModalContext.Provider value={modalRef}>
-      <TitleContext.Provider value={titleRef}>
+      <TitleContext.Provider
+        value={{
+          setTitleData(text, coords) {
+            setTitleData({ text, coords });
+          },
+          clearTitleData() {
+            setTitleData(null);
+          },
+        }}
+      >
         <App
           prepend={[
             <div ref={modalRef} key="modal" />,
-            <div ref={titleRef} key="title" />,
+            <div key="title">
+              {titleData && (
+                <Title coords={titleData.coords}>{titleData.text}</Title>
+              )}
+            </div>,
           ]}
           header={[<Header key="header" />, <SelectionBar key="bar" />]}
           aside={<Aside currentPage={currentPage} />}

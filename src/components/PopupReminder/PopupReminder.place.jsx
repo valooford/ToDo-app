@@ -3,7 +3,7 @@ import cn from 'classnames';
 
 /* eslint-disable import/no-unresolved */
 import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
-import IconButton from '@components/IconButton/IconButton';
+import IconButtonComponent from '@components/IconButton/IconButton';
 import Dropdown from '@components/Dropdown/Dropdown';
 import LocationOption from '@components/LocationOption/LocationOption';
 import Button from '@components/Button/Button';
@@ -17,6 +17,7 @@ export default function PopupReminderPlace({
   onSave,
   onBack,
   onInput,
+  IconButton = IconButtonComponent,
 }) {
   const readyButtonRef = React.createRef();
   return (

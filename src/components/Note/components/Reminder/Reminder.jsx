@@ -3,7 +3,7 @@ import cn from 'classnames';
 /* eslint-disable import/no-unresolved */
 import { getFormattedDate } from '@/utils';
 
-import IconButton from '@components/IconButton/IconButton';
+import IconButtonComponent from '@components/IconButton/IconButton';
 import Title from '@components/Title/Title';
 /* eslint-enable import/no-unresolved */
 import style from './Reminder-cfg.module.scss';
@@ -17,6 +17,7 @@ export default function Reminder({
   isPassed,
   onRemove,
   onClick,
+  IconButton = IconButtonComponent,
 }) {
   const fullText = (date && getFormattedDate(date)) || place;
   let text = fullText;
