@@ -15,28 +15,32 @@ const TitleContainer = ({ children, coords }) => {
   useEffect(() => {
     const { left, top, bottom, width } = coords;
     const title = ref.current;
-
+    // horizontal
+    const documentWidth = document.documentElement.clientWidth;
     const leftToCenter = left + width / 2;
-    const titleHalfWidth = title.offsetWidth / 2;
-    const leftBorder = leftToCenter - titleHalfWidth;
-    const rightBorder = leftToCenter + titleHalfWidth;
-    if (leftBorder < 0) {
-      title.style.left = '0px';
-    } else if (rightBorder > document.documentElement.clientWidth) {
+    const titleWidth = title.offsetWidth;
+    const leftBorder = leftToCenter - titleWidth / 2;
+    const rightBorder = leftToCenter + titleWidth / 2;
+    if (rightBorder > documentWidth && titleWidth <= documentWidth) {
       title.style.right = '0px';
-    } else {
+      title.style.left = undefined;
+    } else if (leftBorder >= 0) {
       title.style.left = `${leftBorder}px`;
+    } else {
+      title.style.left = '0px';
     }
-
+    // vertical
     const titleHeight = title.offsetHeight;
+    const { pageYOffset } = window;
+    const topBorder = top - titleHeight;
     const bottomBorder = bottom + titleHeight;
     if (
-      bottomBorder - window.pageYOffset >
-      document.documentElement.clientHeight
+      bottomBorder - pageYOffset > document.documentElement.clientHeight &&
+      topBorder >= 0
     ) {
-      title.style.top = `${top - titleHeight}px`;
+      title.style.top = `${topBorder + pageYOffset}px`;
     } else {
-      title.style.top = `${bottom}px`;
+      title.style.top = `${bottom + pageYOffset}px`;
     }
   }, [children, coords]);
 
@@ -81,4 +85,15 @@ export function withTitle(Component) {
     );
   };
   return React.forwardRef(WrappedComponent);
+}
+
+export function getTitleContextValue(setTitleData) {
+  return {
+    setTitleData(text, coords) {
+      setTitleData({ text, coords });
+    },
+    clearTitleData() {
+      setTitleData(null);
+    },
+  };
 }

@@ -1,7 +1,9 @@
-import React, { useState, useRef } from 'react';
+import React, { useRef, useState } from 'react';
+import { compose } from 'redux';
 import { connect } from 'react-redux';
 
 /* eslint-disable import/no-unresolved */
+import { withPopup } from '@components/Popup/Popup';
 import PopupMenu from '@components/PopupMenu/PopupMenu.container';
 import PopupColors from '@components/PopupColors/PopupColors.container';
 import PopupReminder from '@components/PopupReminder/PopupReminder.container';
@@ -18,99 +20,101 @@ function SelectionBarContainer({
   selectedNotes,
   pinNote,
   // unpinNote,
+  setPopup,
+  clearPopup,
   clearSelectedNotes,
 }) {
-  const [popupName, setPopupName] = useState(null);
-
   const moreButtonRef = useRef(null);
   const colorsButtonRef = useRef(null);
   const popupColorsItemToFocusRef = useRef(null);
   const reminderButtonRef = useRef(null);
 
-  let colorsButtonMouseLeaveTimerId;
+  // a PopupColors disappearance timer id
+  // a mutable object is used for proper clearTimeout work
+  const [colorsTimerId, setColorsTimerId] = useState({});
+  const setColorsLeaveTimerId = (timerId) => {
+    setColorsTimerId((prev) => {
+      // eslint-disable-next-line no-param-reassign
+      prev.id = timerId;
+      return prev;
+    });
+  };
 
   if (!selectedNotes.length) return null;
 
-  const popup = {};
-  switch (popupName) {
-    case 'menu':
-      popup.menu = (
-        <PopupMenu
-          id={selectedNotes}
-          isMultiple
-          // hasMarkedItems={markedItems && !!markedItems.length}
-          handleClose={() => {
-            setPopupName(null);
-            moreButtonRef.current.focus();
-          }}
-        />
-      );
-      break;
-    case 'colors':
-      popup.colors = (
-        <PopupColors
-          id={selectedNotes}
-          itemToFocusRef={popupColorsItemToFocusRef}
-          handleClose={(isSilent) => {
-            setPopupName(null);
-            if (!isSilent) colorsButtonRef.current.focus();
-          }}
-          onHover={() => {
-            clearTimeout(colorsButtonMouseLeaveTimerId);
-          }}
-        />
-      );
-      break;
-    case 'reminder':
-      popup.reminder = (
-        <PopupReminder
-          id={selectedNotes}
-          handleClose={() => {
-            setPopupName(null);
-            reminderButtonRef.current.focus();
-          }}
-        />
-      );
-      break;
-    default:
-      break;
-  }
+  const setMenuPopup = () => {
+    setPopup(
+      <PopupMenu
+        id={selectedNotes}
+        isMultiple
+        // hasMarkedItems={markedItems && !!markedItems.length}
+        handleClose={() => {
+          clearPopup();
+          moreButtonRef.current.focus();
+        }}
+      />,
+      moreButtonRef.current.getBoundingClientRect()
+    );
+  };
+  const setColorsPopup = () => {
+    setPopup(
+      <PopupColors
+        id={selectedNotes}
+        itemToFocusRef={popupColorsItemToFocusRef}
+        handleClose={(isSilent) => {
+          clearPopup();
+          if (!isSilent) colorsButtonRef.current.focus();
+        }}
+        onHover={() => {
+          clearTimeout(colorsTimerId.id);
+        }}
+      />,
+      colorsButtonRef.current.getBoundingClientRect(),
+      true
+    );
+  };
+  const setReminderPopup = () => {
+    setPopup(
+      <PopupReminder
+        id={selectedNotes}
+        handleClose={() => {
+          clearPopup();
+          reminderButtonRef.current.focus();
+        }}
+      />,
+      reminderButtonRef.current.getBoundingClientRect()
+    );
+  };
 
   return (
     <SelectionBar
       selectedCount={selectedNotes.length}
-      popup={popup}
       eventHandlers={{
         onClose: clearSelectedNotes,
         onMoreButtonClick() {
-          clearTimeout(colorsButtonMouseLeaveTimerId);
-          setPopupName('menu');
+          clearTimeout(colorsTimerId.id);
+          setMenuPopup();
         },
         onColorsButtonClick() {
-          clearTimeout(colorsButtonMouseLeaveTimerId);
-          setPopupName('colors');
+          clearTimeout(colorsTimerId.id);
+          setColorsPopup();
           setTimeout(() => {
             popupColorsItemToFocusRef.current.focus();
           }, 0);
         },
-        onColorsButtonHover:
-          popupName === null || popupName === 'colors'
-            ? () => {
-                clearTimeout(colorsButtonMouseLeaveTimerId);
-                setPopupName('colors');
-              }
-            : null,
-        onColorsButtonMouseLeave:
-          popupName === 'colors'
-            ? () => {
-                colorsButtonMouseLeaveTimerId = setTimeout(() => {
-                  setPopupName(null);
-                }, 1000);
-              }
-            : null,
+        onColorsButtonMouseEnter: () => {
+          clearTimeout(colorsTimerId.id);
+          setColorsPopup();
+        },
+        onColorsButtonMouseLeave: () => {
+          const timerId = setTimeout(() => {
+            clearPopup();
+          }, 1000);
+          setColorsLeaveTimerId(timerId);
+        },
         onReminderButtonClick: () => {
-          clearTimeout(colorsButtonMouseLeaveTimerId);
-          setPopupName('reminder');
+          clearTimeout(colorsTimerId.id);
+          setReminderPopup();
         },
         // onPin: 'selectedNotes.some(unpinned)'
         //   ? () => {
@@ -134,8 +138,11 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, {
-  pinNote: pinNoteAC,
-  unpinNote: unpinNoteAC,
-  clearSelectedNotes: clearSelectedNotesAC,
-})(SelectionBarContainer);
+export default compose(
+  withPopup,
+  connect(mapStateToProps, {
+    pinNote: pinNoteAC,
+    unpinNote: unpinNoteAC,
+    clearSelectedNotes: clearSelectedNotesAC,
+  })
+)(SelectionBarContainer);

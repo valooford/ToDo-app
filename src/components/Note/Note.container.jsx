@@ -8,11 +8,12 @@ import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
 import { useEffectOnMouseDownOutside } from '@/utils';
 
+import Modal from '@components/Modal/Modal.container';
+import IconButtonTitled from '@components/IconButton/IconButton.titled';
+import { withPopup } from '@components/Popup/Popup';
 import PopupMenu from '@components/PopupMenu/PopupMenu.container';
 import PopupColors from '@components/PopupColors/PopupColors.container';
 import PopupReminder from '@components/PopupReminder/PopupReminder.container';
-import Modal from '@components/Modal/Modal.container';
-import IconButtonTitled from '@components/IconButton/IconButton.titled';
 
 import {
   focusNote,
@@ -31,7 +32,6 @@ import {
   removeNoteListItem,
   checkNoteListItem,
   uncheckNoteListItem,
-  setNotePopup,
   selectNote,
   cancelNoteSelection,
 } from '@store/notesReducer';
@@ -71,7 +71,6 @@ function NoteContainer({
     creationDate,
     editingDate,
     color,
-    popupName,
   },
   isFocused,
   onNoteFocus,
@@ -91,10 +90,11 @@ function NoteContainer({
   onListItemRemove,
   onListItemCheck,
   onListItemUncheck,
+  setPopup,
   clearPopup,
-  setMenuPopup,
-  setColorsPopup,
-  setReminderPopup,
+  // setMenuPopup,
+  // setColorsPopup,
+  // setReminderPopup,
   onNoteSelection,
   onCancelNoteSelection,
   noteRef = React.createRef(),
@@ -103,9 +103,6 @@ function NoteContainer({
 }) {
   // interacting
   const [isInteracting, setIsInteracting] = useState(false);
-  useEffect(() => {
-    if (popupName) setIsInteracting(true);
-  }, [popupName]);
   useEffect(() => {
     if (isFocused || isAddNote) return undefined;
     const noteElement = noteRef.current;
@@ -224,58 +221,69 @@ function NoteContainer({
   const popupColorsItemToFocusRef = useRef(null);
   const reminderButtonRef = useRef(null);
 
-  let colorsButtonMouseLeaveTimerId; // a PopupColors disappearance timer id
+  // a PopupColors disappearance timer id
+  // a mutable object is used for proper clearTimeout work
+  const [colorsTimerId, setColorsTimerId] = useState({});
+  const setColorsLeaveTimerId = (timerId) => {
+    setColorsTimerId((prev) => {
+      // eslint-disable-next-line no-param-reassign
+      prev.id = timerId;
+      return prev;
+    });
+  };
 
   // ---replace--- with 'Popup' components receiving refs as props
-  const popup = {};
-  switch (popupName) {
-    case 'menu':
-      popup.menu = (
-        <PopupMenu
-          id={id}
-          hasMarkedItems={
-            itemsWithHandlersGroups && !!itemsWithHandlersGroups.marked.length
-          }
-          handleClose={() => {
-            clearPopup();
-            moreButtonRef.current.focus();
-          }}
-          onRemove={() => {
-            if (neighbourRef && neighbourRef.current)
-              neighbourRef.current.focus();
-          }}
-        />
-      );
-      break;
-    case 'colors':
-      popup.colors = (
-        <PopupColors
-          id={id}
-          itemToFocusRef={popupColorsItemToFocusRef}
-          handleClose={(isSilent) => {
-            clearPopup();
-            if (!isSilent) colorsButtonRef.current.focus();
-          }}
-          onHover={() => {
-            clearTimeout(colorsButtonMouseLeaveTimerId);
-          }}
-        />
-      );
-      break;
-    case 'reminder':
-      popup.reminder = (
-        <PopupReminder
-          id={id}
-          handleClose={() => {
-            clearPopup();
-            reminderButtonRef.current.focus();
-          }}
-        />
-      );
-      break;
-    default:
-      break;
-  }
+  const setMenuPopup = () => {
+    setPopup(
+      <PopupMenu
+        id={id}
+        hasMarkedItems={
+          itemsWithHandlersGroups && !!itemsWithHandlersGroups.marked.length
+        }
+        handleClose={() => {
+          clearPopup();
+          moreButtonRef.current.focus();
+        }}
+        onRemove={() => {
+          if (neighbourRef && neighbourRef.current)
+            neighbourRef.current.focus();
+        }}
+      />,
+      moreButtonRef.current.getBoundingClientRect()
+    );
+    setIsInteracting(true);
+  };
+  const setColorsPopup = () => {
+    setPopup(
+      <PopupColors
+        id={id}
+        itemToFocusRef={popupColorsItemToFocusRef}
+        handleClose={(isSilent) => {
+          clearPopup();
+          if (!isSilent) colorsButtonRef.current.focus();
+        }}
+        onMouseEnter={() => {
+          clearTimeout(colorsTimerId.id);
+        }}
+      />,
+      colorsButtonRef.current.getBoundingClientRect(),
+      true
+    );
+    setIsInteracting(true);
+  };
+  const setReminderPopup = () => {
+    setPopup(
+      <PopupReminder
+        id={id}
+        handleClose={() => {
+          clearPopup();
+          reminderButtonRef.current.focus();
+        }}
+      />,
+      reminderButtonRef.current.getBoundingClientRect()
+    );
+    setIsInteracting(true);
+  };
 
   // const noteRef = useRef(null);
   const onClose = () => {
@@ -336,31 +344,26 @@ function NoteContainer({
     eventHandlers.onPin = isPinned ? onNoteUnpin : onNotePin;
     eventHandlers.onArchive = isArchived ? onNoteSetRegular : onNoteArchive;
     eventHandlers.onMoreButtonClick = () => {
-      clearTimeout(colorsButtonMouseLeaveTimerId);
+      clearTimeout(colorsTimerId.id);
       setMenuPopup();
     };
     eventHandlers.onColorsButtonClick = () => {
-      clearTimeout(colorsButtonMouseLeaveTimerId);
+      clearTimeout(colorsTimerId.id);
       setColorsPopup();
       setTimeout(() => {
         popupColorsItemToFocusRef.current.focus();
       }, 0);
     };
-    eventHandlers.onColorsButtonMouseEnter =
-      popupName == null || popupName === 'colors'
-        ? () => {
-            clearTimeout(colorsButtonMouseLeaveTimerId);
-            setColorsPopup();
-          }
-        : null;
-    eventHandlers.onColorsButtonMouseLeave =
-      popupName === 'colors'
-        ? () => {
-            colorsButtonMouseLeaveTimerId = setTimeout(() => {
-              clearPopup();
-            }, 1000);
-          }
-        : null;
+    eventHandlers.onColorsButtonMouseEnter = () => {
+      clearTimeout(colorsTimerId.id);
+      setColorsPopup();
+    };
+    eventHandlers.onColorsButtonMouseLeave = () => {
+      const timerId = setTimeout(() => {
+        clearPopup();
+      }, 1000);
+      setColorsLeaveTimerId(timerId);
+    };
 
     if (isReminderReadyToUpdate) {
       eventHandlers.onReminderButtonClick = () => {
@@ -368,7 +371,7 @@ function NoteContainer({
       };
     } else {
       eventHandlers.onReminderButtonClick = () => {
-        clearTimeout(colorsButtonMouseLeaveTimerId);
+        clearTimeout(colorsTimerId.id);
         setReminderPopup();
       };
     }
@@ -411,7 +414,6 @@ function NoteContainer({
         isInteracting,
         isSelected,
       }}
-      popup={popup}
       eventHandlers={eventHandlers}
       IconButton={IconButtonTitled}
       CreationTime={CreationTimeTitled}
@@ -426,7 +428,11 @@ function NoteContainer({
       }}
       ref={noteRef}
     >
-      <Reminder id={id} isPassed={isReminderPassed} />
+      <Reminder
+        id={id}
+        isPassed={isReminderPassed}
+        onClick={setReminderPopup}
+      />
     </Note>
   );
 
@@ -479,10 +485,6 @@ function mapDispatchToProps(dispatch, { id, reminderId }) {
       onListItemRemove: (itemId) => removeNoteListItem(id, itemId),
       onListItemCheck: (itemId) => checkNoteListItem(id, itemId),
       onListItemUncheck: (itemId) => uncheckNoteListItem(id, itemId),
-      clearPopup: () => setNotePopup(id, null),
-      setMenuPopup: () => setNotePopup(id, 'menu'),
-      setColorsPopup: () => setNotePopup(id, 'colors'),
-      setReminderPopup: () => setNotePopup(id, 'reminder'),
       onNoteSelection: () => selectNote(id),
       onCancelNoteSelection: () => cancelNoteSelection(id),
     },
@@ -491,6 +493,7 @@ function mapDispatchToProps(dispatch, { id, reminderId }) {
 }
 
 export default compose(
+  withPopup,
   connect(mapStateToProps),
   connect(null, mapDispatchToProps)
 )(NoteContainer);

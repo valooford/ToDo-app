@@ -9,12 +9,11 @@ import style from './SelectionBar-cfg.module.scss';
 export default function SelectionBar({
   selectedCount,
   pinSymbol = '\ue812',
-  popup = {},
   eventHandlers: {
     onClose,
     onMoreButtonClick,
     onColorsButtonClick,
-    onColorsButtonHover,
+    onColorsButtonMouseEnter,
     onColorsButtonMouseLeave,
     onReminderButtonClick,
     onPin,
@@ -35,7 +34,6 @@ export default function SelectionBar({
       titleText: 'Сохранить напоминание',
       modificators: ['icon-button_bigger', 'icon-button_style-selection-bar'],
       onClick: onReminderButtonClick,
-      append: popup.reminder,
       ref: reminderButtonRef,
     },
     {
@@ -43,9 +41,8 @@ export default function SelectionBar({
       titleText: 'Изменить цвет',
       modificators: ['icon-button_bigger', 'icon-button_style-selection-bar'],
       onClick: onColorsButtonClick,
-      onHover: onColorsButtonHover,
+      onMouseEnter: onColorsButtonMouseEnter,
       onMouseLeave: onColorsButtonMouseLeave,
-      append: popup.colors,
       ref: colorsButtonRef,
     },
     {
@@ -58,7 +55,6 @@ export default function SelectionBar({
       titleText: 'Ещё',
       modificators: ['icon-button_bigger', 'icon-button_style-selection-bar'],
       onClick: onMoreButtonClick,
-      append: popup.menu,
       ref: moreButtonRef,
     },
   ];
@@ -89,18 +85,16 @@ export default function SelectionBar({
       </span>
       <span className={style['selection-bar__buttons']}>
         {buttonsParams.map((params) => (
-          <span key={params.titleText}>
-            <IconButton
-              iconSymbol={params.iconSymbol}
-              titleText={params.titleText}
-              modificators={params.modificators}
-              onClick={params.onClick}
-              onHover={params.onHover}
-              onMouseLeave={params.onMouseLeave}
-              ref={params.ref}
-            />
-            {params.append}
-          </span>
+          <IconButton
+            iconSymbol={params.iconSymbol}
+            titleText={params.titleText}
+            modificators={params.modificators}
+            onClick={params.onClick}
+            onMouseEnter={params.onMouseEnter}
+            onMouseLeave={params.onMouseLeave}
+            ref={params.ref}
+            key={params.titleText}
+          />
         ))}
       </span>
     </div>

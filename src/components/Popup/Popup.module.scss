@@ -1,0 +1,8 @@
+.popup {
+  position: absolute;
+  z-index: 20;
+
+  &_hidden {
+    visibility: hidden;
+  }
+}

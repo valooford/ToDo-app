@@ -13,7 +13,7 @@ import { setNoteColor } from '@store/notesReducer';
 function PopupColorsContainer({
   itemToFocusRef,
   handleClose,
-  onHover,
+  onMouseEnter,
   currentColor,
   onColorSelection,
 }) {
@@ -45,7 +45,7 @@ function PopupColorsContainer({
       firstButtonRef={firstButtonRef}
       lastButtonRef={lastButtonRef}
       onKeyDown={keyDownHandler}
-      onHover={onHover}
+      onMouseEnter={onMouseEnter}
       onMouseQuit={() => {
         handleClose(true);
       }}

@@ -62,7 +62,7 @@ export default function PopupColors({
   firstButtonRef,
   lastButtonRef,
   onKeyDown,
-  onHover,
+  onMouseEnter,
   onMouseQuit,
   IconButton = IconButtonComponent,
 }) {
@@ -71,7 +71,7 @@ export default function PopupColors({
     <div
       className={style['popup-colors']}
       onKeyDown={onKeyDown}
-      onMouseEnter={onHover}
+      onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseQuit}
     >
       {buttonsParams.map((params, i) => {

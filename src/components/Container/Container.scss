@@ -2,6 +2,7 @@
   .#{$class-name} {
     width: 600px;
     margin: 0 auto;
+    padding-bottom: $base-unit;
 
     &__group {
       margin-top: 2 * $base-unit;

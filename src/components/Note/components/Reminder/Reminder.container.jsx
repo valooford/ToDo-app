@@ -3,7 +3,6 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 
 /* eslint-disable import/no-unresolved */
-import { setNotePopup as setNotePopupAC } from '@store/notesReducer';
 import { removeReminder as removeReminderAC } from '@store/notificationReducer';
 import {
   getReminder,
@@ -19,7 +18,7 @@ function ReminderContainer({
   reminder,
   isPassed,
   isUnremovable,
-  setNotePopup,
+  onClick,
   removeReminder,
 }) {
   return reminder ? (
@@ -29,7 +28,7 @@ function ReminderContainer({
       place={reminder.place}
       isPassed={isPassed}
       onRemove={isUnremovable ? null : removeReminder}
-      onClick={setNotePopup}
+      onClick={onClick}
       IconButton={IconButtonTitled}
     />
   ) : null;
@@ -44,10 +43,9 @@ function mapStateToProps(state, { id }) {
   };
 }
 
-function mapDispatchToProps(dispatch, { id, reminderId }) {
+function mapDispatchToProps(dispatch, { reminderId }) {
   return bindActionCreators(
     {
-      setNotePopup: () => setNotePopupAC(id, 'reminder'),
       removeReminder: () => removeReminderAC(reminderId),
     },
     dispatch

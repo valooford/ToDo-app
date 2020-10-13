@@ -19,7 +19,6 @@ import {
   REMOVE_CHECKED_LIST_ITEMS,
   TEXT_NOTE_TO_LIST,
   LIST_NOTE_TO_TEXT,
-  SET_NOTE_POPUP,
   SET_NOTE_COLOR,
   SET_SELECTED_NOTES,
 } from './actionsTypes';
@@ -401,19 +400,6 @@ const handlers = {
     archivedNotes.order = [...ids, ...archivedNotes.order];
     return { ...state, regularNotes, archivedNotes };
   },
-  // ---unnecessary---
-  [SET_NOTE_POPUP]: (state, { id, popupName }) => {
-    return {
-      ...state,
-      notes: {
-        ...state.notes,
-        [id]: {
-          ...state.notes[id],
-          popupName,
-        },
-      },
-    };
-  },
   [SET_NOTE_COLOR]: (state, { ids, color }) => {
     const coloredNotes = ids.reduce((notes, id) => {
       // eslint-disable-next-line no-param-reassign
@@ -469,7 +455,6 @@ const normalizedInitialState = {
       headerText: '',
       text: '',
       color: 'default',
-      // popupName: null, // ---unnecessary---
     },
     111: {
       id: '111',
@@ -658,13 +643,6 @@ export function textNoteToList(id) {
  */
 export function listNoteToText(id) {
   return { type: LIST_NOTE_TO_TEXT, id };
-}
-
-/* ---unnecessary--- SET_NOTE_POPUP
- * id: actual id only
- */
-export function setNotePopup(id, popupName = null) {
-  return { type: SET_NOTE_POPUP, id, popupName };
 }
 
 /* SET_NOTE_COLOR

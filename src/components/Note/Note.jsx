@@ -63,8 +63,6 @@ function Note(
 
     // ---replace---
     children, // replace with tag/reminder component data
-    // ---remove---
-    popup = {}, // create global Popup state and remove this
   },
   ref
 ) {
@@ -93,7 +91,6 @@ function Note(
         : 'Сохранить напоминание',
       modificators: 'icon-button_smaller',
       onClick: onReminderButtonClick,
-      append: popup.reminder,
       ref: reminderButtonRef,
     });
   }
@@ -110,7 +107,6 @@ function Note(
       onClick: onColorsButtonClick,
       onMouseEnter: onColorsButtonMouseEnter,
       onMouseLeave: onColorsButtonMouseLeave,
-      append: popup.colors,
       ref: colorsButtonRef,
     });
   }
@@ -133,7 +129,6 @@ function Note(
       titleText: 'Ещё',
       modificators: 'icon-button_smaller',
       onClick: onMoreButtonClick,
-      append: popup.menu,
       ref: moreButtonRef,
     });
   }
@@ -153,19 +148,17 @@ function Note(
   const iconButtons = buttons
     .filter((params) => !params.disabled) // + add notes change history
     .map((params) => (
-      <span key={params.titleText}>
-        <IconButton
-          iconSymbol={params.iconSymbol}
-          titleText={params.titleText}
-          modificators={params.modificators}
-          onClick={params.onClick}
-          onMouseEnter={params.onMouseEnter}
-          onMouseLeave={params.onMouseLeave}
-          disabled={params.disabled}
-          ref={params.ref || null}
-        />
-        {params.append}
-      </span>
+      <IconButton
+        iconSymbol={params.iconSymbol}
+        titleText={params.titleText}
+        modificators={params.modificators}
+        onClick={params.onClick}
+        onMouseEnter={params.onMouseEnter}
+        onMouseLeave={params.onMouseLeave}
+        disabled={params.disabled}
+        ref={params.ref || null}
+        key={params.titleText}
+      />
     ));
   return (
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events

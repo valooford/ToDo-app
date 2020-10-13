@@ -19,7 +19,6 @@ export const UNCHECK_ALL_LIST_ITEMS = 'notes/uncheck-all-list-items';
 export const REMOVE_CHECKED_LIST_ITEMS = 'notes/remove-checked-list-items';
 export const TEXT_NOTE_TO_LIST = 'notes/text-note-to-list';
 export const LIST_NOTE_TO_TEXT = 'notes/list-note-to-text';
-export const SET_NOTE_POPUP = 'notes/set-note-popup'; //! no sense without mount
 export const SET_NOTE_COLOR = 'notes/set-note-color';
 export const SET_SELECTED_NOTES = 'notes/set-selected-notes';
 
