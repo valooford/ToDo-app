@@ -43,21 +43,24 @@ const getCleanPeriod = (period) => {
 
 // КОМПОНЕНТ ВСПЛЫВАЮЩЕГО МЕНЮ НАСТРОЙКИ НАПОМИНАНИЙ / POPUP-REMINDER
 // *
-export default function PopupReminder({
-  onMouseDown,
-  onClose,
-  onKeyDown,
-  reminderDate,
-  setDate,
-  reminderPlace,
-  setPlace,
-  reminderPeriod,
-  findPlacesByQuery,
-  foundPlaces = [],
-  resetFoundPlaces,
-  IconButton,
-  Dropdown,
-}) {
+export default function PopupReminder(
+  {
+    onMouseDown,
+    onClose,
+    onKeyDown,
+    reminderDate,
+    setDate,
+    reminderPlace,
+    setPlace,
+    reminderPeriod,
+    findPlacesByQuery,
+    foundPlaces = [],
+    resetFoundPlaces,
+    IconButton,
+    Dropdown,
+  },
+  ref
+) {
   // resetting found places on mount
   useEffect(() => {
     return () => {
@@ -367,6 +370,7 @@ export default function PopupReminder({
       className={style['popup-reminder']}
       onMouseDown={onMouseDown}
       onKeyDown={fieldset.onKeyDown}
+      ref={ref}
     >
       {fieldset.content}
     </fieldset>

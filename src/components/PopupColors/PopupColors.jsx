@@ -56,16 +56,19 @@ const buttonsParams = [
   },
 ];
 
-export default function PopupColors({
-  onColorSelection,
-  selectedColor,
-  firstButtonRef,
-  lastButtonRef,
-  onKeyDown,
-  onMouseEnter,
-  onMouseQuit,
-  IconButton = IconButtonComponent,
-}) {
+export default function PopupColors(
+  {
+    onColorSelection,
+    selectedColor,
+    firstButtonRef,
+    lastButtonRef,
+    onKeyDown,
+    onMouseEnter,
+    onMouseQuit,
+    IconButton = IconButtonComponent,
+  },
+  ref
+) {
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/mouse-events-have-key-events
     <div
@@ -73,6 +76,7 @@ export default function PopupColors({
       onKeyDown={onKeyDown}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseQuit}
+      ref={ref}
     >
       {buttonsParams.map((params, i) => {
         let buttonRef;

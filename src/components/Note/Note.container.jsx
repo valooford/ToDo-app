@@ -221,6 +221,10 @@ function NoteContainer({
   const popupColorsItemToFocusRef = useRef(null);
   const reminderButtonRef = useRef(null);
 
+  const popupMenuRef = useRef(null);
+  const popupColorsRef = useRef(null);
+  const popupReminderRef = useRef(null);
+
   // a PopupColors disappearance timer id
   // a mutable object is used for proper clearTimeout work
   const [colorsTimerId, setColorsTimerId] = useState({});
@@ -248,8 +252,9 @@ function NoteContainer({
           if (neighbourRef && neighbourRef.current)
             neighbourRef.current.focus();
         }}
+        ref={popupMenuRef}
       />,
-      moreButtonRef.current.getBoundingClientRect()
+      popupMenuRef
     );
     setIsInteracting(true);
   };
@@ -265,8 +270,9 @@ function NoteContainer({
         onMouseEnter={() => {
           clearTimeout(colorsTimerId.id);
         }}
+        ref={popupColorsRef}
       />,
-      colorsButtonRef.current.getBoundingClientRect(),
+      popupColorsRef,
       true
     );
     setIsInteracting(true);
@@ -279,8 +285,9 @@ function NoteContainer({
           clearPopup();
           reminderButtonRef.current.focus();
         }}
+        ref={popupReminderRef}
       />,
-      reminderButtonRef.current.getBoundingClientRect()
+      popupReminderRef
     );
     setIsInteracting(true);
   };

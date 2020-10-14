@@ -7,7 +7,7 @@ import style from './PopupMenu-cfg.module.scss';
 
 // КОМПОНЕНТ ВСПЛЫВАЮЩЕГО МЕНЮ / POPUP-MENU
 // *
-export default function PopupMenu({ items, onMouseDown, onKeyDown }) {
+export default function PopupMenu({ items, onMouseDown, onKeyDown }, ref) {
   return (
     <KeyboardTrap inline autofocus usingArrows>
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions */}
@@ -15,6 +15,7 @@ export default function PopupMenu({ items, onMouseDown, onKeyDown }) {
         className={style['popup-menu']}
         onMouseDown={onMouseDown}
         onKeyDown={onKeyDown}
+        ref={ref}
       >
         {items.map((item) => (
           <li key={item.key}>

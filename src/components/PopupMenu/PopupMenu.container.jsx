@@ -90,21 +90,24 @@ function getMenuItems({
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ POPUP-MENU
 // *
-function PopupMenuContainer({
-  noteType,
-  noteHeader,
-  noteText,
-  noteItemsOrder,
-  isMultiple,
-  hasMarkedItems,
-  onRemove,
-  onCopy,
-  onUncheckAll,
-  onRemoveChecked,
-  onTextToList,
-  onListToText,
-  handleClose,
-}) {
+function PopupMenuContainer(
+  {
+    noteType,
+    noteHeader,
+    noteText,
+    noteItemsOrder,
+    isMultiple,
+    hasMarkedItems,
+    onRemove,
+    onCopy,
+    onUncheckAll,
+    onRemoveChecked,
+    onTextToList,
+    onListToText,
+    handleClose,
+  },
+  ref
+) {
   // detecting click inside popupMenu
   const setIsTouched = useEffectOnMouseDownOutside(() => {
     handleClose();
@@ -147,6 +150,7 @@ function PopupMenuContainer({
         setIsTouched();
       }}
       onKeyDown={keyDownHandler}
+      ref={ref}
     />
   );
 }
@@ -178,4 +182,6 @@ function mapDispatchToProps(dispatch, { id, onRemove }) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(PopupMenuContainer);
+export default connect(mapStateToProps, mapDispatchToProps, null, {
+  forwardRef: true,
+})(PopupMenuContainer);

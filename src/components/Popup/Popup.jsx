@@ -5,13 +5,14 @@ import style from './Popup.module.scss';
 
 export const PopupContext = React.createContext();
 
-export default function Popup({ children, coords, isTopPreferred }) {
+export default function Popup({ children, childRef, isTopPreferred }) {
   const ref = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
   useEffect(() => {
     setIsInitialized(true);
   }, []);
   useEffect(() => {
+    const coords = childRef.current.getBoundingClientRect();
     const { left, right, top, bottom } = coords;
     const popup = ref.current;
     const popupWidth = popup.offsetHeight;
@@ -38,7 +39,7 @@ export default function Popup({ children, coords, isTopPreferred }) {
     } else {
       popup.style.top = `${top}px`;
     }
-  }, [children, coords]);
+  }, [children, childRef]);
   return (
     <div
       className={cn(style.popup, { [style.popup_hidden]: !isInitialized })}
