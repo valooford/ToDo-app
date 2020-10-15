@@ -1,21 +1,19 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import cn from 'classnames';
 
 import style from './Popup.module.scss';
 
 export const PopupContext = React.createContext();
 
-export default function Popup({ children, childRef, isTopPreferred }) {
-  const ref = useRef(null);
+export default function Popup({ children, childRef, coords, isTopPreferred }) {
   const [isInitialized, setIsInitialized] = useState(false);
   useEffect(() => {
     setIsInitialized(true);
   }, []);
   useEffect(() => {
-    const coords = childRef.current.getBoundingClientRect();
     const { left, right, top, bottom } = coords;
-    const popup = ref.current;
-    const popupWidth = popup.offsetHeight;
+    const popup = childRef.current;
+    const popupWidth = popup.offsetWidth;
     // horizontal
     const documentWidth = document.documentElement.clientWidth;
     const leftBorder = right - popupWidth;
@@ -35,16 +33,13 @@ export default function Popup({ children, childRef, isTopPreferred }) {
       topBorder >= 0 &&
       (isTopPreferred || bottomBorder - pageYOffset >= documentHeight)
     ) {
-      popup.style.top = `${topBorder}px`;
+      popup.style.top = `${topBorder + pageYOffset}px`;
     } else {
-      popup.style.top = `${top}px`;
+      popup.style.top = `${bottom + pageYOffset}px`;
     }
-  }, [children, childRef]);
+  }, [children, coords]);
   return (
-    <div
-      className={cn(style.popup, { [style.popup_hidden]: !isInitialized })}
-      ref={ref}
-    >
+    <div className={cn(style.popup, { [style.popup_hidden]: !isInitialized })}>
       {children}
     </div>
   );
@@ -60,8 +55,8 @@ export function withPopup(Component) {
 
 export function getPopupContextValue(setPopupData) {
   return {
-    setPopup(popupElement, coords, isTopPreferred) {
-      setPopupData({ popupElement, coords, isTopPreferred });
+    setPopup(popupElement, popupElementRef, coords, isTopPreferred) {
+      setPopupData({ popupElement, popupElementRef, coords, isTopPreferred });
     },
     clearPopup() {
       setPopupData(null);

@@ -56,7 +56,7 @@ const buttonsParams = [
   },
 ];
 
-export default function PopupColors(
+function PopupColors(
   {
     onColorSelection,
     selectedColor,
@@ -106,3 +106,5 @@ export default function PopupColors(
     </div>
   );
 }
+
+export default React.forwardRef(PopupColors);

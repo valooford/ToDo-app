@@ -43,7 +43,7 @@ const getCleanPeriod = (period) => {
 
 // КОМПОНЕНТ ВСПЛЫВАЮЩЕГО МЕНЮ НАСТРОЙКИ НАПОМИНАНИЙ / POPUP-REMINDER
 // *
-export default function PopupReminder(
+function PopupReminder(
   {
     onMouseDown,
     onClose,
@@ -376,3 +376,5 @@ export default function PopupReminder(
     </fieldset>
   );
 }
+
+export default React.forwardRef(PopupReminder);

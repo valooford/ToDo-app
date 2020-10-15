@@ -29,11 +29,9 @@ import App from './App';
 
 function AppContainer({
   currentPage,
-  // location: { pathname },
   onDirectMainClick, // ---not good--- better to include this in Container
 }) {
   const modalRef = useRef(null);
-  // const titleRef = useRef(null);
   const [titleData, setTitleData] = useState(null);
   const [popupData, setPopupData] = useState(null);
   return (
@@ -50,6 +48,7 @@ function AppContainer({
               ),
               popupData && (
                 <Popup
+                  childRef={popupData.popupElementRef}
                   coords={popupData.coords}
                   isTopPreferred={popupData.isTopPreferred}
                   key="popup"

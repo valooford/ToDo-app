@@ -91,4 +91,4 @@ function mapDispatchToProps(dispatch, { id }) {
 
 export default connect(mapStateToProps, mapDispatchToProps, null, {
   forwardRef: true,
-})(PopupReminderContainer);
+})(React.forwardRef(PopupReminderContainer));

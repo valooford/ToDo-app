@@ -29,6 +29,10 @@ function SelectionBarContainer({
   const popupColorsItemToFocusRef = useRef(null);
   const reminderButtonRef = useRef(null);
 
+  const popupMenuRef = useRef(null);
+  const popupColorsRef = useRef(null);
+  const popupReminderRef = useRef(null);
+
   // a PopupColors disappearance timer id
   // a mutable object is used for proper clearTimeout work
   const [colorsTimerId, setColorsTimerId] = useState({});
@@ -52,7 +56,9 @@ function SelectionBarContainer({
           clearPopup();
           moreButtonRef.current.focus();
         }}
+        ref={popupMenuRef}
       />,
+      popupMenuRef,
       moreButtonRef.current.getBoundingClientRect()
     );
   };
@@ -68,7 +74,9 @@ function SelectionBarContainer({
         onHover={() => {
           clearTimeout(colorsTimerId.id);
         }}
+        ref={popupColorsRef}
       />,
+      popupColorsRef,
       colorsButtonRef.current.getBoundingClientRect(),
       true
     );
@@ -81,7 +89,9 @@ function SelectionBarContainer({
           clearPopup();
           reminderButtonRef.current.focus();
         }}
+        ref={popupReminderRef}
       />,
+      popupReminderRef,
       reminderButtonRef.current.getBoundingClientRect()
     );
   };

@@ -184,4 +184,4 @@ function mapDispatchToProps(dispatch, { id, onRemove }) {
 
 export default connect(mapStateToProps, mapDispatchToProps, null, {
   forwardRef: true,
-})(PopupMenuContainer);
+})(React.forwardRef(PopupMenuContainer));

@@ -254,7 +254,8 @@ function NoteContainer({
         }}
         ref={popupMenuRef}
       />,
-      popupMenuRef
+      popupMenuRef,
+      moreButtonRef.current.getBoundingClientRect()
     );
     setIsInteracting(true);
   };
@@ -273,6 +274,7 @@ function NoteContainer({
         ref={popupColorsRef}
       />,
       popupColorsRef,
+      colorsButtonRef.current.getBoundingClientRect(),
       true
     );
     setIsInteracting(true);
@@ -287,7 +289,8 @@ function NoteContainer({
         }}
         ref={popupReminderRef}
       />,
-      popupReminderRef
+      popupReminderRef,
+      reminderButtonRef.current.getBoundingClientRect()
     );
     setIsInteracting(true);
   };

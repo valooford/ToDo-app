@@ -68,4 +68,4 @@ function mapDispatchToProps(dispatch, { id }) {
 
 export default connect(mapStateToProps, mapDispatchToProps, null, {
   forwardRef: true,
-})(PopupColorsContainer);
+})(React.forwardRef(PopupColorsContainer));
