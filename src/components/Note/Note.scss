@@ -1,10 +1,10 @@
 @mixin noteStylesheet(
   $class-name: 'note',
   $base-unit: 15px,
+  $label-base-unit: 7px,
   $no-padding-icon-size: 22px,
   $smaller-base-unit: 11px,
   $icon-font-name: IconFont,
-  $reminder-base-unit: 7px,
   $background-color: #fff,
   $border-color: rgba(0, 0, 0, 0.133)
 ) {
@@ -107,8 +107,8 @@
     }
     &__info {
       position: relative;
-      height: 3 * $reminder-base-unit + 4px;
-      line-height: 3 * $reminder-base-unit;
+      height: 3 * $label-base-unit + 4px;
+      line-height: 3 * $label-base-unit;
       vertical-align: middle;
     }
     &__creationTime {
@@ -173,7 +173,7 @@
   // $no-padding-icon-size: null,
   // $smaller-base-unit: null,
   // $icon-font-name: null,
-  // $reminder-base-unit: null,
+  // $label-base-unit: null,
   $background-color: null,
   $border-color: null
 ) {

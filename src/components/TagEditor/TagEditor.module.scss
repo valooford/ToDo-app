@@ -1,0 +1,69 @@
+@import '@styles/variables';
+
+.tag-editor {
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding-top: 15px;
+  width: 320px;
+  font-family: $font-family;
+  background-color: #fff;
+  box-shadow: (
+    0 1px 5px rgba(0, 0, 0, 0.133),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.266)
+  );
+
+  > * {
+    padding: 0 15px;
+  }
+
+  &__header {
+    line-height: 30px;
+    color: rgba(0, 0, 0, 0.75);
+    font-size: 15px;
+    font-weight: bold;
+  }
+  &__item {
+    height: 45px;
+    line-height: 45px;
+  }
+
+  &__elem-icon {
+    &_left {
+      float: left;
+      margin-right: 15px;
+    }
+    &_right {
+      float: right;
+      margin-left: 15px;
+    }
+  }
+
+  &__input-wrapper {
+    // height: inherit;
+    line-height: inherit;
+    padding: 0 40px;
+    // clear: none;
+  }
+
+  &__input {
+    box-sizing: border-box;
+    display: inline-block;
+    width: 100%;
+    color: rgba(0, 0, 0, 0.8);
+    font-size: 0.8em;
+    font-weight: bold;
+    border: none;
+    outline: none;
+
+    &:focus {
+      border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+    }
+  }
+
+  &__footer {
+    margin-top: 12px;
+    line-height: 70px;
+    text-align: right;
+    border-top: 1px solid rgba(0, 0, 0, 0.2);
+  }
+}

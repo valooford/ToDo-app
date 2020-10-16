@@ -44,8 +44,8 @@
 
 @include extendIconButtonStylesheet(
   $class-name: $iconButtonClassName,
-  $modificator-name: 'reminder',
-  $base-unit: $reminder-base-unit,
+  $modificator-name: 'label',
+  $base-unit: $label-base-unit,
   $icon-size: 14px,
   $font-size: 12px
 );

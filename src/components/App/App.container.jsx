@@ -15,7 +15,7 @@ import Popup, {
 } from '@components/Popup/Popup';
 import Header from '@components/Header/Header.container';
 import SelectionBar from '@components/SelectionBar/SelectionBar.container';
-import Aside from '@components/Aside/Aside';
+import Aside from '@components/Aside/Aside.container';
 import Page from '@components/Container/Page';
 import Home from '@components/Container/Home';
 import Reminiscent from '@components/Container/Reminiscent';

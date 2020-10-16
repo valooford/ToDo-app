@@ -6,12 +6,16 @@ import style from './Aside-cfg.module.scss';
 
 // КОНТЕЙНЕР БОКОВОГО МЕНЮ / ASIDE
 // *
-export default function Aside({ currentPage }) {
+export default function Aside({ currentPage, labels, onTagsEdit }) {
   const menuItemsParams = [
     { to: '/home', iconSymbol: '\ue80d', text: 'Заметки' },
     { to: '/reminders', iconSymbol: '\uf0f3', text: 'Напоминания' },
-    { to: '/label/123', iconSymbol: '\ue81d', text: '123' },
-    { iconSymbol: '\ue80e', text: 'Изменение ярлыков' },
+    ...labels.map((label) => ({
+      to: `/label/${label}`,
+      iconSymbol: '\ue81d',
+      text: label,
+    })),
+    { iconSymbol: '\ue80e', text: 'Изменение ярлыков', onClick: onTagsEdit },
     { to: '/archive', iconSymbol: '\ue805', text: 'Архив' },
     { to: '/trash', iconSymbol: '\ue80f', text: 'Корзина' },
   ];
@@ -31,6 +35,7 @@ export default function Aside({ currentPage }) {
             iconSymbol={params.iconSymbol}
             text={params.text}
             isSelected={params.isSelected}
+            onClick={params.onClick}
             key={params.text}
           />
         ))}

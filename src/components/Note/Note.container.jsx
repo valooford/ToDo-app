@@ -14,6 +14,8 @@ import { withPopup } from '@components/Popup/Popup';
 import PopupMenu from '@components/PopupMenu/PopupMenu.container';
 import PopupColors from '@components/PopupColors/PopupColors.container';
 import PopupReminder from '@components/PopupReminder/PopupReminder.container';
+import Reminder from '@components/Label/Reminder';
+import Label from '@components/Label/Label.container';
 
 import {
   focusNote,
@@ -47,7 +49,6 @@ import style from './Note-cfg.module.scss';
 import listItemStyle from './components/ListItem/ListItem-cfg.module.scss';
 // ---replace--- insert in Note as tag/reminder general-purpose component
 import CreationTimeTitled from './components/CreationTime/CreationTime.titled';
-import Reminder from './components/Reminder/Reminder.container';
 
 const checkboxClassname = listItemStyle.listItem__checkbox;
 
@@ -62,6 +63,7 @@ function NoteContainer({
   isRemoved,
   isReminderPassed,
   isReminderReadyToUpdate,
+  labeledNotes,
   note: {
     type,
     headerText,
@@ -214,6 +216,13 @@ function NoteContainer({
       { unmarked: [], marked: [] }
     );
   }
+
+  const noteLabels = Object.keys(labeledNotes).reduce((labels, label) => {
+    if (labeledNotes[label][id]) {
+      labels.push(label);
+    }
+    return labels;
+  }, []);
 
   // the buttons refs for backward focusing
   const moreButtonRef = useRef(null);
@@ -443,6 +452,9 @@ function NoteContainer({
         isPassed={isReminderPassed}
         onClick={setReminderPopup}
       />
+      {noteLabels.map((label) => (
+        <Label text={label} key={label} />
+      ))}
     </Note>
   );
 
@@ -471,6 +483,7 @@ function mapStateToProps(state, { id }) {
     isReminderPassed,
     isReminderReadyToUpdate:
       isReminderPassed && state.app.page === '/reminders',
+    labeledNotes: state.main.labeledNotes,
   };
 }
 

@@ -4,10 +4,10 @@
 @include noteStylesheet(
   $class-name: $noteClassName,
   $base-unit: $base-unit,
+  $label-base-unit: $label-base-unit,
   $no-padding-icon-size: $no-padding-icon-size,
   $smaller-base-unit: $smaller-base-unit,
-  $icon-font-name: $icon-font-name,
-  $reminder-base-unit: $reminder-base-unit
+  $icon-font-name: $icon-font-name
 );
 
 @mixin addNoteStyle($style-name, $style-color) {

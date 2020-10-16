@@ -2,10 +2,12 @@
   $class-name: 'iconed-menu-item',
   $base-unit: 15px,
   $bigger-base-unit: 16px,
+  $font-family: sans-serif,
   $icon-font-name: IconFont,
   $selected-color: #bef2ff
 ) {
   .#{$class-name} {
+    font-family: $font-family;
     font-size: 14px;
     font-weight: bold;
 
@@ -21,11 +23,17 @@
 
     &__link {
       display: block;
+      width: 100%;
       margin-left: -0.7 * $base-unit;
-
+      padding: 0;
       line-height: 3 * $bigger-base-unit;
       color: rgba(0, 0, 0, 0.664);
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      text-align: left;
       text-decoration: none;
+      background-color: transparent;
       border: 1px solid transparent;
       outline: none;
       border-top-right-radius: 1.5 * $bigger-base-unit;

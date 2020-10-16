@@ -6,6 +6,8 @@ import {
   SET_NOTE_PIN,
   SET_NOTE_AS_REGULAR,
   SET_NOTE_AS_ARCHIVED,
+  // MANAGE_TAG,
+  // SET_NOTE_TAG,
   ADD_NOTE,
   COPY_NOTE,
   UPDATE_NOTE,
@@ -369,14 +371,34 @@ const handlers = {
   },
   [SET_NOTE_PIN]: (state, { ids, isPinned }) => {
     const pinnedNotes = { ...state.pinnedNotes };
+    let isArchivedWasPinned;
+    const archivedNotes = { ...state.archivedNotes };
+    const regularNotes = { ...state.regularNotes };
     ids.forEach((id) => {
       if (isPinned) {
         pinnedNotes[id] = true;
+        if (state.archivedNotes[id]) {
+          if (!isArchivedWasPinned) isArchivedWasPinned = true;
+          // setting note as regular
+          delete archivedNotes[id];
+          regularNotes[id] = true;
+          regularNotes.order = [id, ...regularNotes.order];
+        }
       } else {
         delete pinnedNotes[id];
       }
+      if (isArchivedWasPinned) {
+        archivedNotes.order = archivedNotes.order.filter(
+          (noteId) => archivedNotes[noteId]
+        );
+      }
     });
-    return { ...state, pinnedNotes };
+    return {
+      ...state,
+      pinnedNotes,
+      archivedNotes: isArchivedWasPinned ? archivedNotes : state.archivedNotes,
+      regularNotes: isArchivedWasPinned ? regularNotes : state.regularNotes,
+    };
   },
   [SET_NOTE_AS_REGULAR]: (state, { ids }) => {
     const archivedNotes = { ...state.archivedNotes };
@@ -514,6 +536,11 @@ const normalizedInitialState = {
   removedNotes: {
     // '111': true,
     order: [],
+  },
+  labeledNotes: {
+    'Label 1': {
+      111: true,
+    },
   },
   focusedNoteId: null,
   selectedNotes: {

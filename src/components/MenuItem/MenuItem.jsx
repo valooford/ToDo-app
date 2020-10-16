@@ -6,10 +6,11 @@ import style from './MenuItem-cfg.module.scss';
 // КОМПОНЕНТ ПУНКТА МЕНЮ С ИКОНКОЙ / ICONED-MENU-ITEM
 // *
 export default function IconedMenuItem({
-  to = '/',
+  to,
   isSelected,
   iconSymbol,
   text,
+  onClick,
 }) {
   return (
     <li
@@ -17,10 +18,21 @@ export default function IconedMenuItem({
         [style['iconed-menu-item_selected']]: isSelected,
       })}
     >
-      <Link to={to} className={style['iconed-menu-item__link']}>
-        <i className={style['iconed-menu-item__icon']}>{iconSymbol}</i>
-        {text}
-      </Link>
+      {to ? (
+        <Link to={to} className={style['iconed-menu-item__link']}>
+          <i className={style['iconed-menu-item__icon']}>{iconSymbol}</i>
+          {text}
+        </Link>
+      ) : (
+        <button
+          type="button"
+          onClick={onClick}
+          className={style['iconed-menu-item__link']}
+        >
+          <i className={style['iconed-menu-item__icon']}>{iconSymbol}</i>
+          {text}
+        </button>
+      )}
     </li>
   );
 }
