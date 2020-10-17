@@ -10,10 +10,13 @@ import IconButtonTitled from '@components/IconButton/IconButton.titled';
 import { setNoteColor } from '@store/notesReducer';
 /* eslint-enable import/no-unresolved */
 
-function PopupColorsContainer(
-  { itemToFocusRef, handleClose, onMouseEnter, currentColor, onColorSelection },
-  ref
-) {
+function PopupColorsContainer({
+  itemToFocusRef,
+  handleClose,
+  onMouseEnter,
+  currentColor,
+  onColorSelection,
+}) {
   const firstButtonRef = itemToFocusRef || React.createRef();
   const lastButtonRef = useRef(null);
   const keyDownHandler = (e) => {
@@ -47,7 +50,6 @@ function PopupColorsContainer(
         handleClose(true);
       }}
       IconButton={IconButtonTitled}
-      ref={ref}
     />
   );
 }
@@ -66,6 +68,7 @@ function mapDispatchToProps(dispatch, { id }) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps, null, {
-  forwardRef: true,
-})(React.forwardRef(PopupColorsContainer));
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PopupColorsContainer);

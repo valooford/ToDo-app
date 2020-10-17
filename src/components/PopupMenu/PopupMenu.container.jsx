@@ -23,6 +23,7 @@ function getMenuItems({
   isMultiple,
   hasMarkedItems,
   onRemove,
+  onTagsEdit,
   onCopy,
   onUncheckAll,
   onRemoveChecked,
@@ -30,7 +31,9 @@ function getMenuItems({
   onListToText,
   closePopup,
 } = {}) {
-  const menuItems = [{ text: 'Добавить ярлык', key: 'tag' }];
+  const menuItems = [
+    { text: 'Добавить ярлык', key: 'tag', onClick: onTagsEdit },
+  ];
   if (!isMultiple) {
     menuItems.push({ text: 'Добавить рисунок', key: 'paint' });
   }
@@ -90,24 +93,22 @@ function getMenuItems({
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ POPUP-MENU
 // *
-function PopupMenuContainer(
-  {
-    noteType,
-    noteHeader,
-    noteText,
-    noteItemsOrder,
-    isMultiple,
-    hasMarkedItems,
-    onRemove,
-    onCopy,
-    onUncheckAll,
-    onRemoveChecked,
-    onTextToList,
-    onListToText,
-    handleClose,
-  },
-  ref
-) {
+function PopupMenuContainer({
+  hasMarkedItems,
+  handleClose,
+  onTagsEdit,
+  noteType,
+  noteHeader,
+  noteText,
+  noteItemsOrder,
+  isMultiple,
+  onRemove,
+  onCopy,
+  onUncheckAll,
+  onRemoveChecked,
+  onTextToList,
+  onListToText,
+}) {
   // detecting click inside popupMenu
   const setIsTouched = useEffectOnMouseDownOutside(() => {
     handleClose();
@@ -117,7 +118,7 @@ function PopupMenuContainer(
     // Tab or Esc
     if (e.keyCode === 9 || e.keyCode === 27) {
       e.preventDefault();
-      e.stopPropagation(); // prevent a focused note from blurring
+      // e.stopPropagation(); // prevent a focused note from blurring
       handleClose();
     }
   };
@@ -137,6 +138,7 @@ function PopupMenuContainer(
         isList: noteType === 'list',
         isMultiple,
         onRemove,
+        onTagsEdit,
         onCopy,
         onUncheckAll,
         onRemoveChecked,
@@ -150,7 +152,6 @@ function PopupMenuContainer(
         setIsTouched();
       }}
       onKeyDown={keyDownHandler}
-      ref={ref}
     />
   );
 }
@@ -182,6 +183,4 @@ function mapDispatchToProps(dispatch, { id, onRemove }) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps, null, {
-  forwardRef: true,
-})(React.forwardRef(PopupMenuContainer));
+export default connect(mapStateToProps, mapDispatchToProps)(PopupMenuContainer);

@@ -20,23 +20,20 @@ import { getReminder, getReminderIdByNoteId } from '@store/selectors';
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ POPUP-REMINDER
 // *
-function PopupReminderContainer(
-  {
-    handleClose,
-    reminder: {
-      date: reminderDate,
-      period: reminderPeriod,
-      place: reminderPlace,
-    } = {},
-    foundPlaces,
-    setDateReminder,
-    setPlaceReminder,
-    findPlacesByQuery,
-    resetFoundPlaces,
-  },
-  ref
-) {
-  // detecting click inside popupMenu
+function PopupReminderContainer({
+  handleClose,
+  reminder: {
+    date: reminderDate,
+    period: reminderPeriod,
+    place: reminderPlace,
+  } = {},
+  foundPlaces,
+  setDateReminder,
+  setPlaceReminder,
+  findPlacesByQuery,
+  resetFoundPlaces,
+}) {
+  // detecting click inside popupReminder
   const setIsTouched = useEffectOnMouseDownOutside(handleClose, []);
 
   const keyDownHandler = (e) => {
@@ -64,7 +61,6 @@ function PopupReminderContainer(
       resetFoundPlaces={resetFoundPlaces}
       IconButton={IconButtonTitled}
       Dropdown={Dropdown}
-      ref={ref}
     />
   );
 }
@@ -89,6 +85,7 @@ function mapDispatchToProps(dispatch, { id }) {
   );
 }
 
-export default connect(mapStateToProps, mapDispatchToProps, null, {
-  forwardRef: true,
-})(React.forwardRef(PopupReminderContainer));
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PopupReminderContainer);

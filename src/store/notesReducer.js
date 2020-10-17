@@ -7,7 +7,7 @@ import {
   SET_NOTE_AS_REGULAR,
   SET_NOTE_AS_ARCHIVED,
   MANAGE_TAG,
-  // SET_NOTE_TAG,
+  SET_NOTE_TAG,
   ADD_NOTE,
   COPY_NOTE,
   UPDATE_NOTE,
@@ -444,6 +444,17 @@ const handlers = {
         return state;
     }
   },
+  [SET_NOTE_TAG]: (state, { ids, tag, remove }) => {
+    const labeledNotes = { ...state.labeledNotes };
+    ids.forEach((id) => {
+      if (remove) {
+        delete labeledNotes[tag][id];
+      } else {
+        labeledNotes[tag][id] = true;
+      }
+    });
+    return { ...state, labeledNotes };
+  },
   [SET_NOTE_COLOR]: (state, { ids, color }) => {
     const coloredNotes = ids.reduce((notes, id) => {
       // eslint-disable-next-line no-param-reassign
@@ -623,6 +634,18 @@ export function renameTag(tag, value) {
 }
 export function removeTag(tag) {
   return { type: MANAGE_TAG, operation: 'remove', tag };
+}
+
+/* SET_NOTE_TAG
+ * id: actual id / array of ids
+ */
+export function setNoteTag(id, tag) {
+  const ids = associativeArrToArr(id);
+  return { type: SET_NOTE_TAG, ids, tag };
+}
+export function removeNoteTag(id, tag) {
+  const ids = associativeArrToArr(id);
+  return { type: SET_NOTE_TAG, ids, tag, remove: true };
 }
 
 // ADD_NOTE

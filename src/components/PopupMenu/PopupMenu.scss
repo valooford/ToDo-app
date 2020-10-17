@@ -5,9 +5,6 @@
   $font-family: serif
 ) {
   .#{$class-name} {
-    position: absolute;
-    top: $smaller-base-unit * 3;
-    left: 0;
     padding-top: $base-unit / 3;
     padding-bottom: $base-unit / 2;
     background-color: #fff;

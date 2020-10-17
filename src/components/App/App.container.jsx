@@ -48,7 +48,6 @@ function AppContainer({
               ),
               popupData && (
                 <Popup
-                  childRef={popupData.popupElementRef}
                   coords={popupData.coords}
                   isTopPreferred={popupData.isTopPreferred}
                   key="popup"

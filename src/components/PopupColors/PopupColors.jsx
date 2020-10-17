@@ -56,19 +56,16 @@ const buttonsParams = [
   },
 ];
 
-function PopupColors(
-  {
-    onColorSelection,
-    selectedColor,
-    firstButtonRef,
-    lastButtonRef,
-    onKeyDown,
-    onMouseEnter,
-    onMouseQuit,
-    IconButton = IconButtonComponent,
-  },
-  ref
-) {
+export default function PopupColors({
+  onColorSelection,
+  selectedColor,
+  firstButtonRef,
+  lastButtonRef,
+  onKeyDown,
+  onMouseEnter,
+  onMouseQuit,
+  IconButton = IconButtonComponent,
+}) {
   return (
     // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/mouse-events-have-key-events
     <div
@@ -76,7 +73,6 @@ function PopupColors(
       onKeyDown={onKeyDown}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseQuit}
-      ref={ref}
     >
       {buttonsParams.map((params, i) => {
         let buttonRef;
@@ -106,5 +102,3 @@ function PopupColors(
     </div>
   );
 }
-
-export default React.forwardRef(PopupColors);

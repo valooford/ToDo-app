@@ -5,12 +5,9 @@
   $font-family: serif
 ) {
   .#{$class-name} {
-    position: absolute;
-    top: $smaller-base-unit * 3;
-    left: 0;
     display: inline-block;
 
-    min-width: 320px;
+    width: 320px;
     padding-bottom: 8px;
     background-color: #fff;
     border: 1px solid #ddd;

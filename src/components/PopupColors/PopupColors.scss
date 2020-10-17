@@ -1,9 +1,6 @@
 @mixin popupColorsStylesheet($base-unit: 9px) {
   .popup-colors {
     display: inline-block;
-    position: absolute;
-    top: -13.5 * $base-unit;
-    left: 0;
     width: 13.5 * $base-unit;
     height: 11 * $base-unit;
     padding: $base-unit;

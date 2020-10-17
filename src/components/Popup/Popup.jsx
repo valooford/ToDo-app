@@ -1,18 +1,19 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import cn from 'classnames';
 
 import style from './Popup.module.scss';
 
 export const PopupContext = React.createContext();
 
-export default function Popup({ children, childRef, coords, isTopPreferred }) {
+export default function Popup({ children, coords, isTopPreferred }) {
+  const ref = useRef(null);
   const [isInitialized, setIsInitialized] = useState(false);
   useEffect(() => {
     setIsInitialized(true);
   }, []);
   useEffect(() => {
     const { left, right, top, bottom } = coords;
-    const popup = childRef.current;
+    const popup = ref.current;
     const popupWidth = popup.offsetWidth;
     // horizontal
     const documentWidth = document.documentElement.clientWidth;
@@ -39,7 +40,10 @@ export default function Popup({ children, childRef, coords, isTopPreferred }) {
     }
   }, [children, coords]);
   return (
-    <div className={cn(style.popup, { [style.popup_hidden]: !isInitialized })}>
+    <div
+      className={cn(style.popup, { [style.popup_hidden]: !isInitialized })}
+      ref={ref}
+    >
       {children}
     </div>
   );
@@ -55,8 +59,8 @@ export function withPopup(Component) {
 
 export function getPopupContextValue(setPopupData) {
   return {
-    setPopup(popupElement, popupElementRef, coords, isTopPreferred) {
-      setPopupData({ popupElement, popupElementRef, coords, isTopPreferred });
+    setPopup(popupElement, coords, isTopPreferred) {
+      setPopupData({ popupElement, coords, isTopPreferred });
     },
     clearPopup() {
       setPopupData(null);

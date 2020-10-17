@@ -10,6 +10,7 @@ import { withPopup } from '@components/Popup/Popup';
 import PopupMenu from '@components/PopupMenu/PopupMenu.container';
 import PopupColors from '@components/PopupColors/PopupColors.container';
 import PopupReminder from '@components/PopupReminder/PopupReminder.container';
+import PopupTag from '@components/PopupTag/PopupTag.container';
 import Reminder from '@components/Label/Reminder';
 import Label from '@components/Label/Label.container';
 
@@ -90,9 +91,6 @@ function NoteContainer({
   onListItemUncheck,
   setPopup,
   clearPopup,
-  // setMenuPopup,
-  // setColorsPopup,
-  // setReminderPopup,
   onNoteSelection,
   onCancelNoteSelection,
   noteRef = React.createRef(),
@@ -226,10 +224,6 @@ function NoteContainer({
   const popupColorsItemToFocusRef = useRef(null);
   const reminderButtonRef = useRef(null);
 
-  const popupMenuRef = useRef(null);
-  const popupColorsRef = useRef(null);
-  const popupReminderRef = useRef(null);
-
   // a PopupColors disappearance timer id
   // a mutable object is used for proper clearTimeout work
   const [colorsTimerId, setColorsTimerId] = useState({});
@@ -241,7 +235,19 @@ function NoteContainer({
     });
   };
 
-  // ---replace--- with 'Popup' components receiving refs as props
+  const setTagPopup = () => {
+    setPopup(
+      <PopupTag
+        ids={[id]}
+        handleClose={() => {
+          clearPopup();
+          moreButtonRef.current.focus();
+        }}
+      />,
+      moreButtonRef.current.getBoundingClientRect()
+    );
+    setIsInteracting(true);
+  };
   const setMenuPopup = () => {
     setPopup(
       <PopupMenu
@@ -253,13 +259,13 @@ function NoteContainer({
           clearPopup();
           moreButtonRef.current.focus();
         }}
+        onTagsEdit={setTagPopup}
+        hasTags={!!noteLabels.length}
         onRemove={() => {
           if (neighbourRef && neighbourRef.current)
             neighbourRef.current.focus();
         }}
-        ref={popupMenuRef}
       />,
-      popupMenuRef,
       moreButtonRef.current.getBoundingClientRect()
     );
     setIsInteracting(true);
@@ -276,9 +282,7 @@ function NoteContainer({
         onMouseEnter={() => {
           clearTimeout(colorsTimerId.id);
         }}
-        ref={popupColorsRef}
       />,
-      popupColorsRef,
       colorsButtonRef.current.getBoundingClientRect(),
       true
     );
@@ -292,15 +296,12 @@ function NoteContainer({
           clearPopup();
           reminderButtonRef.current.focus();
         }}
-        ref={popupReminderRef}
       />,
-      popupReminderRef,
       reminderButtonRef.current.getBoundingClientRect()
     );
     setIsInteracting(true);
   };
 
-  // const noteRef = useRef(null);
   const onClose = () => {
     onNoteBlur();
     if (isAddNote) {
