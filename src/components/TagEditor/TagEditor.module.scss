@@ -3,7 +3,6 @@
 .tag-editor {
   box-sizing: border-box;
   margin: 0 auto;
-  padding-top: 15px;
   width: 320px;
   font-family: $font-family;
   background-color: #fff;
@@ -12,8 +11,15 @@
     inset 0 -1px 2px rgba(0, 0, 0, 0.266)
   );
 
-  > * {
-    padding: 0 15px;
+  &__scroll-wrapper {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-top: 15px;
+    padding-bottom: 12px;
+
+    > * {
+      padding: 0 15px;
+    }
   }
 
   &__header {
@@ -22,27 +28,32 @@
     font-size: 15px;
     font-weight: bold;
   }
+  &__error {
+    padding: 10px 25px;
+    color: rgb(221, 33, 33);
+    font-style: italic;
+    font-size: 0.8em;
+  }
   &__item {
+    position: relative;
     height: 45px;
     line-height: 45px;
   }
 
   &__elem-icon {
+    position: absolute;
+    top: 0;
     &_left {
-      float: left;
-      margin-right: 15px;
+      left: 15px;
     }
     &_right {
-      float: right;
-      margin-left: 15px;
+      right: 15px;
     }
   }
 
   &__input-wrapper {
-    // height: inherit;
     line-height: inherit;
     padding: 0 40px;
-    // clear: none;
   }
 
   &__input {
@@ -61,8 +72,8 @@
   }
 
   &__footer {
-    margin-top: 12px;
     line-height: 70px;
+    padding: 0 15px;
     text-align: right;
     border-top: 1px solid rgba(0, 0, 0, 0.2);
   }

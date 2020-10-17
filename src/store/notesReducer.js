@@ -6,7 +6,7 @@ import {
   SET_NOTE_PIN,
   SET_NOTE_AS_REGULAR,
   SET_NOTE_AS_ARCHIVED,
-  // MANAGE_TAG,
+  MANAGE_TAG,
   // SET_NOTE_TAG,
   ADD_NOTE,
   COPY_NOTE,
@@ -422,6 +422,28 @@ const handlers = {
     archivedNotes.order = [...ids, ...archivedNotes.order];
     return { ...state, regularNotes, archivedNotes };
   },
+  [MANAGE_TAG]: (state, { operation, tag, value }) => {
+    const labeledNotes = { ...state.labeledNotes };
+    switch (operation) {
+      case 'add':
+        labeledNotes[tag] = { id: Date.now() };
+        return { ...state, labeledNotes };
+      case 'rename':
+        if (labeledNotes[value])
+          labeledNotes[value] = {
+            ...labeledNotes[value],
+            ...labeledNotes[tag],
+          };
+        labeledNotes[value] = labeledNotes[tag];
+        delete labeledNotes[tag];
+        return { ...state, labeledNotes };
+      case 'remove':
+        delete labeledNotes[tag];
+        return { ...state, labeledNotes };
+      default:
+        return state;
+    }
+  },
   [SET_NOTE_COLOR]: (state, { ids, color }) => {
     const coloredNotes = ids.reduce((notes, id) => {
       // eslint-disable-next-line no-param-reassign
@@ -539,6 +561,7 @@ const normalizedInitialState = {
   },
   labeledNotes: {
     'Label 1': {
+      id: 100,
       111: true,
     },
   },
@@ -589,6 +612,17 @@ export function setNoteAsRegular(id) {
 export function setNoteAsArchived(id) {
   const ids = associativeArrToArr(id);
   return { type: SET_NOTE_AS_ARCHIVED, ids };
+}
+
+// MANAGE_TAG
+export function addNewTag(tag) {
+  return { type: MANAGE_TAG, operation: 'add', tag };
+}
+export function renameTag(tag, value) {
+  return { type: MANAGE_TAG, operation: 'rename', tag, value };
+}
+export function removeTag(tag) {
+  return { type: MANAGE_TAG, operation: 'remove', tag };
 }
 
 // ADD_NOTE

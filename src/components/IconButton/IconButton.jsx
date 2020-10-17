@@ -15,7 +15,7 @@ function IconButton(
     onFocus,
     onBlur,
   },
-  ref
+  ref = React.createRef()
 ) {
   return (
     // eslint-disable-next-line jsx-a11y/mouse-events-have-key-events
@@ -27,7 +27,10 @@ function IconButton(
           ? modificators.map((m) => style[m])
           : style[modificators]
       )}
-      onClick={onClick}
+      onClick={() => {
+        if (onClick) onClick();
+        ref.current.blur();
+      }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onFocus={onFocus}

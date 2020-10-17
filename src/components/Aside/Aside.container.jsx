@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
 import Modal from '@components/Modal/Modal.container';
@@ -12,20 +12,24 @@ function AsideContainer({ currentPage, labeledNotes }) {
   const onTagsEdit = () => {
     setCurrentModal('TagEditor');
   };
+  const tagsEditButtonRef = useRef(null);
+  const onTagEditorClose = () => {
+    setCurrentModal(null);
+    tagsEditButtonRef.current.focus();
+  };
   return (
     <>
       <Aside
         currentPage={currentPage}
-        labels={Object.keys(labeledNotes)}
+        labels={Object.keys(labeledNotes).sort(
+          (l1, l2) => labeledNotes[l1].id - labeledNotes[l2].id
+        )}
         onTagsEdit={onTagsEdit}
+        tagsEditButtonRef={tagsEditButtonRef}
       />
       {currentModal === 'TagEditor' && (
-        <Modal
-          onClose={() => {
-            setCurrentModal(null);
-          }}
-        >
-          <TagEditor />
+        <Modal onClose={onTagEditorClose}>
+          <TagEditor onClose={onTagEditorClose} />
         </Modal>
       )}
     </>

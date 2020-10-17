@@ -1,8 +1,4 @@
-import React, {
-  /* useState, useEffect, */ useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
@@ -164,12 +160,12 @@ function NoteContainer({
 
   // detecting click outside focused note
   const setIsTouched = useEffectOnMouseDownOutside(() => {
-    if (isFocused) {
-      onNoteBlur();
-      if (isAddNote) {
-        onNoteAdd();
-      }
-    }
+    //! disabled until Popup clicks will be considered
+    //
+    // if (isAddNote && isFocused) {
+    //   onNoteBlur();
+    //   onNoteAdd();
+    // }
   }, [isFocused]);
   const onMouseDown = () => {
     setIsTouched(); // клик был осуществлен в пределах note

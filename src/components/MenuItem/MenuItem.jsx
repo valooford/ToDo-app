@@ -5,13 +5,7 @@ import style from './MenuItem-cfg.module.scss';
 
 // КОМПОНЕНТ ПУНКТА МЕНЮ С ИКОНКОЙ / ICONED-MENU-ITEM
 // *
-export default function IconedMenuItem({
-  to,
-  isSelected,
-  iconSymbol,
-  text,
-  onClick,
-}) {
+function IconedMenuItem({ to, isSelected, iconSymbol, text, onClick }, ref) {
   return (
     <li
       className={cn(style['iconed-menu-item'], {
@@ -19,15 +13,16 @@ export default function IconedMenuItem({
       })}
     >
       {to ? (
-        <Link to={to} className={style['iconed-menu-item__link']}>
+        <Link to={to} className={style['iconed-menu-item__link']} ref={ref}>
           <i className={style['iconed-menu-item__icon']}>{iconSymbol}</i>
           {text}
         </Link>
       ) : (
         <button
           type="button"
-          onClick={onClick}
           className={style['iconed-menu-item__link']}
+          onClick={onClick}
+          ref={ref}
         >
           <i className={style['iconed-menu-item__icon']}>{iconSymbol}</i>
           {text}
@@ -36,3 +31,5 @@ export default function IconedMenuItem({
     </li>
   );
 }
+
+export default React.forwardRef(IconedMenuItem);
