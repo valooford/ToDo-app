@@ -10,6 +10,7 @@ export default function PopupTag({
   setTag,
   removeTag,
   addTag,
+  isNoteHasTag,
   isTagExist,
   onMouseDown,
   onKeyDown,
@@ -19,6 +20,27 @@ export default function PopupTag({
     autofocusRef.current.focus();
   }, []);
   const [searchStr, setSearchStr] = useState('');
+  const displayedLabels = !searchStr
+    ? labels
+    : labels.filter(({ name: label }) =>
+        new RegExp(`${searchStr}`).test(label)
+      );
+
+  const manageLabelTag = (label, isSet) => {
+    if (isSet)
+      return () => {
+        removeTag(label);
+      };
+    return () => {
+      setTag(label);
+    };
+  };
+  const addNewNoteTag = () => {
+    addTag(searchStr);
+    setTag(searchStr);
+    setSearchStr('');
+    autofocusRef.current.focus();
+  };
 
   return (
     <KeyboardTrap>
@@ -34,8 +56,18 @@ export default function PopupTag({
             type="text"
             className={style['popup-tag__input']}
             placeholder="Введите название ярлыка"
+            value={searchStr}
             onChange={(e) => {
               setSearchStr(e.target.value);
+            }}
+            onKeyDown={(e) => {
+              if (e.keyCode === 13) {
+                if (isTagExist(searchStr)) {
+                  manageLabelTag(searchStr, isNoteHasTag(searchStr))();
+                } else {
+                  addNewNoteTag();
+                }
+              }
             }}
             ref={autofocusRef}
           />
@@ -50,20 +82,12 @@ export default function PopupTag({
         </div>
         <KeyboardTrap usingArrows>
           <ul className={style['popup-tag__scroll-wrapper']}>
-            {labels.map(({ name: label, isSet /* isPartlySet */ }) => (
+            {displayedLabels.map(({ name: label, isSet, isPartlySet }) => (
               <li key={label}>
                 <button
                   type="button"
                   className={style['popup-tag__label']}
-                  onClick={
-                    isSet
-                      ? () => {
-                          removeTag(label);
-                        }
-                      : () => {
-                          setTag(label);
-                        }
-                  }
+                  onClick={manageLabelTag(label, isSet)}
                 >
                   <span
                     className={cn(
@@ -72,7 +96,11 @@ export default function PopupTag({
                       style['popup-tag__checkbox']
                     )}
                   >
-                    {isSet ? '\ue800' : ''}
+                    {(() => {
+                      if (isSet) return '\ue800';
+                      if (isPartlySet) return '-';
+                      return '';
+                    })()}
                   </span>
                   {label}
                 </button>
@@ -83,10 +111,7 @@ export default function PopupTag({
             <button
               type="button"
               className={style['popup-tag__create']}
-              onClick={() => {
-                addTag(searchStr);
-                setTag(searchStr);
-              }}
+              onClick={addNewNoteTag}
             >
               <span
                 className={cn(

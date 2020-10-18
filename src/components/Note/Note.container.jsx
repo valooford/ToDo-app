@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 /* eslint-disable import/no-unresolved */
 import { useEffectOnMouseDownOutside } from '@/utils';
 
@@ -96,6 +97,8 @@ function NoteContainer({
   noteRef = React.createRef(),
   neighbourRef,
   isSelectionMode,
+
+  history, // used for URL switching
 }) {
   // interacting
   const [isInteracting, setIsInteracting] = useState(false);
@@ -169,6 +172,23 @@ function NoteContainer({
     setIsTouched(); // клик был осуществлен в пределах note
   };
 
+  // the buttons refs for backward focusing
+  const moreButtonRef = useRef(null);
+  const colorsButtonRef = useRef(null);
+  const popupColorsItemToFocusRef = useRef(null);
+  const reminderButtonRef = useRef(null);
+
+  // a PopupColors disappearance timer id
+  // a mutable object is used for proper clearTimeout work
+  const [colorsTimerId, setColorsTimerId] = useState({});
+  const setColorsLeaveTimerId = (timerId) => {
+    setColorsTimerId((prev) => {
+      // eslint-disable-next-line no-param-reassign
+      prev.id = timerId;
+      return prev;
+    });
+  };
+
   // separation into marked and unmarked list items
   let itemsWithHandlersGroups;
   if (itemsOrder) {
@@ -211,29 +231,14 @@ function NoteContainer({
     );
   }
 
-  const noteLabels = Object.keys(labeledNotes).reduce((labels, label) => {
-    if (labeledNotes[label][id]) {
-      labels.push(label);
-    }
-    return labels;
-  }, []);
-
-  // the buttons refs for backward focusing
-  const moreButtonRef = useRef(null);
-  const colorsButtonRef = useRef(null);
-  const popupColorsItemToFocusRef = useRef(null);
-  const reminderButtonRef = useRef(null);
-
-  // a PopupColors disappearance timer id
-  // a mutable object is used for proper clearTimeout work
-  const [colorsTimerId, setColorsTimerId] = useState({});
-  const setColorsLeaveTimerId = (timerId) => {
-    setColorsTimerId((prev) => {
-      // eslint-disable-next-line no-param-reassign
-      prev.id = timerId;
-      return prev;
-    });
-  };
+  const noteLabels = Object.keys(labeledNotes)
+    .sort((l1, l2) => labeledNotes[l1].id - labeledNotes[l2].id)
+    .reduce((labels, label) => {
+      if (labeledNotes[label][id]) {
+        labels.push(label);
+      }
+      return labels;
+    }, []);
 
   const setTagPopup = () => {
     setPopup(
@@ -450,7 +455,13 @@ function NoteContainer({
         onClick={setReminderPopup}
       />
       {noteLabels.map((label) => (
-        <Label text={label} key={label} />
+        <Label
+          text={label}
+          onClick={() => {
+            history.push(`/label/${label}`);
+          }}
+          key={label}
+        />
       ))}
     </Note>
   );
@@ -513,6 +524,7 @@ function mapDispatchToProps(dispatch, { id, reminderId }) {
 }
 
 export default compose(
+  withRouter,
   withPopup,
   connect(mapStateToProps),
   connect(null, mapDispatchToProps)

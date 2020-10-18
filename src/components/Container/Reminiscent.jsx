@@ -121,6 +121,6 @@ function mapDispatchToProps(dispatch, { addingNoteId }) {
   );
 }
 export default compose(
-  connect(mapStateToProps),
+  connect(mapStateToProps, null),
   connect(null, mapDispatchToProps)
 )(Reminiscent);

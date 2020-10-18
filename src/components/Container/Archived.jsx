@@ -15,7 +15,7 @@ function Archived({
     <Container
       elements={archivedNotesOrder}
       groups={{
-        removed: {
+        archived: {
           test: (noteId) => !removedNotes[noteId],
           component: Note,
           refPropName: 'noteRef',

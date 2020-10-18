@@ -11,15 +11,19 @@ function Page({
   setPage,
   isSelectionMode,
   clearSelectedNotes,
+  ...oldProps
 }) {
   useEffect(() => {
     setPage();
   }, []);
 
+  const { pageName, ...props } = oldProps;
   return (
     <Component
       isSelectionMode={isSelectionMode}
       onClickOutsideOfElements={isSelectionMode ? clearSelectedNotes : null}
+      // eslint-disable-next-line react/jsx-props-no-spreading
+      {...props}
     />
   );
 }

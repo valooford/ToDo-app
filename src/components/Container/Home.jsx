@@ -27,7 +27,7 @@ function Home({
           unique: true,
         },
         pinned: {
-          test: (noteId) => pinnedNotes[noteId] && !removedNotes[noteId],
+          test: (noteId) => pinnedNotes[noteId],
           name: 'Закрепленные',
           isNameRequired: true,
           component: Note,

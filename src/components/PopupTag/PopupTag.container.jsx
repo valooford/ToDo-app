@@ -38,6 +38,7 @@ function PopupTagContainer({
       setTag={setTag}
       removeTag={removeTag}
       addTag={addTag}
+      isNoteHasTag={(tag) => ids.every((id) => labeledNotes[tag][id])}
       isTagExist={(tag) => labeledNotes[tag]}
       onMouseDown={() => {
         setIsTouched();

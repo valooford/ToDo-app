@@ -151,15 +151,26 @@ const handlers = {
   },
   [REMOVE_NOTE]: (state, { ids }) => {
     const removedNotes = { ...state.removedNotes };
+    const pinnedNotes = { ...state.pinnedNotes };
+    const touchedFields = {};
     ids.forEach((id) => {
       removedNotes[id] = true;
+      if (pinnedNotes[id]) {
+        delete pinnedNotes[id];
+        if (!touchedFields.pinnedNotes) touchedFields.pinnedNotes = true;
+      }
     });
     const { notes } = state;
     removedNotes.order = [...ids, ...removedNotes.order].sort(
       (noteId1, noteId2) =>
         notes[noteId2].creationDate - notes[noteId1].creationDate
     );
-    return { ...state, removedNotes, selectedNotes: { length: 0 } };
+    return {
+      ...state,
+      pinnedNotes: touchedFields.pinnedNotes ? pinnedNotes : state.pinnedNotes,
+      removedNotes,
+      selectedNotes: { length: 0 },
+    };
   },
   [RESTORE_NOTE]: (state, { ids }) => {
     const removedNotes = { ...state.removedNotes };
@@ -640,11 +651,13 @@ export function removeTag(tag) {
  * id: actual id / array of ids
  */
 export function setNoteTag(id, tag) {
-  const ids = associativeArrToArr(id);
+  // const ids = associativeArrToArr(id);
+  const ids = id.forEach ? id : [id];
   return { type: SET_NOTE_TAG, ids, tag };
 }
 export function removeNoteTag(id, tag) {
-  const ids = associativeArrToArr(id);
+  // const ids = associativeArrToArr(id);
+  const ids = id.forEach ? id : [id];
   return { type: SET_NOTE_TAG, ids, tag, remove: true };
 }
 

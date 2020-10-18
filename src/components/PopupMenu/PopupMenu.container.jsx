@@ -24,6 +24,7 @@ function getMenuItems({
   hasMarkedItems,
   onRemove,
   onTagsEdit,
+  hasTags,
   onCopy,
   onUncheckAll,
   onRemoveChecked,
@@ -32,7 +33,11 @@ function getMenuItems({
   closePopup,
 } = {}) {
   const menuItems = [
-    { text: 'Добавить ярлык', key: 'tag', onClick: onTagsEdit },
+    {
+      text: hasTags ? 'Редактировать ярлыки' : 'Добавить ярлык',
+      key: 'tag',
+      onClick: onTagsEdit,
+    },
   ];
   if (!isMultiple) {
     menuItems.push({ text: 'Добавить рисунок', key: 'paint' });
@@ -97,6 +102,7 @@ function PopupMenuContainer({
   hasMarkedItems,
   handleClose,
   onTagsEdit,
+  hasTags,
   noteType,
   noteHeader,
   noteText,
@@ -139,6 +145,7 @@ function PopupMenuContainer({
         isMultiple,
         onRemove,
         onTagsEdit,
+        hasTags,
         onCopy,
         onUncheckAll,
         onRemoveChecked,

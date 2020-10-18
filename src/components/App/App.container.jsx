@@ -19,6 +19,7 @@ import Aside from '@components/Aside/Aside.container';
 import Page from '@components/Container/Page';
 import Home from '@components/Container/Home';
 import Reminiscent from '@components/Container/Reminiscent';
+import Labeled from '@components/Container/Labeled';
 import Archived from '@components/Container/Archived';
 import Removed from '@components/Container/Removed';
 
@@ -78,7 +79,16 @@ function AppContainer({
                     match: {
                       params: { labelID },
                     },
-                  }) => `label: ${labelID}`}
+                  }) => {
+                    return (
+                      <Page
+                        label={labelID}
+                        pageName={`/label/${labelID}`}
+                        key="/label"
+                        component={Labeled}
+                      />
+                    );
+                  }}
                 />
                 <Route
                   path="/archive"
