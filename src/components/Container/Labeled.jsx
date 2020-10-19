@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 /* eslint-disable import/no-unresolved */
 import AddNote from '@components/Note/AddNote.container';
 import Note from '@components/Note/Note.container';
@@ -24,6 +25,7 @@ function Labeled({
 }) {
   // setting label on addingNote
   useEffect(() => {
+    if (!labeledNotes) return;
     setLabel();
   }, [addingNoteId]);
   // cleaning up on page switching
@@ -33,9 +35,11 @@ function Labeled({
   });
   useEffect(() => {
     return () => {
+      if (!labeledNotes) return;
       storedRemoveLabel.func();
     };
   }, []);
+  if (!labeledNotes) return <Redirect to="/" />;
   return (
     <Container
       elements={[addingNoteId, ...regularNotes.order, ...archivedNotes.order]}

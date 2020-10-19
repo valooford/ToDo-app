@@ -16,7 +16,6 @@ import Reminder from '@components/Label/Reminder';
 import Label from '@components/Label/Label.container';
 
 import {
-  focusNote,
   blurNote,
   pinNote,
   unpinNote,
@@ -40,6 +39,7 @@ import {
   getAddingNoteId,
   getReminderIdByNoteId,
   hasPassedReminder,
+  getCurrentPage,
 } from '@store/selectors';
 /* eslint-enable import/no-unresolved */
 import Note from './Note';
@@ -73,7 +73,6 @@ function NoteContainer({
     color,
   },
   isFocused,
-  onNoteFocus,
   onNoteBlur,
   onNotePin,
   onNoteUnpin,
@@ -98,8 +97,15 @@ function NoteContainer({
   neighbourRef,
   isSelectionMode,
 
-  history, // used for URL switching
+  // used for URL switching
+  history,
+  currentPage,
 }) {
+  const onNoteFocus = () => {
+    const path = `/${items ? 'LIST' : 'NOTE'}/${id}`;
+    history.push(path);
+  };
+
   // interacting
   const [isInteracting, setIsInteracting] = useState(false);
   useEffect(() => {
@@ -308,6 +314,7 @@ function NoteContainer({
   };
 
   const onClose = () => {
+    if (history.location.pathname !== currentPage) history.push(currentPage);
     onNoteBlur();
     if (isAddNote) {
       onNoteAdd();
@@ -492,13 +499,13 @@ function mapStateToProps(state, { id }) {
     isReminderReadyToUpdate:
       isReminderPassed && state.app.page === '/reminders',
     labeledNotes: state.main.labeledNotes,
+    currentPage: getCurrentPage(state),
   };
 }
 
 function mapDispatchToProps(dispatch, { id, reminderId }) {
   return bindActionCreators(
     {
-      onNoteFocus: () => focusNote(id),
       onNoteBlur: blurNote,
       onNotePin: () => pinNote(id),
       onNoteUnpin: () => unpinNote(id),
@@ -526,6 +533,6 @@ function mapDispatchToProps(dispatch, { id, reminderId }) {
 export default compose(
   withRouter,
   withPopup,
-  connect(mapStateToProps),
+  connect(mapStateToProps, null),
   connect(null, mapDispatchToProps)
 )(NoteContainer);

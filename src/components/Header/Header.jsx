@@ -33,13 +33,17 @@ const buttonsParams = [
 
 // КОМПОНЕНТ ШАПКИ / HEADER
 // *
-export default function Header({ IconButton = IconButtonComponent }) {
+export default function Header({
+  onMenuButtonClick,
+  IconButton = IconButtonComponent,
+}) {
   return (
     <div className={style.header}>
       <IconButton
         iconSymbol="&#xf0c9;"
         titleText="Главное меню"
         modificators="icon-button_bigger"
+        onClick={onMenuButtonClick}
       />
       <span className={style.header__logo}>
         <i>&#xe80d;</i>

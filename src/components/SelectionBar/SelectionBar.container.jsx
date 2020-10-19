@@ -7,6 +7,7 @@ import { withPopup } from '@components/Popup/Popup';
 import PopupMenu from '@components/PopupMenu/PopupMenu.container';
 import PopupColors from '@components/PopupColors/PopupColors.container';
 import PopupReminder from '@components/PopupReminder/PopupReminder.container';
+import PopupTag from '@components/PopupTag/PopupTag.container';
 
 import {
   pinNote as pinNoteAC,
@@ -18,6 +19,7 @@ import SelectionBar from './SelectionBar';
 
 function SelectionBarContainer({
   selectedNotes,
+  labeledNotes,
   pinNote,
   // unpinNote,
   setPopup,
@@ -42,6 +44,21 @@ function SelectionBarContainer({
 
   if (!selectedNotes.length) return null;
 
+  const selectedNotesNoLength = { ...selectedNotes };
+  delete selectedNotesNoLength.length;
+  const selectedNotesArr = Object.keys(selectedNotesNoLength);
+  const setTagPopup = () => {
+    setPopup(
+      <PopupTag
+        ids={selectedNotesArr}
+        handleClose={() => {
+          clearPopup();
+          moreButtonRef.current.focus();
+        }}
+      />,
+      moreButtonRef.current.getBoundingClientRect()
+    );
+  };
   const setMenuPopup = () => {
     setPopup(
       <PopupMenu
@@ -52,6 +69,10 @@ function SelectionBarContainer({
           clearPopup();
           moreButtonRef.current.focus();
         }}
+        onTagsEdit={setTagPopup}
+        hasTags={selectedNotesArr.some((noteId) =>
+          Object.values(labeledNotes).some((label) => label[noteId])
+        )}
       />,
       moreButtonRef.current.getBoundingClientRect()
     );
@@ -135,6 +156,7 @@ function SelectionBarContainer({
 function mapStateToProps(state) {
   return {
     selectedNotes: state.main.selectedNotes,
+    labeledNotes: state.main.labeledNotes,
   };
 }
 

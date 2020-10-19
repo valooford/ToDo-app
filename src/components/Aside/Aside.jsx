@@ -9,6 +9,7 @@ import style from './Aside-cfg.module.scss';
 export default function Aside({
   currentPage,
   labels,
+  isExpanded,
   onTagsEdit,
   tagsEditButtonRef,
 }) {
@@ -42,6 +43,7 @@ export default function Aside({
           <IconedMenuItem
             to={params.to}
             isActive={params.to === currentPage}
+            isConcise={!isExpanded}
             iconSymbol={params.iconSymbol}
             text={params.text}
             isSelected={params.isSelected}

@@ -16,6 +16,7 @@ import Popup, {
 import Header from '@components/Header/Header.container';
 import SelectionBar from '@components/SelectionBar/SelectionBar.container';
 import Aside from '@components/Aside/Aside.container';
+import NoteFocuser from '@components/Container/NoteFocuser';
 import Page from '@components/Container/Page';
 import Home from '@components/Container/Home';
 import Reminiscent from '@components/Container/Reminiscent';
@@ -24,17 +25,19 @@ import Archived from '@components/Container/Archived';
 import Removed from '@components/Container/Removed';
 
 import { clearSelectedNotes as clearSelectedNotesAC } from '@store/notesReducer';
-import { getCurrentPage } from '@store/selectors';
 /* eslint-enable import/no-unresolved */
 import App from './App';
 
 function AppContainer({
-  currentPage,
   onDirectMainClick, // ---not good--- better to include this in Container
 }) {
   const modalRef = useRef(null);
   const [titleData, setTitleData] = useState(null);
   const [popupData, setPopupData] = useState(null);
+  const [isAsideExpanded, setIsAsideExpanded] = useState(true);
+  const switchIsAsideExpanded = () => {
+    setIsAsideExpanded((prev) => !prev);
+  };
   return (
     <ModalContext.Provider value={modalRef}>
       <TitleContext.Provider value={getTitleContextValue(setTitleData)}>
@@ -57,8 +60,11 @@ function AppContainer({
                 </Popup>
               ),
             ]}
-            header={[<Header key="header" />, <SelectionBar key="bar" />]}
-            aside={<Aside currentPage={currentPage} />}
+            header={[
+              <Header onMenuButtonClick={switchIsAsideExpanded} key="header" />,
+              <SelectionBar key="bar" />,
+            ]}
+            aside={<Aside isExpanded={isAsideExpanded} />}
             main={
               <Switch>
                 <Route
@@ -118,7 +124,7 @@ function AppContainer({
                     match: {
                       params: { noteID },
                     },
-                  }) => `page with note: ${noteID}`}
+                  }) => <NoteFocuser noteID={noteID} />}
                 />
                 <Route
                   path="*"
@@ -128,16 +134,13 @@ function AppContainer({
                 />
               </Switch>
             }
+            isAsideMinified={!isAsideExpanded}
             onDirectMainClick={onDirectMainClick}
           />
         </PopupContext.Provider>
       </TitleContext.Provider>
     </ModalContext.Provider>
   );
-}
-
-function mapStateToProps(state) {
-  return { currentPage: getCurrentPage(state) };
 }
 
 export default compose(
@@ -150,7 +153,7 @@ export default compose(
     );
   },
   withRouter,
-  connect(mapStateToProps, {
+  connect(null, {
     onDirectMainClick: clearSelectedNotesAC,
   })
 )(AppContainer);
