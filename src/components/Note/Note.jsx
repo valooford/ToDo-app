@@ -240,7 +240,7 @@ function Note(
       {items && (
         <div className={style.note__listWrapper}>
           <ul className={style.note__list}>
-            {items.map((item) => (
+            {items.map((item) => [
               <ListItem
                 isPreview={item.onFocus}
                 value={item.text}
@@ -250,8 +250,21 @@ function Note(
                 onMouseUp={item.onFocus}
                 key={item.id}
                 ref={item.ref}
-              />
-            ))}
+              />,
+              ...item.sub.map((subItem) => (
+                <ListItem
+                  isNested
+                  isPreview={subItem.onFocus}
+                  value={subItem.text}
+                  onChange={subItem.onChange}
+                  onRemove={subItem.onRemove}
+                  onCheck={subItem.onCheck}
+                  onMouseUp={subItem.onFocus}
+                  key={subItem.id}
+                  ref={subItem.ref}
+                />
+              )),
+            ])}
             {onListItemAdd && (
               <ListItem
                 isAddItem
@@ -271,7 +284,7 @@ function Note(
               {`${markedItems.length} отмеченных пунктов`}
             </span>
             <ul className={style.note__list}>
-              {markedItems.map((item) => (
+              {markedItems.map((item) => [
                 <ListItem
                   isChecked
                   isPreview={item.onFocus}
@@ -282,8 +295,22 @@ function Note(
                   onMouseUp={item.onFocus}
                   key={item.id}
                   ref={item.ref}
-                />
-              ))}
+                />,
+                ...item.sub.map((subItem) => (
+                  <ListItem
+                    isChecked
+                    isNested
+                    isPreview={subItem.onFocus}
+                    value={subItem.text}
+                    onChange={subItem.onChange}
+                    onRemove={subItem.onRemove}
+                    onCheck={subItem.onCheck}
+                    onMouseUp={subItem.onFocus}
+                    key={subItem.id}
+                    ref={subItem.ref}
+                  />
+                )),
+              ])}
             </ul>
           </div>
         </div>

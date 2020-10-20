@@ -13,6 +13,7 @@ export { style };
 function ListItem(
   {
     isAddItem,
+    isNested,
     isChecked,
     isPreview,
     value,
@@ -49,7 +50,12 @@ function ListItem(
     );
   }
   return (
-    <li className={cn(style.listItem, { [style.listItem_add]: isAddItem })}>
+    <li
+      className={cn(style.listItem, {
+        [style.listItem_add]: isAddItem,
+        [style.listItem_nested]: isNested,
+      })}
+    >
       {isAddItem ? (
         <span className={style.listItem__add}>&#xe810;</span>
       ) : (

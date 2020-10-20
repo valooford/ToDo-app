@@ -7,6 +7,10 @@
   .#{$class-name} {
     position: relative;
 
+    &_nested {
+      margin-left: 20px;
+    }
+
     &__drag,
     &__add,
     &__checkbox {
