@@ -210,6 +210,7 @@ function NoteContainer({
             onListItemRemove(itemId);
           },
           ref: itemId === focusInfo.itemId ? listItemRef : null,
+          // still no handlers for subItems ↓↓↓
           sub: item.sub.map((subItemId) => items[subItemId]),
         };
         if (!isFocused) {

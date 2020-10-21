@@ -219,6 +219,7 @@ const handlers = {
       removedNotes,
     };
   },
+  // + { id, text, after }
   [ADD_NOTE_LIST_ITEM]: (state, { id, text }) => {
     const newItemId = Date.now();
     return {
@@ -235,7 +236,7 @@ const handlers = {
               sub: [],
             },
           },
-          itemsOrder: [...state.notes[id].itemsOrder, newItemId],
+          itemsOrder: [...state.notes[id].itemsOrder, newItemId], // + splice
           editingDate: new Date(),
         },
       },
@@ -556,6 +557,7 @@ const normalizedInitialState = {
           id: '222-4',
           text: 'nested',
           sub: [],
+          // + subOf: '222-2'
         },
       },
       itemsOrder: ['222-1', '222-2', '222-3'],
@@ -711,7 +713,7 @@ export function deleteNote(id) {
 
 // LIST ITEM ACTION CREATORS
 export function addNoteListItem(id, text) {
-  return { type: ADD_NOTE_LIST_ITEM, id, text };
+  return { type: ADD_NOTE_LIST_ITEM, id, text }; // + after
 }
 export function removeNoteListItem(id, itemId) {
   return { type: REMOVE_NOTE_LIST_ITEM, id, itemId };

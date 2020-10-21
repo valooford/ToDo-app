@@ -19,6 +19,7 @@ export const REMOVE_NOTE_LIST_ITEM = 'notes/remove-note-list-item';
 export const SET_CHECK_NOTE_LIST_ITEM = 'notes/set-check-note-list-item';
 export const UNCHECK_ALL_LIST_ITEMS = 'notes/uncheck-all-list-items';
 export const REMOVE_CHECKED_LIST_ITEMS = 'notes/remove-checked-list-items';
+// + list item: MOVE_UP, MOVE_DOWN, LEVEL_UP, LEVEL_DOWN
 export const TEXT_NOTE_TO_LIST = 'notes/text-note-to-list';
 export const LIST_NOTE_TO_TEXT = 'notes/list-note-to-text';
 export const SET_NOTE_COLOR = 'notes/set-note-color';

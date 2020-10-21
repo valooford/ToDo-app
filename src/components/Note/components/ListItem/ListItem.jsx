@@ -24,6 +24,8 @@ function ListItem(
   },
   ref
 ) {
+  // + React DnD
+
   const listItemInteractiveElements = [
     <button
       className={style.listItem__checkbox}
