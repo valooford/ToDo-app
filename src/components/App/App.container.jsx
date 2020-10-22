@@ -3,6 +3,8 @@ import React, { useRef, useState } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { HashRouter, Route, Switch, withRouter } from 'react-router-dom';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 /* eslint-disable import/no-unresolved */
 import { ModalContext } from '@components/Modal/Modal.container';
 import Title, {
@@ -39,107 +41,112 @@ function AppContainer({
     setIsAsideExpanded((prev) => !prev);
   };
   return (
-    <ModalContext.Provider value={modalRef}>
-      <TitleContext.Provider value={getTitleContextValue(setTitleData)}>
-        <PopupContext.Provider value={getPopupContextValue(setPopupData)}>
-          <App
-            prepend={[
-              <div ref={modalRef} key="modal" />,
-              titleData && (
-                <Title coords={titleData.coords} key="title">
-                  {titleData.text}
-                </Title>
-              ),
-              popupData && (
-                <Popup
-                  coords={popupData.coords}
-                  isTopPreferred={popupData.isTopPreferred}
-                  key="popup"
-                >
-                  {popupData.popupElement}
-                </Popup>
-              ),
-            ]}
-            header={[
-              <Header onMenuButtonClick={switchIsAsideExpanded} key="header" />,
-              <SelectionBar key="bar" />,
-            ]}
-            aside={<Aside isExpanded={isAsideExpanded} />}
-            main={
-              <Switch>
-                <Route
-                  path="/reminders"
-                  render={() => {
-                    return (
+    <DndProvider backend={HTML5Backend}>
+      <ModalContext.Provider value={modalRef}>
+        <TitleContext.Provider value={getTitleContextValue(setTitleData)}>
+          <PopupContext.Provider value={getPopupContextValue(setPopupData)}>
+            <App
+              prepend={[
+                <div ref={modalRef} key="modal" />,
+                titleData && (
+                  <Title coords={titleData.coords} key="title">
+                    {titleData.text}
+                  </Title>
+                ),
+                popupData && (
+                  <Popup
+                    coords={popupData.coords}
+                    isTopPreferred={popupData.isTopPreferred}
+                    key="popup"
+                  >
+                    {popupData.popupElement}
+                  </Popup>
+                ),
+              ]}
+              header={[
+                <Header
+                  onMenuButtonClick={switchIsAsideExpanded}
+                  key="header"
+                />,
+                <SelectionBar key="bar" />,
+              ]}
+              aside={<Aside isExpanded={isAsideExpanded} />}
+              main={
+                <Switch>
+                  <Route
+                    path="/reminders"
+                    render={() => {
+                      return (
+                        <Page
+                          pageName="/reminders"
+                          key="/reminders"
+                          component={Reminiscent}
+                        />
+                      );
+                    }}
+                  />
+                  <Route
+                    path="/label/:labelID"
+                    render={({
+                      match: {
+                        params: { labelID },
+                      },
+                    }) => {
+                      return (
+                        <Page
+                          label={labelID}
+                          pageName={`/label/${labelID}`}
+                          key="/label"
+                          component={Labeled}
+                        />
+                      );
+                    }}
+                  />
+                  <Route
+                    path="/archive"
+                    render={() => (
                       <Page
-                        pageName="/reminders"
-                        key="/reminders"
-                        component={Reminiscent}
+                        pageName="/archive"
+                        key="/archive"
+                        component={Archived}
                       />
-                    );
-                  }}
-                />
-                <Route
-                  path="/label/:labelID"
-                  render={({
-                    match: {
-                      params: { labelID },
-                    },
-                  }) => {
-                    return (
-                      <Page
-                        label={labelID}
-                        pageName={`/label/${labelID}`}
-                        key="/label"
-                        component={Labeled}
-                      />
-                    );
-                  }}
-                />
-                <Route
-                  path="/archive"
-                  render={() => (
-                    <Page
-                      pageName="/archive"
-                      key="/archive"
-                      component={Archived}
-                    />
-                  )}
-                />
-                <Route
-                  path="/trash"
-                  render={() => {
-                    return (
-                      <Page
-                        pageName="/trash"
-                        key="/trash"
-                        component={Removed}
-                      />
-                    );
-                  }}
-                />
-                <Route
-                  path={['/NOTE/:noteID', '/LIST/:noteID']}
-                  render={({
-                    match: {
-                      params: { noteID },
-                    },
-                  }) => <NoteFocuser noteID={noteID} />}
-                />
-                <Route
-                  path="*"
-                  render={() => (
-                    <Page pageName="/home" key="/home" component={Home} />
-                  )}
-                />
-              </Switch>
-            }
-            isAsideMinified={!isAsideExpanded}
-            onDirectMainClick={onDirectMainClick}
-          />
-        </PopupContext.Provider>
-      </TitleContext.Provider>
-    </ModalContext.Provider>
+                    )}
+                  />
+                  <Route
+                    path="/trash"
+                    render={() => {
+                      return (
+                        <Page
+                          pageName="/trash"
+                          key="/trash"
+                          component={Removed}
+                        />
+                      );
+                    }}
+                  />
+                  <Route
+                    path={['/NOTE/:noteID', '/LIST/:noteID']}
+                    render={({
+                      match: {
+                        params: { noteID },
+                      },
+                    }) => <NoteFocuser noteID={noteID} />}
+                  />
+                  <Route
+                    path="*"
+                    render={() => (
+                      <Page pageName="/home" key="/home" component={Home} />
+                    )}
+                  />
+                </Switch>
+              }
+              isAsideMinified={!isAsideExpanded}
+              onDirectMainClick={onDirectMainClick}
+            />
+          </PopupContext.Provider>
+        </TitleContext.Provider>
+      </ModalContext.Provider>
+    </DndProvider>
   );
 }
 

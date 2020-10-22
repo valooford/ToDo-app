@@ -5,7 +5,7 @@ import Button from '@components/Button/Button';
 import IconButtonComponent from '@components/IconButton/IconButton';
 import Textarea from '@components/Textarea/Textarea';
 /* eslint-enable import/no-unresolved */
-import ListItem from './components/ListItem/ListItem';
+import ListItemComponent from './components/ListItem/ListItem';
 import CreationTimeComponent from './components/CreationTime/CreationTime';
 // ...add some tag/reminder general-purpose component
 import style from './Note-cfg.module.scss';
@@ -50,6 +50,7 @@ function Note(
       onTextFieldFocus,
     },
     IconButton = IconButtonComponent,
+    ListItem = ListItemComponent,
     CreationTime = CreationTimeComponent,
     refs: {
       moreButtonRef,
@@ -249,7 +250,7 @@ function Note(
                 onCheck={item.onCheck}
                 onMouseUp={item.onFocus}
                 key={item.id}
-                ref={item.ref}
+                textareaRef={item.ref}
               />,
               ...item.sub.map((subItem) => (
                 <ListItem
@@ -261,7 +262,7 @@ function Note(
                   onCheck={subItem.onCheck}
                   onMouseUp={subItem.onFocus}
                   key={subItem.id}
-                  ref={subItem.ref}
+                  textareaRef={subItem.ref}
                 />
               )),
             ])}
@@ -274,7 +275,7 @@ function Note(
                   }
                 }}
                 key="add-list-item"
-                ref={addListItemRef}
+                textareaRef={addListItemRef}
               />
             )}
           </ul>
@@ -294,7 +295,7 @@ function Note(
                   onCheck={item.onCheck}
                   onMouseUp={item.onFocus}
                   key={item.id}
-                  ref={item.ref}
+                  textareaRef={item.ref}
                 />,
                 ...item.sub.map((subItem) => (
                   <ListItem
@@ -307,7 +308,7 @@ function Note(
                     onCheck={subItem.onCheck}
                     onMouseUp={subItem.onFocus}
                     key={subItem.id}
-                    ref={subItem.ref}
+                    textareaRef={subItem.ref}
                   />
                 )),
               ])}

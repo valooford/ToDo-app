@@ -21,11 +21,11 @@ function ListItem(
     onRemove,
     onCheck,
     onMouseUp,
+    dragRef,
+    textareaRef,
   },
   ref
 ) {
-  // + React DnD
-
   const listItemInteractiveElements = [
     <button
       className={style.listItem__checkbox}
@@ -38,7 +38,7 @@ function ListItem(
   ];
   if (!isPreview) {
     listItemInteractiveElements.push(
-      <span className={style.listItem__drag} key="drag">
+      <span className={style.listItem__drag} key="drag" ref={dragRef}>
         &#xe811;
       </span>,
       <span className={style.listItem__remove} key="remove">
@@ -57,6 +57,7 @@ function ListItem(
         [style.listItem_add]: isAddItem,
         [style.listItem_nested]: isNested,
       })}
+      ref={ref}
     >
       {isAddItem ? (
         <span className={style.listItem__add}>&#xe810;</span>
@@ -70,7 +71,7 @@ function ListItem(
           onChange={!isPreview ? onChange : null}
           onMouseUp={onMouseUp}
           tabIndex={isPreview ? -1 : 0}
-          ref={ref}
+          ref={textareaRef}
         />
       </span>
     </li>

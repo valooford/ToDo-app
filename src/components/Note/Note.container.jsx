@@ -43,6 +43,7 @@ import {
 } from '@store/selectors';
 /* eslint-enable import/no-unresolved */
 import Note from './Note';
+import ListItemDnD from './components/ListItem/ListItem.dnd';
 import style from './Note-cfg.module.scss';
 import listItemStyle from './components/ListItem/ListItem-cfg.module.scss';
 // ---replace--- insert in Note as tag/reminder general-purpose component
@@ -446,6 +447,7 @@ function NoteContainer({
       }}
       eventHandlers={eventHandlers}
       IconButton={IconButtonTitled}
+      ListItem={ListItemDnD}
       CreationTime={CreationTimeTitled}
       refs={{
         moreButtonRef,
