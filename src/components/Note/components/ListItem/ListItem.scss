@@ -6,7 +6,7 @@
 ) {
   .#{$class-name} {
     position: relative;
-    opacity: 1;
+    background-color: #fff;
 
     &_nested {
       margin-left: 20px;

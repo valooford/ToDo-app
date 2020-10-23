@@ -37,10 +37,14 @@ function ListItem(
     </button>,
   ];
   if (!isPreview) {
+    if (!isChecked) {
+      listItemInteractiveElements.push(
+        <span className={style.listItem__drag} key="drag" ref={dragRef}>
+          &#xe811;
+        </span>
+      );
+    }
     listItemInteractiveElements.push(
-      <span className={style.listItem__drag} key="drag" ref={dragRef}>
-        &#xe811;
-      </span>,
       <span className={style.listItem__remove} key="remove">
         <IconButton
           iconSymbol="&#xe80c;"
@@ -78,4 +82,4 @@ function ListItem(
   );
 }
 
-export default React.forwardRef(ListItem);
+export default React.memo(React.forwardRef(ListItem));
