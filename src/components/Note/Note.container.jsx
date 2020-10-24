@@ -43,7 +43,9 @@ import {
 } from '@store/selectors';
 /* eslint-enable import/no-unresolved */
 import Note from './Note';
-import ListItemDnD from './components/ListItem/ListItem.dnd';
+import ListItemDnD, {
+  ListDragContext,
+} from './components/ListItem/ListItem.dnd';
 import style from './Note-cfg.module.scss';
 import listItemStyle from './components/ListItem/ListItem-cfg.module.scss';
 // ---replace--- insert in Note as tag/reminder general-purpose component
@@ -130,6 +132,7 @@ function NoteContainer({
   // focusing
   const headerRef = useRef(null);
   const textFieldRef = useRef(null);
+  const listRef = useRef(null);
   const listItemRef = useRef(null);
   const addListItemRef = useRef(null);
   const defaultFocusInfo = {
@@ -429,52 +432,55 @@ function NoteContainer({
   }
 
   const noteElem = (
-    <Note
-      isSelectionMode={isSelectionMode}
-      noteData={{
-        headerText,
-        text,
-        items: itemsOrder && itemsWithHandlersGroups.unmarked,
-        markedItems: itemsOrder && itemsWithHandlersGroups.marked,
-        isPinned,
-        isArchived,
-        isReminderPassed: isReminderReadyToUpdate,
-        creationDate,
-        editingDate,
-        color,
-        isInteracting,
-        isSelected,
-      }}
-      eventHandlers={eventHandlers}
-      IconButton={IconButtonTitled}
-      ListItem={ListItemDnD}
-      CreationTime={CreationTimeTitled}
-      refs={{
-        moreButtonRef,
-        colorsButtonRef,
-        reminderButtonRef,
+    <ListDragContext.Provider value={listRef}>
+      <Note
+        isSelectionMode={isSelectionMode}
+        noteData={{
+          headerText,
+          text,
+          items: itemsOrder && itemsWithHandlersGroups.unmarked,
+          markedItems: itemsOrder && itemsWithHandlersGroups.marked,
+          isPinned,
+          isArchived,
+          isReminderPassed: isReminderReadyToUpdate,
+          creationDate,
+          editingDate,
+          color,
+          isInteracting,
+          isSelected,
+        }}
+        eventHandlers={eventHandlers}
+        IconButton={IconButtonTitled}
+        ListItem={ListItemDnD}
+        CreationTime={CreationTimeTitled}
+        refs={{
+          moreButtonRef,
+          colorsButtonRef,
+          reminderButtonRef,
 
-        headerRef,
-        textFieldRef,
-        addListItemRef,
-      }}
-      ref={noteRef}
-    >
-      <Reminder
-        id={id}
-        isPassed={isReminderPassed}
-        onClick={setReminderPopup}
-      />
-      {noteLabels.map((label) => (
-        <Label
-          text={label}
-          onClick={() => {
-            history.push(`/label/${label}`);
-          }}
-          key={label}
+          headerRef,
+          textFieldRef,
+          listRef,
+          addListItemRef,
+        }}
+        ref={noteRef}
+      >
+        <Reminder
+          id={id}
+          isPassed={isReminderPassed}
+          onClick={setReminderPopup}
         />
-      ))}
-    </Note>
+        {noteLabels.map((label) => (
+          <Label
+            text={label}
+            onClick={() => {
+              history.push(`/label/${label}`);
+            }}
+            key={label}
+          />
+        ))}
+      </Note>
+    </ListDragContext.Provider>
   );
 
   if (isFocused && !isAddNote) {

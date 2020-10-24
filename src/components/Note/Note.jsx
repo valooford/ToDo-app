@@ -59,6 +59,7 @@ function Note(
 
       headerRef,
       textFieldRef,
+      listRef,
       addListItemRef,
     } = {},
 
@@ -240,7 +241,7 @@ function Note(
       )}
       {items && (
         <div className={style.note__listWrapper}>
-          <ul className={style.note__list}>
+          <ul className={style.note__list} ref={listRef}>
             {items.map((item) => [
               <ListItem
                 isPreview={item.onFocus}

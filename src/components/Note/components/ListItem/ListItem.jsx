@@ -16,6 +16,7 @@ function ListItem(
     isNested,
     isChecked,
     isPreview,
+    isDragging,
     value,
     onChange,
     onRemove,
@@ -60,6 +61,7 @@ function ListItem(
       className={cn(style.listItem, {
         [style.listItem_add]: isAddItem,
         [style.listItem_nested]: isNested,
+        [style.listItem_dragging]: isDragging,
       })}
       ref={ref}
     >

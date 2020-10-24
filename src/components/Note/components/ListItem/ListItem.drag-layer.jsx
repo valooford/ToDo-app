@@ -9,17 +9,39 @@ const layerStyles = {
   pointerEvents: 'none',
   zIndex: 100,
 };
-export default function ListItemDragLayer() {
+export default function ListItemDragLayer({ wrapperRef, itemRef }) {
   const { item, offsetDifference } = useDragLayer((monitor) => ({
     item: monitor.getItem(),
     offsetDifference: monitor.getDifferenceFromInitialOffset(),
   }));
-  const [offset, setOffset] = useState(offsetDifference);
+  const [offset, setOffset] = useState({ y: offsetDifference.y });
+  const setOffsetY = (y) => {
+    setOffset((prev) => ({ ...prev, y }));
+  };
   const [shouldRedraw, setShouldRedraw] = useState(true);
   const [timerId] = useState({});
   useEffect(() => {
     if (!shouldRedraw) return;
-    setOffset(offsetDifference);
+    const offsetY = offsetDifference.y;
+    const {
+      top: wrapperTop,
+      bottom: wrapperBottom,
+    } = wrapperRef.current.getBoundingClientRect();
+    const {
+      top: itemTop,
+      height: itemHeight,
+    } = itemRef.current.getBoundingClientRect();
+    const addListItemHeight = 46; // 34h + 6*2pad
+    if (itemTop + offsetY < wrapperTop) {
+      setOffsetY(wrapperTop - itemTop);
+    } else if (
+      itemTop + offsetY + itemHeight >
+      wrapperBottom - addListItemHeight
+    ) {
+      setOffsetY(wrapperBottom - itemTop - itemHeight - addListItemHeight);
+    } else {
+      setOffsetY(offsetY);
+    }
     setShouldRedraw(false);
     timerId.id = setTimeout(() => {
       setShouldRedraw(true);
@@ -36,7 +58,7 @@ export default function ListItemDragLayer() {
     <div style={layerStyles}>
       <div style={{ marginTop: `${offset.y}px` }}>
         {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-        <ListItem {...item} />
+        <ListItem {...item} isDragging />
       </div>
     </div>
   );
