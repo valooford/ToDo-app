@@ -39,7 +39,6 @@ function Note(
       onDelete,
       onHeaderChange,
       onTextFieldChange,
-      onListItemAdd,
       onMoreButtonClick,
       onColorsButtonClick,
       onColorsButtonMouseEnter,
@@ -50,7 +49,6 @@ function Note(
       onTextFieldFocus,
     },
     IconButton = IconButtonComponent,
-    ListItem = ListItemComponent,
     CreationTime = CreationTimeComponent,
     refs: {
       moreButtonRef,
@@ -60,7 +58,6 @@ function Note(
       headerRef,
       textFieldRef,
       listRef,
-      addListItemRef,
     } = {},
 
     // ---replace---
@@ -239,46 +236,10 @@ function Note(
           />
         </div>
       )}
-      {items && (
+      {markedItems && (
         <div className={style.note__listWrapper}>
           <ul className={style.note__list} ref={listRef}>
-            {items.map((item) => [
-              <ListItem
-                isPreview={item.onFocus}
-                value={item.text}
-                onChange={item.onChange}
-                onRemove={item.onRemove}
-                onCheck={item.onCheck}
-                onMouseUp={item.onFocus}
-                key={item.id}
-                textareaRef={item.ref}
-              />,
-              ...item.sub.map((subItem) => (
-                <ListItem
-                  isNested
-                  isPreview={subItem.onFocus}
-                  value={subItem.text}
-                  onChange={subItem.onChange}
-                  onRemove={subItem.onRemove}
-                  onCheck={subItem.onCheck}
-                  onMouseUp={subItem.onFocus}
-                  key={subItem.id}
-                  textareaRef={subItem.ref}
-                />
-              )),
-            ])}
-            {onListItemAdd && (
-              <ListItem
-                isAddItem
-                onChange={({ target: { value } }) => {
-                  if (value !== '') {
-                    onListItemAdd(value);
-                  }
-                }}
-                key="add-list-item"
-                textareaRef={addListItemRef}
-              />
-            )}
+            {items}
           </ul>
           <div className={style.note__markedList}>
             <i>&#xe81a;</i>
@@ -287,7 +248,7 @@ function Note(
             </span>
             <ul className={style.note__list}>
               {markedItems.map((item) => [
-                <ListItem
+                <ListItemComponent
                   isChecked
                   isPreview={item.onFocus}
                   value={item.text}
@@ -299,7 +260,7 @@ function Note(
                   textareaRef={item.ref}
                 />,
                 ...item.sub.map((subItem) => (
-                  <ListItem
+                  <ListItemComponent
                     isChecked
                     isNested
                     isPreview={subItem.onFocus}

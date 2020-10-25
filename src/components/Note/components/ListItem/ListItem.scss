@@ -9,7 +9,9 @@
     background-color: #fff;
 
     &_nested {
-      padding-left: 20px;
+      .#{$class-name}__content {
+        padding-left: 20px;
+      }
       .#{$class-name}__checkbox {
         left: 1.8 * $base-unit + 20px;
       }
@@ -24,6 +26,20 @@
       .#{$class-name}__drag {
         display: inline;
       }
+    }
+
+    &_overlapped {
+      .#{$class-name}__droppableField {
+        height: 46px;
+        background-color: #bbb;
+      }
+    }
+    &_hidden {
+      opacity: 0;
+    }
+
+    &__content {
+      position: relative;
     }
 
     &__drag,

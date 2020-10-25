@@ -12,7 +12,7 @@ const layerStyles = {
 export default function ListItemDragLayer({ wrapperRef, itemRef }) {
   const { item, offsetDifference } = useDragLayer((monitor) => ({
     item: monitor.getItem(),
-    offsetDifference: monitor.getDifferenceFromInitialOffset(),
+    offsetDifference: monitor.getDifferenceFromInitialOffset() || {},
   }));
   const [offset, setOffset] = useState({ y: offsetDifference.y });
   const setOffsetY = (y) => {

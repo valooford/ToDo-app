@@ -559,8 +559,25 @@ const normalizedInitialState = {
           sub: [],
           // + subOf: '222-2'
         },
+        '222-5': {
+          id: '222-5',
+          text: 'fifth',
+          sub: ['222-6', '222-7'],
+        },
+        '222-6': {
+          id: '222-6',
+          text: 'sixth',
+          sub: [],
+          // + subOf: '222-5'
+        },
+        '222-7': {
+          id: '222-7',
+          text: 'seventh',
+          sub: [],
+          // + subOf: '222-5'
+        },
       },
-      itemsOrder: ['222-1', '222-2', '222-3'],
+      itemsOrder: ['222-1', '222-2', '222-3', '222-5'],
       creationDate: new Date(2020, 5, 30, 10),
       editingDate: new Date(2020, 6, 1, 1, 12),
       // color: 'blue',

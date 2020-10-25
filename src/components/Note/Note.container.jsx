@@ -26,7 +26,6 @@ import {
   addNewNote,
   updateNoteHeader,
   updateNoteText,
-  addNoteListItem,
   updateNoteListItem,
   removeNoteListItem,
   checkNoteListItem,
@@ -46,6 +45,7 @@ import Note from './Note';
 import ListItemDnD, {
   ListDragContext,
 } from './components/ListItem/ListItem.dnd';
+import ListItemGroup from './components/ListItem/ListItemGroup';
 import style from './Note-cfg.module.scss';
 import listItemStyle from './components/ListItem/ListItem-cfg.module.scss';
 // ---replace--- insert in Note as tag/reminder general-purpose component
@@ -87,7 +87,6 @@ function NoteContainer({
   onNoteAdd,
   onHeaderChange,
   onTextFieldChange,
-  onListItemAdd,
   onListItemChange,
   onListItemRemove,
   onListItemCheck,
@@ -413,7 +412,6 @@ function NoteContainer({
     if (isFocused) {
       eventHandlers.onHeaderChange = onHeaderChange;
       eventHandlers.onTextFieldChange = onTextFieldChange;
-      eventHandlers.onListItemAdd = onListItemAdd;
     } else {
       // !isFocused
       eventHandlers.onHeaderFocus = ({ target }) => {
@@ -438,7 +436,15 @@ function NoteContainer({
         noteData={{
           headerText,
           text,
-          items: itemsOrder && itemsWithHandlersGroups.unmarked,
+          // items: itemsOrder && itemsWithHandlersGroups.unmarked,
+          items: itemsOrder && (
+            <ListItemGroup
+              id={id}
+              items={itemsWithHandlersGroups.unmarked}
+              isAddNeeded={isFocused}
+              addListItemRef={addListItemRef}
+            />
+          ),
           markedItems: itemsOrder && itemsWithHandlersGroups.marked,
           isPinned,
           isArchived,
@@ -461,7 +467,6 @@ function NoteContainer({
           headerRef,
           textFieldRef,
           listRef,
-          addListItemRef,
         }}
         ref={noteRef}
       >
@@ -527,7 +532,6 @@ function mapDispatchToProps(dispatch, { id, reminderId }) {
       onNoteAdd: addNewNote,
       onHeaderChange: (headerText) => updateNoteHeader(id, headerText),
       onTextFieldChange: (text) => updateNoteText(id, text),
-      onListItemAdd: (itemText) => addNoteListItem(id, itemText),
       onListItemChange: (itemId, itemText) =>
         updateNoteListItem(id, itemId, itemText),
       onListItemRemove: (itemId) => removeNoteListItem(id, itemId),
