@@ -12,40 +12,66 @@ import ListItemDragLayer from './ListItem.drag-layer';
 export const ListDragContext = React.createContext();
 
 function ListItemDnD(props) {
-  const { isNested, value, onOverlap, onDrop } = props;
-  const listItemWrapperRef = useContext(ListDragContext);
-
+  const { isNested, value, onDrag, onOverlap, onDragEnd, isOverlapped } = props;
+  const listItemWrapperRef = useContext(ListDragContext); // used to get the limits of dragging
+  // handle dragging
+  const itemRef = useRef(null);
+  // const [itemClientRect, setItemClientRect] = useState(null);
   const [{ isDragging }, drag, preview] = useDrag({
     item: { type: dragSourceTypes.LIST_ITEM, isNested, value },
+    begin: () => {
+      // setItemClientRect(itemRef.current.getBoundingClientRect());
+      if (onDrag) onDrag();
+    },
+    end: () => {
+      // setItemClientRect(null);
+      onDragEnd();
+    },
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   });
-  const [{ isOverlapped }, drop] = useDrop({
+  // handle dropping
+  const [, drop] = useDrop({
     accept: dragSourceTypes.LIST_ITEM,
-    drop: (/* item, monitor */) => {
-      onDrop();
+    hover: () => {
+      onOverlap();
     },
-    collect: (monitor) => ({ isOverlapped: !!monitor.isOver() }),
+    // drop: (item, monitor) => {
+    //   console.log(item);
+    // },
+    collect: (monitor) => ({ isOver: !!monitor.isOver() }),
   });
-  if (isOverlapped) onOverlap();
-
+  // get rid of default dragging image (when using custom drag layer)
   useEffect(() => {
     preview(getEmptyImage(), { captureDraggingState: true });
   }, []);
-  const itemRef = useRef(null);
+  // choosing droppable areas
+  const dropAreaField = useRef(null);
+  drop(isOverlapped ? dropAreaField : itemRef);
+
   return (
     <>
       {isDragging && (
-        <ListItemDragLayer wrapperRef={listItemWrapperRef} itemRef={itemRef} />
+        <ListItemDragLayer
+          wrapperRef={listItemWrapperRef}
+          // itemClientRect={itemClientRect}
+          itemRef={itemRef}
+        />
       )}
+      {isOverlapped && !isDragging && (
+        <div
+          style={{ height: '40px', backgroundColor: '#bbb' }}
+          ref={dropAreaField}
+        />
+      )}
+      {/* {!isDragging && ( */}
       <ListItem
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...props}
-        isOverlapped={isOverlapped}
         isHidden={isDragging}
         dragRef={drag}
-        droppableRef={drop(itemRef)}
+        ref={itemRef}
       />
-      {/* <ListItem {...props} ref={preview} dragRef={drag} /> */}
+      {/* )} */}
     </>
   );
 }

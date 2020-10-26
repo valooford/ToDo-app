@@ -9,6 +9,7 @@ import { addNoteListItem } from '@store/notesReducer';
 import ListItemDnD from './ListItem.dnd';
 
 function ListItemGroup({ items, isAddNeeded, addListItemRef, onListItemAdd }) {
+  const [draggingItem, setDraggingItem] = useState(null);
   const [overlappedItem, setOverlappedItem] = useState(null);
 
   return (
@@ -23,34 +24,40 @@ function ListItemGroup({ items, isAddNeeded, addListItemRef, onListItemAdd }) {
           onMouseUp={item.onFocus}
           key={item.id}
           textareaRef={item.ref}
+          onDrag={() => {
+            setDraggingItem(item.id);
+          }}
           onOverlap={() => {
             setOverlappedItem(item.id);
           }}
-          onDrop={() => {
+          onDragEnd={() => {
             setOverlappedItem(null);
+            setDraggingItem(null);
           }}
           isOverlapped={overlappedItem === item.id}
         />,
-        ...item.sub.map((subItem) => (
-          <ListItemDnD
-            isNested
-            isPreview={subItem.onFocus}
-            value={subItem.text}
-            onChange={subItem.onChange}
-            onRemove={subItem.onRemove}
-            onCheck={subItem.onCheck}
-            onMouseUp={subItem.onFocus}
-            key={subItem.id}
-            textareaRef={subItem.ref}
-            onOverlap={() => {
-              setOverlappedItem(subItem.id);
-            }}
-            onDrop={() => {
-              setOverlappedItem(null);
-            }}
-            isOverlapped={overlappedItem === subItem.id}
-          />
-        )),
+        ...(draggingItem !== item.id
+          ? item.sub.map((subItem) => (
+              <ListItemDnD
+                isNested
+                isPreview={subItem.onFocus}
+                value={subItem.text}
+                onChange={subItem.onChange}
+                onRemove={subItem.onRemove}
+                onCheck={subItem.onCheck}
+                onMouseUp={subItem.onFocus}
+                key={subItem.id}
+                textareaRef={subItem.ref}
+                onOverlap={() => {
+                  setOverlappedItem(subItem.id);
+                }}
+                onDragEnd={() => {
+                  setOverlappedItem(null);
+                }}
+                isOverlapped={overlappedItem === subItem.id}
+              />
+            ))
+          : []),
       ])}
       {isAddNeeded && (
         <ListItemDnD
@@ -64,9 +71,6 @@ function ListItemGroup({ items, isAddNeeded, addListItemRef, onListItemAdd }) {
           textareaRef={addListItemRef}
           onOverlap={() => {
             setOverlappedItem('add');
-          }}
-          onDrop={() => {
-            setOverlappedItem(null);
           }}
           isOverlapped={overlappedItem === 'add'}
         />

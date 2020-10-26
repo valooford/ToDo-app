@@ -9,17 +9,28 @@ const layerStyles = {
   pointerEvents: 'none',
   zIndex: 100,
 };
-export default function ListItemDragLayer({ wrapperRef, itemRef }) {
+
+export default function ListItemDragLayer({
+  wrapperRef,
+  // itemClientRect,
+  itemRef,
+}) {
+  // drag layer properties
   const { item, offsetDifference } = useDragLayer((monitor) => ({
     item: monitor.getItem(),
     offsetDifference: monitor.getDifferenceFromInitialOffset() || {},
   }));
+  // final drag image offset
   const [offset, setOffset] = useState({ y: offsetDifference.y });
   const setOffsetY = (y) => {
     setOffset((prev) => ({ ...prev, y }));
   };
+  // redrawing by timer to increase performance
   const [shouldRedraw, setShouldRedraw] = useState(true);
   const [timerId] = useState({});
+  const [itemClientRect] = useState(() =>
+    itemRef.current.getBoundingClientRect()
+  );
   useEffect(() => {
     if (!shouldRedraw) return;
     const offsetY = offsetDifference.y;
@@ -27,10 +38,7 @@ export default function ListItemDragLayer({ wrapperRef, itemRef }) {
       top: wrapperTop,
       bottom: wrapperBottom,
     } = wrapperRef.current.getBoundingClientRect();
-    const {
-      top: itemTop,
-      height: itemHeight,
-    } = itemRef.current.getBoundingClientRect();
+    const { top: itemTop, height: itemHeight } = itemClientRect;
     const addListItemHeight = 46; // 34h + 6*2pad
     if (itemTop + offsetY < wrapperTop) {
       setOffsetY(wrapperTop - itemTop);
@@ -47,6 +55,8 @@ export default function ListItemDragLayer({ wrapperRef, itemRef }) {
       setShouldRedraw(true);
     }, 40);
   }, [shouldRedraw]);
+
+  // cleaning up
   useEffect(
     () => () => {
       clearTimeout(timerId.id);

@@ -17,7 +17,6 @@ function ListItem(
     isChecked,
     isPreview,
     isDragging,
-    isOverlapped,
     isHidden,
     value,
     onChange,
@@ -25,7 +24,6 @@ function ListItem(
     onCheck,
     onMouseUp,
     dragRef,
-    droppableRef,
     textareaRef,
   },
   ref
@@ -65,35 +63,25 @@ function ListItem(
         [style.listItem_add]: isAddItem,
         [style.listItem_nested]: isNested,
         [style.listItem_dragging]: isDragging,
-        [style.listItem_overlapped]: isOverlapped,
         [style.listItem_hidden]: isHidden,
       })}
       ref={ref}
     >
-      <div
-        className={style.listItem__droppableField}
-        ref={isOverlapped ? droppableRef : null}
-      />
-      <div
-        className={style.listItem__content}
-        ref={!isOverlapped ? droppableRef : null}
-      >
-        {isAddItem ? (
-          <span className={style.listItem__add}>&#xe810;</span>
-        ) : (
-          listItemInteractiveElements
-        )}
-        <span className={style.listItem__text}>
-          <Textarea
-            value={value}
-            placeholder={isAddItem ? 'Новый пункт' : ''}
-            onChange={!isPreview ? onChange : null}
-            onMouseUp={onMouseUp}
-            tabIndex={isPreview ? -1 : 0}
-            ref={textareaRef}
-          />
-        </span>
-      </div>
+      {isAddItem ? (
+        <span className={style.listItem__add}>&#xe810;</span>
+      ) : (
+        listItemInteractiveElements
+      )}
+      <span className={style.listItem__text}>
+        <Textarea
+          value={value}
+          placeholder={isAddItem ? 'Новый пункт' : ''}
+          onChange={!isPreview ? onChange : null}
+          onMouseUp={onMouseUp}
+          tabIndex={isPreview ? -1 : 0}
+          ref={textareaRef}
+        />
+      </span>
     </li>
   );
 }
