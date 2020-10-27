@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 
@@ -16,15 +16,15 @@ function ListItemDnD(props) {
   const listItemWrapperRef = useContext(ListDragContext); // used to get the limits of dragging
   // handle dragging
   const itemRef = useRef(null);
-  // const [itemClientRect, setItemClientRect] = useState(null);
+  const [itemClientRect, setItemClientRect] = useState(null);
   const [{ isDragging }, drag, preview] = useDrag({
     item: { type: dragSourceTypes.LIST_ITEM, isNested, value },
     begin: () => {
-      // setItemClientRect(itemRef.current.getBoundingClientRect());
+      setItemClientRect(itemRef.current.getBoundingClientRect());
       if (onDrag) onDrag();
     },
     end: () => {
-      // setItemClientRect(null);
+      setItemClientRect(null);
       onDragEnd();
     },
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
@@ -46,24 +46,22 @@ function ListItemDnD(props) {
   }, []);
   // choosing droppable areas
   const dropAreaField = useRef(null);
-  drop(isOverlapped ? dropAreaField : itemRef);
+  drop(isOverlapped && !isDragging ? dropAreaField : itemRef);
 
   return (
     <>
       {isDragging && (
         <ListItemDragLayer
           wrapperRef={listItemWrapperRef}
-          // itemClientRect={itemClientRect}
-          itemRef={itemRef}
+          itemClientRect={itemClientRect}
         />
       )}
       {isOverlapped && !isDragging && (
         <div
-          style={{ height: '40px', backgroundColor: '#bbb' }}
+          style={{ height: '36px', backgroundColor: '#bbb' }}
           ref={dropAreaField}
         />
       )}
-      {/* {!isDragging && ( */}
       <ListItem
         // eslint-disable-next-line react/jsx-props-no-spreading
         {...props}
@@ -71,7 +69,6 @@ function ListItemDnD(props) {
         dragRef={drag}
         ref={itemRef}
       />
-      {/* )} */}
     </>
   );
 }

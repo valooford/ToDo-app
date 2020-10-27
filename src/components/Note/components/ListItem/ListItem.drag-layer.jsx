@@ -10,11 +10,7 @@ const layerStyles = {
   zIndex: 100,
 };
 
-export default function ListItemDragLayer({
-  wrapperRef,
-  // itemClientRect,
-  itemRef,
-}) {
+export default function ListItemDragLayer({ wrapperRef, itemClientRect }) {
   // drag layer properties
   const { item, offsetDifference } = useDragLayer((monitor) => ({
     item: monitor.getItem(),
@@ -28,9 +24,6 @@ export default function ListItemDragLayer({
   // redrawing by timer to increase performance
   const [shouldRedraw, setShouldRedraw] = useState(true);
   const [timerId] = useState({});
-  const [itemClientRect] = useState(() =>
-    itemRef.current.getBoundingClientRect()
-  );
   useEffect(() => {
     if (!shouldRedraw) return;
     const offsetY = offsetDifference.y;

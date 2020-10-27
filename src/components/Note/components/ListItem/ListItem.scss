@@ -26,8 +26,17 @@
       }
     }
 
+    // dragging starting only when there is
+    // a handle (&__drag) underneath
     &_hidden {
+      transform: translate(-50px, -50px);
+      height: 0;
       opacity: 0;
+      z-index: 20;
+      .#{$class-name}__drag {
+        height: 100px;
+        width: 100px;
+      }
     }
 
     &__drag,
