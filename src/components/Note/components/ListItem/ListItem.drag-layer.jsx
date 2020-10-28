@@ -17,7 +17,9 @@ export default function ListItemDragLayer({ wrapperRef, itemClientRect }) {
     offsetDifference: monitor.getDifferenceFromInitialOffset() || {},
   }));
   // final drag image offset
-  const [offset, setOffset] = useState({ y: offsetDifference.y });
+  const [offset, setOffset] = useState({
+    y: offsetDifference.y,
+  });
   const setOffsetY = (y) => {
     setOffset((prev) => ({ ...prev, y }));
   };
@@ -32,7 +34,7 @@ export default function ListItemDragLayer({ wrapperRef, itemClientRect }) {
       bottom: wrapperBottom,
     } = wrapperRef.current.getBoundingClientRect();
     const { top: itemTop, height: itemHeight } = itemClientRect;
-    const addListItemHeight = 46; // 34h + 6*2pad
+    const addListItemHeight = 46;
     if (itemTop + offsetY < wrapperTop) {
       setOffsetY(wrapperTop - itemTop);
     } else if (

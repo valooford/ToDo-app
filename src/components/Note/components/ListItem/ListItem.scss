@@ -29,12 +29,15 @@
     // dragging starting only when there is
     // a handle (&__drag) underneath
     &_hidden {
-      transform: translate(-50px, -50px);
+      transform: translateX(-50px);
       height: 0;
-      opacity: 0;
+      visibility: hidden;
       z-index: 20;
       .#{$class-name}__drag {
-        height: 100px;
+        top: 0;
+        visibility: visible;
+        opacity: 0;
+        height: 40px;
         width: 100px;
       }
     }

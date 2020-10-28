@@ -562,7 +562,7 @@ const normalizedInitialState = {
         '222-5': {
           id: '222-5',
           text: 'fifth',
-          sub: ['222-6', '222-7'],
+          sub: ['222-6'],
         },
         '222-6': {
           id: '222-6',
@@ -577,7 +577,7 @@ const normalizedInitialState = {
           // + subOf: '222-5'
         },
       },
-      itemsOrder: ['222-1', '222-2', '222-3', '222-5'],
+      itemsOrder: ['222-1', '222-2', '222-3', '222-7', '222-5'],
       creationDate: new Date(2020, 5, 30, 10),
       editingDate: new Date(2020, 6, 1, 1, 12),
       // color: 'blue',

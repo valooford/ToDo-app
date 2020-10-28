@@ -16,21 +16,21 @@ function ListItemDnD(props) {
   const listItemWrapperRef = useContext(ListDragContext); // used to get the limits of dragging
   // handle dragging
   const itemRef = useRef(null);
-  const [itemClientRect, setItemClientRect] = useState(null);
   const [{ isDragging }, drag, preview] = useDrag({
-    item: { type: dragSourceTypes.LIST_ITEM, isNested, value },
+    item: { type: dragSourceTypes.LIST_ITEM },
     begin: () => {
-      setItemClientRect(itemRef.current.getBoundingClientRect());
+      const clientRect = itemRef.current.getBoundingClientRect();
       if (onDrag) onDrag();
+      return { isNested, value, height: clientRect.height };
     },
     end: () => {
-      setItemClientRect(null);
       onDragEnd();
     },
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   });
   // handle dropping
-  const [, drop] = useDrop({
+  const [dragAreaHeight, setDragAreaHeight] = useState(40);
+  const [{ overHeight }, drop] = useDrop({
     accept: dragSourceTypes.LIST_ITEM,
     hover: () => {
       onOverlap();
@@ -38,8 +38,21 @@ function ListItemDnD(props) {
     // drop: (item, monitor) => {
     //   console.log(item);
     // },
-    collect: (monitor) => ({ isOver: !!monitor.isOver() }),
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+      overHeight: monitor.isOver() && monitor.getItem().height,
+    }),
   });
+  if (overHeight && overHeight !== dragAreaHeight)
+    setDragAreaHeight(overHeight);
+  const [{ shouldCollapse }, collapseDrop] = useDrop({
+    accept: dragSourceTypes.LIST_ITEM,
+    collect: (monitor) => ({ shouldCollapse: !!monitor.isOver() }),
+  });
+  useEffect(() => {
+    if (!onDragEnd || !shouldCollapse || !isOverlapped) return;
+    onDragEnd();
+  }, [shouldCollapse]);
   // get rid of default dragging image (when using custom drag layer)
   useEffect(() => {
     preview(getEmptyImage(), { captureDraggingState: true });
@@ -53,12 +66,15 @@ function ListItemDnD(props) {
       {isDragging && (
         <ListItemDragLayer
           wrapperRef={listItemWrapperRef}
-          itemClientRect={itemClientRect}
+          itemClientRect={itemRef.current.getBoundingClientRect()}
         />
       )}
       {isOverlapped && !isDragging && (
-        <div
-          style={{ height: '36px', backgroundColor: '#bbb' }}
+        <li
+          style={{
+            height: `${dragAreaHeight}px`,
+            backgroundColor: '#bbb',
+          }}
           ref={dropAreaField}
         />
       )}
@@ -67,7 +83,7 @@ function ListItemDnD(props) {
         {...props}
         isHidden={isDragging}
         dragRef={drag}
-        ref={itemRef}
+        ref={collapseDrop(itemRef)}
       />
     </>
   );
