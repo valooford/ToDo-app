@@ -16,9 +16,12 @@ export default function ListItemDragLayer({ wrapperRef, itemClientRect }) {
     item: monitor.getItem(),
     offsetDifference: monitor.getDifferenceFromInitialOffset() || {},
   }));
+  // correction (because of droppable area appearance)
+  const [initialItemTop] = useState(() => itemClientRect.top);
+  const shiftY = initialItemTop - itemClientRect.top;
   // final drag image offset
   const [offset, setOffset] = useState({
-    y: offsetDifference.y,
+    y: offsetDifference.y + shiftY,
   });
   const setOffsetY = (y) => {
     setOffset((prev) => ({ ...prev, y }));
@@ -28,7 +31,7 @@ export default function ListItemDragLayer({ wrapperRef, itemClientRect }) {
   const [timerId] = useState({});
   useEffect(() => {
     if (!shouldRedraw) return;
-    const offsetY = offsetDifference.y;
+    const offsetY = offsetDifference.y + shiftY;
     const {
       top: wrapperTop,
       bottom: wrapperBottom,

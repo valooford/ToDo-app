@@ -12,54 +12,69 @@ import ListItemDragLayer from './ListItem.drag-layer';
 export const ListDragContext = React.createContext();
 
 function ListItemDnD(props) {
-  const { isNested, value, onDrag, onOverlap, onDragEnd, isOverlapped } = props;
+  const {
+    isNested,
+    value,
+    onDrag,
+    onOverlap,
+    onDragEnd,
+    overlapNext,
+    isOverlapped,
+  } = props;
   const listItemWrapperRef = useContext(ListDragContext); // used to get the limits of dragging
+
   // handle dragging
   const itemRef = useRef(null);
   const [{ isDragging }, drag, preview] = useDrag({
-    item: { type: dragSourceTypes.LIST_ITEM },
+    item: { type: dragSourceTypes.LIST_ITEM }, // source type
     begin: () => {
-      const clientRect = itemRef.current.getBoundingClientRect();
-      if (onDrag) onDrag();
-      return { isNested, value, height: clientRect.height };
+      const clientRect = itemRef.current.getBoundingClientRect(); // save height
+      onDrag(); // set dragging item
+      return { isNested, value, height: clientRect.height }; // return props for ListItem
     },
     end: () => {
-      onDragEnd();
+      onDragEnd(); // reset dragging and overlapped item
     },
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   });
-  // handle dropping
-  const [dragAreaHeight, setDragAreaHeight] = useState(40);
-  const [{ overHeight }, drop] = useDrop({
-    accept: dragSourceTypes.LIST_ITEM,
-    hover: () => {
-      onOverlap();
-    },
-    // drop: (item, monitor) => {
-    //   console.log(item);
-    // },
-    collect: (monitor) => ({
-      isOver: !!monitor.isOver(),
-      overHeight: monitor.isOver() && monitor.getItem().height,
-    }),
-  });
-  if (overHeight && overHeight !== dragAreaHeight)
-    setDragAreaHeight(overHeight);
-  const [{ shouldCollapse }, collapseDrop] = useDrop({
-    accept: dragSourceTypes.LIST_ITEM,
-    collect: (monitor) => ({ shouldCollapse: !!monitor.isOver() }),
-  });
-  useEffect(() => {
-    if (!onDragEnd || !shouldCollapse || !isOverlapped) return;
-    onDragEnd();
-  }, [shouldCollapse]);
   // get rid of default dragging image (when using custom drag layer)
   useEffect(() => {
     preview(getEmptyImage(), { captureDraggingState: true });
   }, []);
+
+  // handle dropping on ListItem
+  const [dragAreaHeight, setDragAreaHeight] = useState(40); // equals dragging ListItem height
+  const [{ isOver, overHeight }, drop] = useDrop({
+    accept: dragSourceTypes.LIST_ITEM, // accepted source type
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+      overHeight: monitor.isOver() && monitor.getItem().height, // dragging ListItem height
+    }),
+  });
+  // catching ListItem overlap
+  useEffect(() => {
+    if (isOver) {
+      if (!isOverlapped) {
+        onOverlap(); // setting overlapped item
+      } else if (overlapNext) {
+        overlapNext(); // overlap next item
+      }
+    }
+  }, [isOver]);
+
+  if (overHeight && overHeight !== dragAreaHeight)
+    setDragAreaHeight(overHeight);
+
+  // handle dropping on droppable area
+  const [, dropArea] = useDrop({
+    accept: dragSourceTypes.LIST_ITEM,
+    // drop: (item, monitor) => {
+    //   console.log(item);
+    // },
+    collect: () => ({}),
+  });
   // choosing droppable areas
   const dropAreaField = useRef(null);
-  drop(isOverlapped && !isDragging ? dropAreaField : itemRef);
 
   return (
     <>
@@ -75,7 +90,7 @@ function ListItemDnD(props) {
             height: `${dragAreaHeight}px`,
             backgroundColor: '#bbb',
           }}
-          ref={dropAreaField}
+          ref={dropArea(dropAreaField)}
         />
       )}
       <ListItem
@@ -83,7 +98,7 @@ function ListItemDnD(props) {
         {...props}
         isHidden={isDragging}
         dragRef={drag}
-        ref={collapseDrop(itemRef)}
+        ref={drop(itemRef)}
       />
     </>
   );

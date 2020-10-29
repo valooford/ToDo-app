@@ -14,7 +14,7 @@ function ListItemGroup({ items, isAddNeeded, addListItemRef, onListItemAdd }) {
 
   return (
     <>
-      {items.map((item) => [
+      {items.map((item, i) => [
         <ListItemDnD
           isPreview={item.onFocus}
           value={item.text}
@@ -26,6 +26,13 @@ function ListItemGroup({ items, isAddNeeded, addListItemRef, onListItemAdd }) {
           textareaRef={item.ref}
           onDrag={() => {
             setDraggingItem(item.id);
+            if (item.sub.length !== 0) {
+              setOverlappedItem(item.sub[0].id);
+            } else if (i !== items.length - 1) {
+              setOverlappedItem(items[i + 1].id);
+            } else {
+              setOverlappedItem('add');
+            }
           }}
           onOverlap={() => {
             setOverlappedItem(item.id);
@@ -34,10 +41,25 @@ function ListItemGroup({ items, isAddNeeded, addListItemRef, onListItemAdd }) {
             setOverlappedItem(null);
             setDraggingItem(null);
           }}
+          overlapNext={(() => {
+            if (item.sub.length !== 0) {
+              return () => {
+                setOverlappedItem(item.sub[0].id);
+              };
+            }
+            if (i !== items.length - 1) {
+              return () => {
+                setOverlappedItem(items[i + 1].id);
+              };
+            }
+            return () => {
+              setOverlappedItem('add');
+            };
+          })()}
           isOverlapped={overlappedItem === item.id}
         />,
         ...(draggingItem !== item.id
-          ? item.sub.map((subItem) => (
+          ? item.sub.map((subItem, si) => (
               <ListItemDnD
                 isNested
                 isPreview={subItem.onFocus}
@@ -48,12 +70,36 @@ function ListItemGroup({ items, isAddNeeded, addListItemRef, onListItemAdd }) {
                 onMouseUp={subItem.onFocus}
                 key={subItem.id}
                 textareaRef={subItem.ref}
+                onDrag={() => {
+                  if (si !== item.sub.length - 1) {
+                    setOverlappedItem(item.sub[si + 1].id);
+                  } else if (i !== items.length - 1) {
+                    setOverlappedItem(items[i + 1].id);
+                  } else {
+                    setOverlappedItem('add');
+                  }
+                }}
                 onOverlap={() => {
                   setOverlappedItem(subItem.id);
                 }}
                 onDragEnd={() => {
                   setOverlappedItem(null);
                 }}
+                overlapNext={(() => {
+                  if (si !== item.sub.length - 1) {
+                    return () => {
+                      setOverlappedItem(item.sub[si + 1].id);
+                    };
+                  }
+                  if (i !== items.length - 1) {
+                    return () => {
+                      setOverlappedItem(items[i + 1].id);
+                    };
+                  }
+                  return () => {
+                    setOverlappedItem('add');
+                  };
+                })()}
                 isOverlapped={overlappedItem === subItem.id}
               />
             ))
