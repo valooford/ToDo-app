@@ -12,8 +12,11 @@ const layerStyles = {
 
 export default function ListItemDragLayer({ wrapperRef, itemClientRect }) {
   // drag layer properties
-  const { item, offsetDifference } = useDragLayer((monitor) => ({
-    item: monitor.getItem(),
+  const {
+    item: { isNested, ...item },
+    offsetDifference,
+  } = useDragLayer((monitor) => ({
+    item: monitor.getItem() || {},
     offsetDifference: monitor.getDifferenceFromInitialOffset() || {},
   }));
   // correction (because of droppable area appearance)
@@ -65,8 +68,16 @@ export default function ListItemDragLayer({ wrapperRef, itemClientRect }) {
   return (
     <div style={layerStyles}>
       <div style={{ marginTop: `${offset.y}px` }}>
-        {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-        <ListItem {...item} isDragging />
+        <ListItem
+          // eslint-disable-next-line react/jsx-props-no-spreading
+          {...item}
+          isDragging
+          isNested={(() => {
+            if (isNested && offsetDifference.x < -20) return false;
+            if (!isNested && offsetDifference.x > 20) return true;
+            return isNested;
+          })()}
+        />
       </div>
     </div>
   );

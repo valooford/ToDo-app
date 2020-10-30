@@ -13,6 +13,9 @@
       .#{$class-name}__checkbox {
         left: 1.8 * $base-unit + 20px;
       }
+      .#{$class-name}__drag {
+        left: 20px;
+      }
     }
     &_dragging {
       margin-left: -10px;
