@@ -19,6 +19,8 @@ import {
   SET_CHECK_NOTE_LIST_ITEM,
   UNCHECK_ALL_LIST_ITEMS,
   REMOVE_CHECKED_LIST_ITEMS,
+  INSERT_LIST_ITEM,
+  INSERT_LIST_SUB_ITEM,
   TEXT_NOTE_TO_LIST,
   LIST_NOTE_TO_TEXT,
   SET_NOTE_COLOR,
@@ -327,6 +329,29 @@ const handlers = {
       },
     };
   },
+  [INSERT_LIST_ITEM]: () =>
+    // state,
+    // { id, itemId, itemToDisplaceId, recvSubItemsFromSubId }
+    {
+      // extract list item with itemId from its place
+      // ...
+      // check for 'recvSubItemsFromSubId' parameter
+      // if recvSubItemsFromSubId !== null then take itemToDisplace's subItems from recvSubItemsFromSubId
+      // ...
+      // place item on new position
+      // ...
+    },
+  [INSERT_LIST_SUB_ITEM]: () =>
+    // state,
+    // { id, subItemId, itemId, subItemToDisplaceId }
+    {
+      // extract list item with subItemId from its place
+      // ...
+      // check for 'pos' parameter
+      // if pos === null then insert in the end of item's sub array
+      // else displace subItemToDisplace
+      // ...
+    },
   [TEXT_NOTE_TO_LIST]: (state, { id }) => {
     const { text, ...note } = state.notes[id];
     const itemsId = Date.now();
