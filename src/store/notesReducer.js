@@ -329,29 +329,72 @@ const handlers = {
       },
     };
   },
-  [INSERT_LIST_ITEM]: () =>
-    // state,
-    // { id, itemId, itemToDisplaceId, recvSubItemsFromSubId }
+  [INSERT_LIST_ITEM]: (
+    state,
+    { id, itemId, itemToDisplaceId, parentItemId, recvSubItemsFromSubId }
+  ) => {
+    // extract list item with itemId from its place
+    const notes = { ...state.notes };
+    const note = { ...notes[id] };
+    let item = note.items[itemId];
+    let itemsOrder;
+    let parentItem;
+    if (item.subOf) {
+      // nested
+      itemsOrder = [...note.itemsOrder];
+      parentItem = {
+        ...note.items[parentItemId],
+        sub: note.items[parentItemId].sub.filter((iid) => iid !== itemId),
+      };
+      if (recvSubItemsFromSubId) {
+        // take itemToDisplace's subItems from recvSubItemsFromSubId
+        const nestedItemPos = parentItem.sub.indexOf(recvSubItemsFromSubId);
+        item.sub = parentItem.sub.slice(nestedItemPos);
+        parentItem.sub = parentItem.sub.slice(0, nestedItemPos);
+      }
+      item = { ...item };
+      delete item.subOf;
+    } else {
+      itemsOrder = note.itemsOrder.filter((iid) => iid !== itemId);
+    }
+    // place item on new position
+    const pos = note.itemsOrder.indexOf(itemToDisplaceId);
+    itemsOrder.splice(pos, 0);
+
+    if (item !== note.items[itemId]) note.items[itemId] = item;
+    if (parentItem) note.items[parentItemId] = parentItem;
+    note.itemsOrder = itemsOrder;
+    notes[id] = note;
+    return { ...state, notes };
+  },
+  [INSERT_LIST_SUB_ITEM]: (
+    state,
     {
-      // extract list item with itemId from its place
-      // ...
-      // check for 'recvSubItemsFromSubId' parameter
-      // if recvSubItemsFromSubId !== null then take itemToDisplace's subItems from recvSubItemsFromSubId
-      // ...
-      // place item on new position
-      // ...
-    },
-  [INSERT_LIST_SUB_ITEM]: () =>
-    // state,
-    // { id, subItemId, itemId, subItemToDisplaceId }
-    {
-      // extract list item with subItemId from its place
-      // ...
-      // check for 'pos' parameter
-      // if pos === null then insert in the end of item's sub array
-      // else displace subItemToDisplace
-      // ...
-    },
+      id,
+      subItemId,
+      itemId,
+      // subItemToDisplaceId
+    }
+  ) => {
+    const notes = { ...state.notes };
+    const note = { ...notes[id] };
+    const items = { ...note.items };
+    const subItem = { ...items[subItemId] };
+    subItem.subOf = itemId;
+    // extract list item with subItemId from its place
+    // ...
+
+    // check for 'subItemToDisplaceId' parameter
+    // if subItemToDisplaceId === null then insert in the end of item's sub array
+    // else displace subItemToDisplace
+    // ...
+    const item = { ...items[itemId] };
+
+    note[itemId] = item;
+    note.items = items;
+    notes[id] = note;
+    return { ...state, notes };
+  },
   [TEXT_NOTE_TO_LIST]: (state, { id }) => {
     const { text, ...note } = state.notes[id];
     const itemsId = Date.now();
@@ -582,7 +625,7 @@ const normalizedInitialState = {
           id: '222-4',
           text: 'nested',
           sub: [],
-          // + subOf: '222-2'
+          subOf: '222-2',
         },
         '222-5': {
           id: '222-5',
@@ -593,13 +636,12 @@ const normalizedInitialState = {
           id: '222-6',
           text: 'sixth',
           sub: [],
-          // + subOf: '222-5'
+          subOf: '222-5',
         },
         '222-7': {
           id: '222-7',
           text: 'seventh',
           sub: [],
-          // + subOf: '222-5'
         },
       },
       itemsOrder: ['222-1', '222-2', '222-3', '222-7', '222-5'],
