@@ -82,9 +82,12 @@ function ListItemGroup({ items, isAddNeeded, addListItemRef, onListItemAdd }) {
                 onOverlap={() => {
                   setOverlappedItem(subItem.id);
                 }}
-                onDragEnd={() => {
-                  setOverlappedItem(null);
-                }}
+                onDragEnd={
+                  (/* isNested */) => {
+                    // console.log(isNested);
+                    setOverlappedItem(null);
+                  }
+                }
                 overlapNext={(() => {
                   if (si !== item.sub.length - 1) {
                     return () => {

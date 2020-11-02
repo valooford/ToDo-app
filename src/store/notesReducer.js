@@ -27,6 +27,37 @@ import {
   SET_SELECTED_NOTES,
 } from './actionsTypes';
 
+function removeItemFromNoteItemOrders(itemId, note) {
+  const item = note.items[itemId];
+  let parentItem;
+  let newItem;
+  let itemsOrder;
+  const parentItemId = item.subOf;
+  if (parentItemId) {
+    parentItem = {
+      ...note.items[parentItemId],
+      sub: note.items[parentItemId].sub.filter((iid) => iid !== itemId),
+    };
+    newItem = { ...item };
+    delete newItem.subOf;
+  } else {
+    itemsOrder = note.itemsOrder.filter((iid) => iid !== itemId);
+  }
+
+  const newNote = { ...note };
+  if (parentItem) {
+    newNote.items = {
+      ...note.items,
+      [parentItemId]: parentItem,
+      [itemId]: newItem,
+    };
+  }
+  if (itemsOrder) {
+    newNote.itemsOrder = itemsOrder;
+  }
+  return newNote;
+}
+
 const handlers = {
   // ---unused---
   [ADD_NOTE]: (state) => {
@@ -331,67 +362,68 @@ const handlers = {
   },
   [INSERT_LIST_ITEM]: (
     state,
-    { id, itemId, itemToDisplaceId, parentItemId, recvSubItemsFromSubId }
+    { id, itemId, itemToDisplaceId, recvSubItemsFromSubId }
   ) => {
     // extract list item with itemId from its place
     const notes = { ...state.notes };
-    const note = { ...notes[id] };
-    let item = note.items[itemId];
-    let itemsOrder;
-    let parentItem;
-    if (item.subOf) {
-      // nested
-      itemsOrder = [...note.itemsOrder];
-      parentItem = {
-        ...note.items[parentItemId],
-        sub: note.items[parentItemId].sub.filter((iid) => iid !== itemId),
+    const note = removeItemFromNoteItemOrders(itemId, notes[id]);
+
+    const item = note.items[itemId];
+    const itemsOrder = { ...note.itemsOrder };
+    const pos = itemsOrder.indexOf(itemToDisplaceId);
+    let parentItemId;
+    let newParentItem;
+    let newItem;
+    if (recvSubItemsFromSubId != null) {
+      // take itemToDisplace's subItems from recvSubItemsFromSubId
+      parentItemId = itemsOrder[pos - 1];
+      const parentItem = note.items[parentItemId];
+
+      const nestedItemPos = parentItem.sub.indexOf(recvSubItemsFromSubId);
+      newParentItem = {
+        ...parentItem,
+        sub: parentItem.sub.slice(0, nestedItemPos),
       };
-      if (recvSubItemsFromSubId) {
-        // take itemToDisplace's subItems from recvSubItemsFromSubId
-        const nestedItemPos = parentItem.sub.indexOf(recvSubItemsFromSubId);
-        item.sub = parentItem.sub.slice(nestedItemPos);
-        parentItem.sub = parentItem.sub.slice(0, nestedItemPos);
-      }
-      item = { ...item };
-      delete item.subOf;
-    } else {
-      itemsOrder = note.itemsOrder.filter((iid) => iid !== itemId);
+      newItem = {
+        ...item,
+        sub: [...item.sub, ...parentItem.sub.slice(nestedItemPos)],
+      };
     }
     // place item on new position
-    const pos = note.itemsOrder.indexOf(itemToDisplaceId);
-    itemsOrder.splice(pos, 0);
 
-    if (item !== note.items[itemId]) note.items[itemId] = item;
-    if (parentItem) note.items[parentItemId] = parentItem;
+    itemsOrder.splice(pos, 0, itemId);
+
+    if (newParentItem) note.items[parentItemId] = newParentItem;
+    if (newItem) note.items[itemId] = newItem;
     note.itemsOrder = itemsOrder;
     notes[id] = note;
     return { ...state, notes };
   },
   [INSERT_LIST_SUB_ITEM]: (
     state,
-    {
-      id,
-      subItemId,
-      itemId,
-      // subItemToDisplaceId
-    }
+    { id, itemId, parentItemId, subItemToDisplaceId }
   ) => {
+    // extract list item with itemId from its place
     const notes = { ...state.notes };
-    const note = { ...notes[id] };
-    const items = { ...note.items };
-    const subItem = { ...items[subItemId] };
-    subItem.subOf = itemId;
-    // extract list item with subItemId from its place
-    // ...
+    const note = removeItemFromNoteItemOrders(itemId, notes[id]);
 
-    // check for 'subItemToDisplaceId' parameter
-    // if subItemToDisplaceId === null then insert in the end of item's sub array
-    // else displace subItemToDisplace
-    // ...
-    const item = { ...items[itemId] };
+    const item = { ...note.items[itemId] };
+    const parentItem = { ...note.items[parentItemId] };
+    let sub;
+    if (subItemToDisplaceId != null) {
+      // insert before other subItem
+      const itemToDisplacePos = parentItem.sub.indexOf(subItemToDisplaceId);
+      sub = [...parentItem.sub];
+      sub.splice(itemToDisplacePos, 0, itemId);
+    } else {
+      // insert in the end
+      sub = [...parentItem.sub, itemId];
+    }
+    parentItem.sub = sub;
+    item.subOf = parentItemId;
+    note.items[parentItemId] = parentItem;
+    note.items[itemId] = item;
 
-    note[itemId] = item;
-    note.items = items;
     notes[id] = note;
     return { ...state, notes };
   },
@@ -814,6 +846,26 @@ export function uncheckAllListItems(id) {
 }
 export function removeCheckedListItems(id) {
   return { type: REMOVE_CHECKED_LIST_ITEMS, id };
+}
+
+// LIST ITEM MOVEMENT ACTION CREACORS
+export function insertListItem(id, itemId, itemToDisplaceId, subItemId = null) {
+  return {
+    type: INSERT_LIST_ITEM,
+    id,
+    itemId,
+    itemToDisplaceId,
+    recvSubItemsFromSubId: subItemId,
+  };
+}
+export function insertListSubItem(id, itemId, parentItemId, subItemId = null) {
+  return {
+    type: INSERT_LIST_SUB_ITEM,
+    id,
+    itemId,
+    parentItemId,
+    subItemToDisplaceId: subItemId,
+  };
 }
 
 /* TEXT_NOTE_TO_LIST

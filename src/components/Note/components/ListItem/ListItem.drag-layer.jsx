@@ -10,7 +10,12 @@ const layerStyles = {
   zIndex: 100,
 };
 
-export default function ListItemDragLayer({ wrapperRef, itemClientRect }) {
+export default function ListItemDragLayer({
+  nestedState,
+  setNestedState,
+  wrapperRef,
+  itemClientRect,
+}) {
   // drag layer properties
   const {
     item: { isNested, ...item },
@@ -57,6 +62,12 @@ export default function ListItemDragLayer({ wrapperRef, itemClientRect }) {
     }, 40);
   }, [shouldRedraw]);
 
+  const horizontalOffset = offsetDifference.x;
+  useEffect(() => {
+    if (offsetDifference.x < -20) setNestedState(false);
+    if (offsetDifference.x > 20) setNestedState(true);
+  }, [horizontalOffset < -20, horizontalOffset > 20]);
+
   // cleaning up
   useEffect(
     () => () => {
@@ -72,11 +83,7 @@ export default function ListItemDragLayer({ wrapperRef, itemClientRect }) {
           // eslint-disable-next-line react/jsx-props-no-spreading
           {...item}
           isDragging
-          isNested={(() => {
-            if (isNested && offsetDifference.x < -20) return false;
-            if (!isNested && offsetDifference.x > 20) return true;
-            return isNested;
-          })()}
+          isNested={nestedState}
         />
       </div>
     </div>
