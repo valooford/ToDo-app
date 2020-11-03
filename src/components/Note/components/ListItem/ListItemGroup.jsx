@@ -3,12 +3,23 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 /* eslint-disable import/no-unresolved */
-import { addNoteListItem } from '@store/notesReducer';
+import {
+  addNoteListItem,
+  insertListItem,
+  insertListSubItem,
+} from '@store/notesReducer';
 /* eslint-enable import/no-unresolved */
 
 import ListItemDnD from './ListItem.dnd';
 
-function ListItemGroup({ items, isAddNeeded, addListItemRef, onListItemAdd }) {
+function ListItemGroup({
+  items,
+  isAddNeeded,
+  addListItemRef,
+  onListItemAdd,
+  // onListItemInsertion,
+  // onListSubItemInsertion,
+}) {
   const [draggingItem, setDraggingItem] = useState(null);
   const [overlappedItem, setOverlappedItem] = useState(null);
 
@@ -37,10 +48,17 @@ function ListItemGroup({ items, isAddNeeded, addListItemRef, onListItemAdd }) {
           onOverlap={() => {
             setOverlappedItem(item.id);
           }}
-          onDragEnd={() => {
-            setOverlappedItem(null);
-            setDraggingItem(null);
-          }}
+          onDragEnd={
+            (/* isNested */) => {
+              // if (isNested) {
+              //   onListSubItemInsertion(item.id, ...)
+              // } else {
+              //   onListItemInsertion(item.id, overlappedItem, ...)
+              // }
+              setOverlappedItem(null);
+              setDraggingItem(null);
+            }
+          }
           overlapNext={(() => {
             if (item.sub.length !== 0) {
               return () => {
@@ -84,7 +102,11 @@ function ListItemGroup({ items, isAddNeeded, addListItemRef, onListItemAdd }) {
                 }}
                 onDragEnd={
                   (/* isNested */) => {
-                    // console.log(isNested);
+                    // if (isNested) {
+                    //   onListSubItemInsertion(item.id, ...)
+                    // } else {
+                    //   onListItemInsertion(item.id, overlappedItem, ...)
+                    // }
                     setOverlappedItem(null);
                   }
                 }
@@ -132,6 +154,10 @@ function mapDispatchToProps(dispatch, { id }) {
   return bindActionCreators(
     {
       onListItemAdd: (itemText) => addNoteListItem(id, itemText),
+      onListItemInsertion: (itemId, itemToDisplaceId, subItemId) =>
+        insertListItem(id, itemId, itemToDisplaceId, subItemId),
+      onListSubItemInsertion: (itemId, parentItemId, subItemId) =>
+        insertListSubItem(id, itemId, parentItemId, subItemId),
     },
     dispatch
   );

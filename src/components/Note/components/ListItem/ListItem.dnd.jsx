@@ -23,7 +23,7 @@ function ListItemDnD(props) {
   } = props;
   const listItemWrapperRef = useContext(ListDragContext); // used to get the limits of dragging
 
-  const [nestedState, setNestedState] = useState(isNested);
+  const [nestState, setNestState] = useState(isNested);
 
   // handle dragging
   const itemRef = useRef(null);
@@ -35,7 +35,7 @@ function ListItemDnD(props) {
       return { isNested, value, height: clientRect.height }; // return props for ListItem
     },
     end: () => {
-      onDragEnd(nestedState); // reset dragging and overlapped item
+      onDragEnd(nestState); // reset dragging and overlapped item
     },
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   });
@@ -72,7 +72,7 @@ function ListItemDnD(props) {
     accept: dragSourceTypes.LIST_ITEM,
     // drop: (item) => {
     //   console.log(item);
-    //   console.log(nestedState);
+    //   console.log(nestState);
     // },
     collect: () => ({}),
   });
@@ -83,13 +83,9 @@ function ListItemDnD(props) {
     <>
       {isDragging && (
         <ListItemDragLayer
-          nestedState={nestedState}
-          setNestedState={(val) => {
-            setNestedState((prev) => {
-              if (prev && !val) return false;
-              if (!prev && val) return true;
-              return prev;
-            });
+          nestState={nestState}
+          setNestState={(val) => {
+            setNestState(val);
           }}
           wrapperRef={listItemWrapperRef}
           itemClientRect={itemRef.current.getBoundingClientRect()}

@@ -11,8 +11,8 @@ const layerStyles = {
 };
 
 export default function ListItemDragLayer({
-  nestedState,
-  setNestedState,
+  nestState,
+  setNestState,
   wrapperRef,
   itemClientRect,
 }) {
@@ -64,9 +64,12 @@ export default function ListItemDragLayer({
 
   const horizontalOffset = offsetDifference.x;
   useEffect(() => {
-    if (offsetDifference.x < -20) setNestedState(false);
-    if (offsetDifference.x > 20) setNestedState(true);
-  }, [horizontalOffset < -20, horizontalOffset > 20]);
+    if (nestState && horizontalOffset <= 0) {
+      setNestState(false);
+    } else if (!nestState && horizontalOffset > 20) {
+      setNestState(true);
+    }
+  }, [horizontalOffset]);
 
   // cleaning up
   useEffect(
@@ -83,7 +86,7 @@ export default function ListItemDragLayer({
           // eslint-disable-next-line react/jsx-props-no-spreading
           {...item}
           isDragging
-          isNested={nestedState}
+          isNested={nestState}
         />
       </div>
     </div>
