@@ -17,11 +17,51 @@ function ListItemGroup({
   isAddNeeded,
   addListItemRef,
   onListItemAdd,
-  // onListItemInsertion,
-  // onListSubItemInsertion,
+  onListItemInsertion,
+  onListSubItemInsertion,
 }) {
   const [draggingItem, setDraggingItem] = useState(null);
   const [overlappedItem, setOverlappedItem] = useState(null);
+  const [overlappedParentItem, setOverlappedParentItem] = useState(null);
+
+  const onDragEnd = (item) => {
+    // + check overlappedItem for 'add'
+    // + check for item inserting to itself
+    return (isNested) => {
+      const isOverlappedNested = !!overlappedParentItem;
+      if (isNested) {
+        if (isOverlappedNested) {
+          onListSubItemInsertion(item.id, overlappedParentItem, overlappedItem);
+        } else if (overlappedItem !== items[0].id) {
+          const parentIndex = items.findIndex((pi) => overlappedItem === pi.id);
+          onListSubItemInsertion(item.id, items[parentIndex - 1].id);
+        } else {
+          onListItemInsertion(item.id, overlappedItem);
+        }
+      } else {
+        if (isOverlappedNested) {
+          const parentIndex = items.findIndex(
+            (pi) => overlappedParentItem === pi.id
+          );
+          onListItemInsertion(
+            item.id,
+            items[parentIndex + 1].id,
+            overlappedItem
+          );
+        } else {
+          onListItemInsertion(item.id, overlappedItem);
+        }
+        onListItemInsertion(
+          item.id,
+          overlappedParentItem || overlappedItem,
+          overlappedParentItem ? overlappedItem : null
+        );
+      }
+      setOverlappedItem(null);
+      setOverlappedParentItem(null);
+      setDraggingItem(null);
+    };
+  };
 
   return (
     <>
@@ -48,17 +88,7 @@ function ListItemGroup({
           onOverlap={() => {
             setOverlappedItem(item.id);
           }}
-          onDragEnd={
-            (/* isNested */) => {
-              // if (isNested) {
-              //   onListSubItemInsertion(item.id, ...)
-              // } else {
-              //   onListItemInsertion(item.id, overlappedItem, ...)
-              // }
-              setOverlappedItem(null);
-              setDraggingItem(null);
-            }
-          }
+          onDragEnd={onDragEnd(item)}
           overlapNext={(() => {
             if (item.sub.length !== 0) {
               return () => {
@@ -99,17 +129,9 @@ function ListItemGroup({
                 }}
                 onOverlap={() => {
                   setOverlappedItem(subItem.id);
+                  setOverlappedParentItem(item.id);
                 }}
-                onDragEnd={
-                  (/* isNested */) => {
-                    // if (isNested) {
-                    //   onListSubItemInsertion(item.id, ...)
-                    // } else {
-                    //   onListItemInsertion(item.id, overlappedItem, ...)
-                    // }
-                    setOverlappedItem(null);
-                  }
-                }
+                onDragEnd={onDragEnd(subItem)}
                 overlapNext={(() => {
                   if (si !== item.sub.length - 1) {
                     return () => {

@@ -369,7 +369,7 @@ const handlers = {
     const note = removeItemFromNoteItemOrders(itemId, notes[id]);
 
     const item = note.items[itemId];
-    const itemsOrder = { ...note.itemsOrder };
+    const itemsOrder = [...note.itemsOrder];
     const pos = itemsOrder.indexOf(itemToDisplaceId);
     let parentItemId;
     let newParentItem;
