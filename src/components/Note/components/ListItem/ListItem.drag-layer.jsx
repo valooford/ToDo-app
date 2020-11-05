@@ -64,9 +64,9 @@ export default function ListItemDragLayer({
 
   const horizontalOffset = offsetDifference.x;
   useEffect(() => {
-    if (nestState && horizontalOffset <= 0) {
+    if (nestState && horizontalOffset <= 20) {
       setNestState(false);
-    } else if (!nestState && horizontalOffset > 20) {
+    } else if (!nestState && horizontalOffset > 40) {
       setNestState(true);
     }
   }, [horizontalOffset]);

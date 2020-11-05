@@ -57,7 +57,7 @@ function ListItemDnD(props) {
   useEffect(() => {
     if (isOver) {
       if (!isOverlapped) {
-        onOverlap(); // setting overlapped item
+        if (onOverlap) onOverlap(); // setting overlapped item
       } else if (overlapNext) {
         overlapNext(); // overlap next item
       }

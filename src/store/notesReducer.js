@@ -370,7 +370,10 @@ const handlers = {
 
     const item = note.items[itemId];
     const itemsOrder = [...note.itemsOrder];
-    const pos = itemsOrder.indexOf(itemToDisplaceId);
+    const pos =
+      itemToDisplaceId == null
+        ? itemsOrder.length
+        : itemsOrder.indexOf(itemToDisplaceId);
     let parentItemId;
     let newParentItem;
     let newItem;
@@ -414,10 +417,10 @@ const handlers = {
       // insert before other subItem
       const itemToDisplacePos = parentItem.sub.indexOf(subItemToDisplaceId);
       sub = [...parentItem.sub];
-      sub.splice(itemToDisplacePos, 0, itemId);
+      sub.splice(itemToDisplacePos, 0, itemId, ...item.sub);
     } else {
       // insert in the end
-      sub = [...parentItem.sub, itemId];
+      sub = [...parentItem.sub, itemId, ...item.sub];
     }
     parentItem.sub = sub;
     item.subOf = parentItemId;
@@ -849,7 +852,12 @@ export function removeCheckedListItems(id) {
 }
 
 // LIST ITEM MOVEMENT ACTION CREACORS
-export function insertListItem(id, itemId, itemToDisplaceId, subItemId = null) {
+export function insertListItem(
+  id,
+  itemId,
+  itemToDisplaceId = null,
+  subItemId = null
+) {
   return {
     type: INSERT_LIST_ITEM,
     id,
