@@ -23,6 +23,7 @@ function ListItem(
     onRemove,
     onCheck,
     onMouseUp,
+    onInputConfirm,
     dragRef,
     textareaRef,
   },
@@ -78,6 +79,17 @@ function ListItem(
           placeholder={isAddItem ? 'Новый пункт' : ''}
           onChange={!isPreview ? onChange : null}
           onMouseUp={onMouseUp}
+          onKeyDown={(e) => {
+            // Enter & !Shift
+            if (e.keyCode === 13 && !e.shiftKey) {
+              e.preventDefault();
+              if (onInputConfirm) onInputConfirm();
+            }
+            // Backspace
+            if (e.keyCode === 8 && value === '') {
+              onRemove();
+            }
+          }}
           tabIndex={isPreview ? -1 : 0}
           ref={textareaRef}
         />

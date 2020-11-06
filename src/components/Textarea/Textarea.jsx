@@ -27,7 +27,7 @@ function handleAutoResize(textarea) {
 // КОМПОНЕНТ ТЕКСТОВОГО ПОЛЯ / TEXTAREA
 // *
 function Textarea(
-  { placeholder = '', value = '', onChange, onMouseUp, tabIndex },
+  { placeholder = '', value = '', onChange, onMouseUp, onKeyDown, tabIndex },
   ref
 ) {
   const textareaRef = ref || React.createRef();
@@ -42,6 +42,7 @@ function Textarea(
       placeholder={placeholder}
       value={value}
       onChange={onChange}
+      onKeyDown={onKeyDown}
       readOnly={!onChange}
       onMouseUp={onMouseUp}
       tabIndex={tabIndex}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -42,6 +42,7 @@ function ListItemGroup({
       } else {
         const isOverlappedNested = !!overlappedParentItem;
         if (isNested) {
+          // nested
           if (isOverlappedNested) {
             onListSubItemInsertion(
               item.id,
@@ -49,37 +50,35 @@ function ListItemGroup({
               overlappedItem
             );
           } else if (overlappedItem !== items[0].id) {
-            const parentIndex = items.findIndex(
+            const possibleParentItems = items.filter(
+              ({ id: iid }) => iid !== item.id
+            );
+            const parentIndex = possibleParentItems.findIndex(
               (pi) => overlappedItem === pi.id
             );
             if (item.id === items[0].id) {
-              onListItemInsertion(item.id, items[parentIndex].id);
+              onListItemInsertion(item.id, possibleParentItems[parentIndex].id);
             } else {
-              onListSubItemInsertion(item.id, items[parentIndex - 1].id);
+              onListSubItemInsertion(
+                item.id,
+                possibleParentItems[parentIndex - 1].id
+              );
             }
           } else {
             onListItemInsertion(item.id, overlappedItem);
           }
-        } else {
-          if (isOverlappedNested) {
-            const parentIndex = items.findIndex(
-              (pi) => overlappedParentItem === pi.id
-            );
-            onListItemInsertion(
-              item.id,
-              items.length === parentIndex + 1
-                ? null
-                : items[parentIndex + 1].id,
-              overlappedItem
-            );
-          } else {
-            onListItemInsertion(item.id, overlappedItem);
-          }
+          // not nested
+        } else if (isOverlappedNested) {
+          const parentIndex = items.findIndex(
+            (pi) => overlappedParentItem === pi.id
+          );
           onListItemInsertion(
             item.id,
-            overlappedParentItem || overlappedItem,
-            overlappedParentItem ? overlappedItem : null
+            items.length === parentIndex + 1 ? null : items[parentIndex + 1].id,
+            overlappedItem
           );
+        } else {
+          onListItemInsertion(item.id, overlappedItem);
         }
       }
       setOverlappedItem(null);
@@ -88,6 +87,35 @@ function ListItemGroup({
     };
   };
 
+  // focus handling
+  const [focusingItemInfo, setFocusingItemInfo] = useState(null);
+  const setFocusingItem = (originIndex, originSubIndex = null) => {
+    setFocusingItemInfo({ index: originIndex, subIndex: originSubIndex });
+  };
+  const focusingItemTextareaRef = useRef(null);
+  useEffect(() => {
+    if (!focusingItemInfo) return;
+    let focusingItemTextarea;
+    if (focusingItemInfo.index === 'add') {
+      focusingItemTextarea = addListItemRef.current;
+    } else {
+      focusingItemTextarea = focusingItemTextareaRef.current;
+      if (!focusingItemTextarea) {
+        if (focusingItemInfo.subIndex != null) {
+          focusingItemTextarea =
+            items[focusingItemInfo.index].sub[focusingItemInfo.subIndex].ref
+              .current;
+        } else {
+          focusingItemTextarea = items[focusingItemInfo.index].ref.current;
+        }
+      }
+    }
+
+    focusingItemTextarea.focus();
+    focusingItemTextarea.setSelectionRange(9999, 9999);
+    setFocusingItemInfo(null);
+  }, [focusingItemInfo]);
+
   return (
     <>
       {items.map((item, i) => [
@@ -95,11 +123,42 @@ function ListItemGroup({
           isPreview={item.onFocus}
           value={item.text}
           onChange={item.onChange}
-          onRemove={item.onRemove}
+          onRemove={() => {
+            let index;
+            let subIndex;
+            if (i === 0) {
+              if (!items[0].sub.length) {
+                index = 'add';
+              } else {
+                index = 0;
+              }
+            } else {
+              index = i - 1;
+              const subCount = items[index].sub.length;
+              if (subCount) {
+                subIndex = subCount - 1;
+              }
+            }
+            setFocusingItem(index, subIndex);
+            item.onRemove();
+          }}
           onCheck={item.onCheck}
           onMouseUp={item.onFocus}
           key={item.id}
-          textareaRef={item.ref}
+          textareaRef={(() => {
+            if (item.ref) return item.ref;
+            if (
+              focusingItemInfo &&
+              focusingItemInfo.index === i &&
+              focusingItemInfo.subIndex == null
+            )
+              return focusingItemTextareaRef;
+            return null;
+          })()}
+          onInputConfirm={() => {
+            setFocusingItem(i + 1);
+            onListItemAdd('', item.id);
+          }}
           onDrag={() => {
             setDraggingItem(item.id);
             if (item.sub.length !== 0) {
@@ -114,6 +173,7 @@ function ListItemGroup({
             draggingItem !== item.id
               ? () => {
                   setOverlappedItem(item.id);
+                  setOverlappedParentItem(null);
                 }
               : null
           }
@@ -142,11 +202,29 @@ function ListItemGroup({
                 isPreview={subItem.onFocus}
                 value={subItem.text}
                 onChange={subItem.onChange}
-                onRemove={subItem.onRemove}
+                onRemove={() => {
+                  const subIndex = si === 0 ? null : si - 1;
+                  setFocusingItem(i, subIndex);
+                  subItem.onRemove();
+                }}
                 onCheck={subItem.onCheck}
                 onMouseUp={subItem.onFocus}
                 key={subItem.id}
-                textareaRef={subItem.ref}
+                // textareaRef={subItem.ref}
+                textareaRef={(() => {
+                  if (item.ref) return subItem.ref;
+                  if (
+                    focusingItemInfo &&
+                    focusingItemInfo.index === i &&
+                    focusingItemInfo.subIndex === si
+                  )
+                    return focusingItemTextareaRef;
+                  return null;
+                })()}
+                onInputConfirm={() => {
+                  setFocusingItem(i, si + 1);
+                  onListItemAdd('', subItem.id);
+                }}
                 onDrag={() => {
                   if (si !== item.sub.length - 1) {
                     setOverlappedItem(item.sub[si + 1].id);
@@ -190,6 +268,7 @@ function ListItemGroup({
           isAddItem
           onChange={({ target: { value } }) => {
             if (value !== '') {
+              setFocusingItem(items.length);
               onListItemAdd(value);
             }
           }}
@@ -208,7 +287,7 @@ function ListItemGroup({
 function mapDispatchToProps(dispatch, { id }) {
   return bindActionCreators(
     {
-      onListItemAdd: (itemText) => addNoteListItem(id, itemText),
+      onListItemAdd: (itemText, after) => addNoteListItem(id, itemText, after),
       onListItemInsertion: (itemId, itemToDisplaceId, subItemId) =>
         insertListItem(id, itemId, itemToDisplaceId, subItemId),
       onListSubItemInsertion: (itemId, parentItemId, subItemId) =>

@@ -214,7 +214,27 @@ function NoteContainer({
           },
           ref: itemId === focusInfo.itemId ? listItemRef : null,
           // still no handlers for subItems ↓↓↓
-          sub: item.sub.map((subItemId) => items[subItemId]),
+          sub: item.sub.map((subItemId) => ({
+            ...items[subItemId],
+            onChange({ target: { value: itemText } }) {
+              onListItemChange(subItemId, itemText);
+            },
+            onRemove() {
+              onListItemRemove(subItemId);
+            },
+            onFocus: !isFocused
+              ? ({ target }) => {
+                  setFocusInfo({
+                    fieldRef: listItemRef,
+                    subItemId,
+                    caret: target.selectionStart,
+                  });
+                }
+              : null,
+            onCheck: () => {
+              onListItemCheck(item.id);
+            },
+          })),
         };
         if (!isFocused) {
           supplementedItem.onFocus = ({ target }) => {

@@ -253,44 +253,55 @@ const handlers = {
     };
   },
   // + { id, text, after }
-  [ADD_NOTE_LIST_ITEM]: (state, { id, text }) => {
+  [ADD_NOTE_LIST_ITEM]: (state, { id, text, after }) => {
     const newItemId = Date.now();
-    return {
-      ...state,
-      notes: {
-        ...state.notes,
-        [id]: {
-          ...state.notes[id],
-          items: {
-            ...state.notes[id].items,
-            [newItemId]: {
-              id: newItemId,
-              text,
-              sub: [],
-            },
-          },
-          itemsOrder: [...state.notes[id].itemsOrder, newItemId], // + splice
-          editingDate: new Date(),
-        },
-      },
+    const notes = { ...state.notes };
+    const note = { ...notes[id] };
+    const items = { ...note.items };
+    const { itemsOrder } = note;
+    let newItemsOrder;
+    let parentItem;
+    let parentItemId;
+    if (after != null) {
+      const afterItem = items[after];
+      parentItemId = afterItem.subOf;
+      if (parentItemId) {
+        parentItem = { ...items[parentItemId] };
+        const itemToDisplaceIndex = parentItem.sub.indexOf(afterItem.id);
+        parentItem.sub = [...parentItem.sub];
+        parentItem.sub.splice(itemToDisplaceIndex + 1, 0, newItemId);
+      } else {
+        parentItemId = after;
+        parentItem = { ...afterItem };
+        parentItem.sub = [newItemId, ...parentItem.sub];
+        // newItemsOrder = [...itemsOrder];
+        // const itemToDisplaceIndex = newItemsOrder.indexOf(afterItem.id);
+        // newItemsOrder.splice(itemToDisplaceIndex + 1, 0, newItemId);
+      }
+    } else {
+      newItemsOrder = [...itemsOrder, newItemId];
+    }
+    if (newItemsOrder) note.itemsOrder = newItemsOrder;
+    items[newItemId] = {
+      id: newItemId,
+      text,
+      sub: [],
     };
+    if (parentItem) {
+      items[parentItemId] = parentItem;
+      items[newItemId].subOf = parentItemId;
+    }
+    note.items = items;
+    note.editingDate = new Date();
+    notes[id] = note;
+    return { ...state, notes };
   },
   [REMOVE_NOTE_LIST_ITEM]: (state, { id, itemId }) => {
-    const { [itemId]: removingItem, ...items } = state.notes[id].items;
-    return {
-      ...state,
-      notes: {
-        ...state.notes,
-        [id]: {
-          ...state.notes[id],
-          items,
-          itemsOrder: state.notes[id].itemsOrder.filter(
-            (iId) => iId !== itemId
-          ),
-          editingDate: new Date(),
-        },
-      },
-    };
+    const notes = { ...state.notes };
+    const note = removeItemFromNoteItemOrders(itemId, notes[id]);
+    note.editingDate = new Date();
+    notes[id] = note;
+    return { ...state, notes };
   },
   [SET_CHECK_NOTE_LIST_ITEM]: (state, { id, itemId, isMarked }) => {
     return {
@@ -393,7 +404,6 @@ const handlers = {
       };
     }
     // place item on new position
-
     itemsOrder.splice(pos, 0, itemId);
 
     if (newParentItem) note.items[parentItemId] = newParentItem;
@@ -423,6 +433,7 @@ const handlers = {
       sub = [...parentItem.sub, itemId, ...item.sub];
     }
     parentItem.sub = sub;
+    item.sub = [];
     item.subOf = parentItemId;
     note.items[parentItemId] = parentItem;
     note.items[itemId] = item;
@@ -832,8 +843,8 @@ export function deleteNote(id) {
 }
 
 // LIST ITEM ACTION CREATORS
-export function addNoteListItem(id, text) {
-  return { type: ADD_NOTE_LIST_ITEM, id, text }; // + after
+export function addNoteListItem(id, text, after = null) {
+  return { type: ADD_NOTE_LIST_ITEM, id, text, after };
 }
 export function removeNoteListItem(id, itemId) {
   return { type: REMOVE_NOTE_LIST_ITEM, id, itemId };

@@ -29,7 +29,7 @@ function IconButton(
       )}
       onClick={() => {
         if (onClick) onClick();
-        ref.current.blur();
+        if (ref) ref.current.blur();
       }}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
