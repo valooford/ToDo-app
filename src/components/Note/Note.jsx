@@ -59,9 +59,6 @@ function Note(
       textFieldRef,
       listRef,
     } = {},
-
-    // ---replace---
-    children, // replace with tag/reminder component data
   },
   ref
 ) {
@@ -291,7 +288,6 @@ function Note(
             />
           </span>
         )}
-        {children}
       </div>
       <div className={style.note__buttons}>
         {onClose && (
