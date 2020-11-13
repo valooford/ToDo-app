@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { useDrag } from 'react-dnd';
+import { connect } from 'react-redux';
+import { useDrag, useDrop } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 
 /* eslint-disable import/no-unresolved */
@@ -9,35 +10,60 @@ import dragSourceTypes from '@/dragSourceTypes';
 import Note from './Note.container';
 import NoteDragLayer from './Note.drag-layer';
 
-export default function NoteDnD(props) {
+function NoteDnD({ isOverlapped, onOverlap, ...props }) {
   const { id, noteRef } = props;
 
   // handle dragging
   const [{ isDragging }, drag, preview] = useDrag({
     item: { type: dragSourceTypes.NOTE },
+    end: () => {
+      onOverlap(null);
+    },
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   });
   // get rid of default dragging image (when using custom drag layer)
   useEffect(() => {
     preview(getEmptyImage(), { captureDraggingState: true });
   }, []);
-  // eslint-disable-next-line react/jsx-props-no-spreading
-  // return <Note {...props} noteRef={noteRef ? drag(noteRef) : drag} />;
+
+  // handle dropping
+  const [{ isOver }, drop] = useDrop({
+    accept: dragSourceTypes.NOTE, // accepted source type
+    collect: (monitor) => ({
+      isOver: !!monitor.isOver(),
+    }),
+  });
+  useEffect(() => {
+    if (isOver) {
+      if (!isOverlapped) {
+        // onOverlap(id);
+        // console.log(`note ${id} is overlapped`);
+      }
+    }
+  }, [isOver]);
 
   return (
     <>
       {isDragging && <NoteDragLayer id={id} key="dragging" />}
-      {/* {isOverlapped && !isDragging && (
+      {isOverlapped && !isDragging && (
         <li
           style={{
-            height: `${dragAreaHeight}px`,
+            // height: `${dragAreaHeight}px`,
+            height: '100px',
             backgroundColor: '#bbb',
           }}
-          ref={dropArea(dropAreaField)}
+          // ref={dropArea(dropAreaField)}
         />
-      )} */}
+      )}
       {/* eslint-disable-next-line react/jsx-props-no-spreading */}
-      <Note {...props} noteRef={noteRef ? drag(noteRef) : drag} />
+      <Note {...props} noteRef={drag(drop(noteRef))} />
     </>
   );
 }
+
+function mapStateToProps(state, { id, overlappedItem }) {
+  return {
+    isOverlapped: id === overlappedItem,
+  };
+}
+export default connect(mapStateToProps, null)(NoteDnD);

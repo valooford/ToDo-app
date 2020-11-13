@@ -19,8 +19,10 @@ export default function NoteDragLayer({ id }) {
 
   return (
     <div style={layerStyles}>
-      <div style={{ marginTop: `${offsetDifference.y}px` }}>
-        <Note id={id} />;
+      <div
+        style={{ marginTop: `${offsetDifference.y}px`, marginLeft: '-15px' }}
+      >
+        <Note id={id} />
       </div>
     </div>
   );

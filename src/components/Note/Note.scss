@@ -12,7 +12,6 @@
     position: relative;
     box-sizing: border-box;
     max-width: 600px;
-    margin: 0 auto;
     padding: $base-unit $base-unit 0.5 * $base-unit;
     background-color: $background-color;
     border: 1px solid $border-color;
@@ -24,6 +23,10 @@
     font-weight: bold;
 
     cursor: default;
+
+    &_focused {
+      margin: 0 auto;
+    }
 
     &:hover,
     &_focused {

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
 import AddNote from '@components/Note/AddNote.container';
@@ -16,6 +16,14 @@ function Home({
   isSelectionMode,
   onClickOutsideOfElements,
 }) {
+  const [overlappedItem, setOverlappedItem] = useState(123);
+  const onOverlap = (id) => {
+    setOverlappedItem(id);
+  };
+  // useEffect(() => {
+  //   console.log(`overlappedItem: ${overlappedItem}`);
+  // }, [overlappedItem]);
+
   return (
     <Container
       elements={[addingNoteId, ...regularNotesOrder]}
@@ -32,14 +40,14 @@ function Home({
           isNameRequired: true,
           component: Note,
           refPropName: 'noteRef',
-          extraProps: { isSelectionMode },
+          extraProps: { isSelectionMode, overlappedItem, onOverlap },
         },
         unpinned: {
           test: (noteId) => !pinnedNotes[noteId] && !removedNotes[noteId],
           name: 'Другие заметки',
           component: Note,
           refPropName: 'noteRef',
-          extraProps: { isSelectionMode },
+          extraProps: { isSelectionMode, overlappedItem, onOverlap },
         },
       }}
       onClickOutsideOfElements={onClickOutsideOfElements}
