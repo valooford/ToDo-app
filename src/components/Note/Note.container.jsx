@@ -57,6 +57,7 @@ const checkboxClassname = listItemStyle.listItem__checkbox;
 // *
 function NoteContainer({
   id,
+  isHidden,
   isAddNote,
   isSelected,
   isPinned,
@@ -453,6 +454,7 @@ function NoteContainer({
     <ListDragContext.Provider value={listRef}>
       <Note
         isSelectionMode={isSelectionMode}
+        isHidden={isHidden}
         noteData={{
           headerText,
           text,

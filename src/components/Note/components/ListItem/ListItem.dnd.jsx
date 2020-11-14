@@ -70,11 +70,6 @@ function ListItemDnD(props) {
   // handle dropping on droppable area
   const [, dropArea] = useDrop({
     accept: dragSourceTypes.LIST_ITEM,
-    // drop: (item) => {
-    //   console.log(item);
-    //   console.log(nestState);
-    // },
-    collect: () => ({}),
   });
   // choosing droppable areas
   const dropAreaField = useRef(null);

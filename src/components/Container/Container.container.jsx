@@ -23,7 +23,7 @@ export default function ContainerContainer({
   );
   const elementGroups = elements.reduce((elGroups, id) => {
     /* eslint-disable no-param-reassign */
-    const elemRef = React.createRef();
+    const elemRef = React.createRef(); // ? causing problems with drag&drop
     for (let i = 0; i < groupKeys.length; i += 1) {
       const groupKey = groupKeys[i];
       const elemProps = {

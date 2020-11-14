@@ -16,13 +16,16 @@ function Home({
   isSelectionMode,
   onClickOutsideOfElements,
 }) {
-  const [overlappedItem, setOverlappedItem] = useState(123);
+  const [overlappedNote, setOverlappedNote] = useState(null);
   const onOverlap = (id) => {
-    setOverlappedItem(id);
+    setOverlappedNote(id);
   };
-  // useEffect(() => {
-  //   console.log(`overlappedItem: ${overlappedItem}`);
-  // }, [overlappedItem]);
+  const onDragEnd = (/* id */) => {
+    if (overlappedNote) {
+      // console.log(`note ${id} was dropped on note ${overlappedNote}`);
+      setOverlappedNote(null);
+    }
+  };
 
   return (
     <Container
@@ -40,14 +43,14 @@ function Home({
           isNameRequired: true,
           component: Note,
           refPropName: 'noteRef',
-          extraProps: { isSelectionMode, overlappedItem, onOverlap },
+          extraProps: { isSelectionMode, overlappedNote, onOverlap, onDragEnd },
         },
         unpinned: {
           test: (noteId) => !pinnedNotes[noteId] && !removedNotes[noteId],
           name: 'Другие заметки',
           component: Note,
           refPropName: 'noteRef',
-          extraProps: { isSelectionMode, overlappedItem, onOverlap },
+          extraProps: { isSelectionMode, overlappedNote, onOverlap, onDragEnd },
         },
       }}
       onClickOutsideOfElements={onClickOutsideOfElements}

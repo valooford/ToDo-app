@@ -13,6 +13,7 @@ import style from './Note-cfg.module.scss';
 function Note(
   {
     isSelectionMode,
+    isHidden,
     noteData: {
       headerText,
       text,
@@ -164,6 +165,7 @@ function Note(
         [style.note_interacting]: isInteracting,
         [style.note_selected]: isSelected,
         [style['note_mode-selection']]: isSelectionMode,
+        [style.note_hidden]: isHidden,
       })}
       onSubmit={(e) => e.preventDefault()}
       onClick={onClick}
