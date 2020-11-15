@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Container from './Container';
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ CONTAINER
@@ -21,13 +21,28 @@ export default function ContainerContainer({
     },
     { neighbourRef: null }
   );
-  const elementGroups = elements.reduce((elGroups, id) => {
+
+  // refs must be stable across renders
+  const [elementsRefs, setElementsRefs] = useState(() =>
+    Array(elements.length)
+      .fill()
+      .map(() => React.createRef())
+  );
+  useEffect(() => {
+    setElementsRefs((prev) =>
+      Array(elements.length)
+        .fill()
+        .map((_, i) => prev[i] || React.createRef())
+    );
+  }, [elements.length]);
+
+  const elementGroups = elements.reduce((elGroups, id, index) => {
     /* eslint-disable no-param-reassign */
-    const elemRef = React.createRef(); // ? causing problems with drag&drop
+    const elemRef = elementsRefs[index];
     for (let i = 0; i < groupKeys.length; i += 1) {
       const groupKey = groupKeys[i];
       const elemProps = {
-        neighbourRef: groups.neighbourRef,
+        neighbourRef: elGroups.neighbourRef,
         [groups[groupKey].refPropName]: elemRef,
         ...groups[groupKey].extraProps,
       };

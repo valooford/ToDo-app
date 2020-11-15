@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { useDrag, useDrop } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
@@ -11,11 +11,10 @@ import Note from './Note.container';
 import NoteDragLayer from './Note.drag-layer';
 
 function NoteDnD({ isOverlapped, onOverlap, onDragEnd, ...props }) {
-  // const { id, noteRef } = props;
-
-  const { id } = props;
-  // seems like noteRef must be stable across renders
-  const noteRef = useRef(null);
+  const { id, noteRef } = props;
+  // + neighbour id is needed here
+  // maybe kinda function is passed to Container.container
+  // that executes with id/index or both and constructs neighbour id
 
   // handle dragging
   const [{ isDragging }, drag, preview] = useDrag({
@@ -49,6 +48,9 @@ function NoteDnD({ isOverlapped, onOverlap, onDragEnd, ...props }) {
         onOverlap(id);
         setDragAreaHeight(overHeight);
       }
+      // else if (overlapNext) {
+      //   overlapNext(); // overlap next item
+      // }
     }
   }, [isOver]);
 
