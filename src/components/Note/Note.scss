@@ -28,6 +28,14 @@
       margin: 0 auto;
     }
 
+    &:not(&_focused) {
+      .#{$class-name}__header,
+      .#{$class-name}__text,
+      .#{$class-name}__listWrapper {
+        pointer-events: none;
+      }
+    }
+
     &:hover,
     &_focused {
       box-shadow: (

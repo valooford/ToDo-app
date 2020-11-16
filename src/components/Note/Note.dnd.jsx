@@ -10,7 +10,13 @@ import dragSourceTypes from '@/dragSourceTypes';
 import Note from './Note.container';
 import NoteDragLayer from './Note.drag-layer';
 
-function NoteDnD({ isOverlapped, onOverlap, onDragEnd, ...props }) {
+function NoteDnD({
+  isOverlapped,
+  onOverlap,
+  onDragEnd,
+  overlapNext,
+  ...props
+}) {
   const { id, noteRef } = props;
   // + neighbour id is needed here
   // maybe kinda function is passed to Container.container
@@ -20,11 +26,14 @@ function NoteDnD({ isOverlapped, onOverlap, onDragEnd, ...props }) {
   const [{ isDragging }, drag, preview] = useDrag({
     item: { type: dragSourceTypes.NOTE },
     begin: () => {
+      // console.log('drag began');
       const clientRect = noteRef.current.getBoundingClientRect(); // save height
+      overlapNext(); // overlap next item
       return { height: clientRect.height }; // return props for ListItem
     },
     end: () => {
-      onDragEnd(id);
+      // console.log('drag ended');
+      onDragEnd();
     },
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
   });
@@ -45,12 +54,11 @@ function NoteDnD({ isOverlapped, onOverlap, onDragEnd, ...props }) {
   useEffect(() => {
     if (isOver && !isDragging) {
       if (!isOverlapped) {
-        onOverlap(id);
+        onOverlap();
         setDragAreaHeight(overHeight);
+      } else {
+        overlapNext(); // overlap next item
       }
-      // else if (overlapNext) {
-      //   overlapNext(); // overlap next item
-      // }
     }
   }, [isOver]);
 
@@ -78,9 +86,10 @@ function NoteDnD({ isOverlapped, onOverlap, onDragEnd, ...props }) {
   );
 }
 
-function mapStateToProps(state, { id, overlappedNote }) {
-  return {
-    isOverlapped: id === overlappedNote,
-  };
-}
-export default connect(mapStateToProps, null)(NoteDnD);
+// function mapStateToProps(state, { id, overlappedNote }) {
+//   return {
+//     isOverlapped: id === overlappedNote,
+//   };
+// }
+// export default connect(mapStateToProps, null)(NoteDnD);
+export default connect(null, null)(NoteDnD);

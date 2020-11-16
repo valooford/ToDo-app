@@ -41,20 +41,33 @@ export default function ContainerContainer({
     const elemRef = elementsRefs[index];
     for (let i = 0; i < groupKeys.length; i += 1) {
       const groupKey = groupKeys[i];
+      const group = groups[groupKey];
+      const extraProps = group.extraProps
+        ? Object.keys(group.extraProps).reduce((extras, propName) => {
+            const prop = group.extraProps[propName];
+            if (typeof prop === 'function') {
+              extras[propName] = prop(id, index);
+            } else {
+              extras[propName] = prop;
+            }
+            return extras;
+          }, {})
+        : {};
       const elemProps = {
         neighbourRef: elGroups.neighbourRef,
-        [groups[groupKey].refPropName]: elemRef,
-        ...groups[groupKey].extraProps,
+        [group.refPropName]: elemRef,
+        ...extraProps,
+        // ...group.extraProps,
       };
-      if (groups[groupKey].test(id)) {
-        const Component = groups[groupKey].component;
+      if (group.test(id)) {
+        const Component = group.component;
         elGroups[groupKey].push({
           id,
           // eslint-disable-next-line react/jsx-props-no-spreading
           node: <Component id={id} {...elemProps} />,
         });
         elGroups.neighbourRef = elemRef;
-        if (groups[groupKey].unique) break;
+        if (group.unique) break;
       }
     }
     /* eslint-enable no-param-reassign */
