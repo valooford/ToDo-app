@@ -69,6 +69,7 @@
     &_hidden {
       opacity: 0;
       position: absolute;
+      width: 100%; // under every clickable pixel
       z-index: 20;
     }
 

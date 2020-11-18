@@ -31,6 +31,7 @@ function Note(
     eventHandlers: {
       onClick,
       onMouseDown,
+      onMouseUp,
       onKeyDown,
       onClose, // on close button click / pressing Esc
       onSelection,
@@ -170,6 +171,7 @@ function Note(
       onSubmit={(e) => e.preventDefault()}
       onClick={onClick}
       onMouseDown={onMouseDown}
+      onMouseUp={onMouseUp}
       onKeyDown={(e) => {
         if (onKeyDown) onKeyDown(e);
         // Esc

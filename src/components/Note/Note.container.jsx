@@ -376,7 +376,7 @@ function NoteContainer({
         ? onCancelNoteSelection
         : onNoteSelection;
     } else {
-      eventHandlers.onClick = ({ target }) => {
+      eventHandlers.onMouseUp = ({ target }) => {
         const nonFocusingElementsSelectors = [
           style.note__check,
           style.note__cornerButtons,

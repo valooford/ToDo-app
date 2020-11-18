@@ -15,24 +15,20 @@ function NoteDnD({
   onOverlap,
   onDragEnd,
   overlapNext,
+  noteRef,
   ...props
 }) {
-  const { id, noteRef } = props;
-  // + neighbour id is needed here
-  // maybe kinda function is passed to Container.container
-  // that executes with id/index or both and constructs neighbour id
+  const { id } = props;
 
   // handle dragging
   const [{ isDragging }, drag, preview] = useDrag({
     item: { type: dragSourceTypes.NOTE },
     begin: () => {
-      // console.log('drag began');
       const clientRect = noteRef.current.getBoundingClientRect(); // save height
       overlapNext(); // overlap next item
       return { height: clientRect.height }; // return props for ListItem
     },
     end: () => {
-      // console.log('drag ended');
       onDragEnd();
     },
     collect: (monitor) => ({ isDragging: monitor.isDragging() }),
@@ -73,7 +69,7 @@ function NoteDnD({
       {isOverlapped && !isDragging && (
         <div
           style={{
-            height: `${dragAreaHeight}px`,
+            height: `${dragAreaHeight}px`, // ! equals 0 when overlapNext() on drag begin is fired
             // height: '100px',
             backgroundColor: '#bbb',
           }}
