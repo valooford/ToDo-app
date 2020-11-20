@@ -51,12 +51,16 @@ function NoteDnD({
     if (isOver && !isDragging) {
       if (!isOverlapped) {
         onOverlap();
-        setDragAreaHeight(overHeight);
       } else {
         overlapNext(); // overlap next item
       }
     }
   }, [isOver]);
+  useEffect(() => {
+    if (overHeight) {
+      setDragAreaHeight(overHeight);
+    }
+  }, [overHeight]);
 
   // handle dropping on droppable area
   const [, dropArea] = useDrop({
@@ -69,8 +73,7 @@ function NoteDnD({
       {isOverlapped && !isDragging && (
         <div
           style={{
-            height: `${dragAreaHeight}px`, // ! equals 0 when overlapNext() on drag begin is fired
-            // height: '100px',
+            height: `${dragAreaHeight || 140}px`, // ! equals 0 when overlapNext() on drag begin is fired
             backgroundColor: '#bbb',
           }}
           ref={dropArea}

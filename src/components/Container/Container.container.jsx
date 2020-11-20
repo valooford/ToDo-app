@@ -7,7 +7,19 @@ export default function ContainerContainer({
   elements,
   groups,
   onClickOutsideOfElements,
+  dndEnabled,
 }) {
+  const [overlappedItem, setOverlappedItem] = useState(null);
+  const onOverlap = (id) => {
+    setOverlappedItem(id);
+  };
+  const onDragEnd = (/* id */) => {
+    if (overlappedItem) {
+      // console.log(`note ${id} was dropped on note ${overlappedNote}`);
+      setOverlappedItem(null);
+    }
+  };
+
   // ELEMENT GROUPS GATHERING
   // *
   const groupKeys = Object.keys(groups);
@@ -42,24 +54,36 @@ export default function ContainerContainer({
     for (let i = 0; i < groupKeys.length; i += 1) {
       const groupKey = groupKeys[i];
       const group = groups[groupKey];
-      const extraProps = group.extraProps
-        ? Object.keys(group.extraProps).reduce((extras, propName) => {
-            const prop = group.extraProps[propName];
-            if (typeof prop === 'function') {
-              extras[propName] = prop(id, index);
-            } else {
-              extras[propName] = prop;
-            }
-            return extras;
-          }, {})
-        : {};
       const elemProps = {
         neighbourRef: elGroups.neighbourRef,
         [group.refPropName]: elemRef,
-        ...extraProps,
-        // ...group.extraProps,
+        ...group.extraProps,
+        ...(dndEnabled
+          ? {
+              isOverlapped: id === overlappedItem,
+              onOverlap: () => onOverlap(id),
+              onDragEnd: () => onDragEnd(id),
+            }
+          : {}),
       };
       if (group.test(id)) {
+        if (dndEnabled) {
+          const gindex = elGroups[groupKey].length;
+          elemProps.overlapNext = () => {
+            setTimeout(() => {
+              const nextEl = elGroups[groupKey][gindex + 1];
+              let itemToOverlapId;
+              if (nextEl && nextEl.id !== id) {
+                itemToOverlapId = nextEl.id;
+              } else if (elGroups[groupKey][gindex + 2]) {
+                itemToOverlapId = elGroups[groupKey][gindex + 2].id;
+              } else {
+                itemToOverlapId = 'end';
+              }
+              setOverlappedItem(itemToOverlapId);
+            }, 0);
+          };
+        }
         const Component = group.component;
         elGroups[groupKey].push({
           id,

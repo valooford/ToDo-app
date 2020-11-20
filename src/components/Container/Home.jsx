@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 /* eslint-disable import/no-unresolved */
 import AddNote from '@components/Note/AddNote.container';
@@ -16,38 +16,6 @@ function Home({
   isSelectionMode,
   onClickOutsideOfElements,
 }) {
-  const [overlappedNote, setOverlappedNote] = useState(null);
-  const onOverlap = (id) => {
-    setOverlappedNote(id);
-  };
-  const onDragEnd = (/* id */) => {
-    if (overlappedNote) {
-      // console.log(`note ${id} was dropped on note ${overlappedNote}`);
-      setOverlappedNote(null);
-    }
-  };
-
-  const extraPropsForNoteDnD = {
-    isSelectionMode,
-    isOverlapped: (id) => id === overlappedNote,
-    onOverlap: (id) => () => onOverlap(id),
-    onDragEnd: (id) => () => onDragEnd(id),
-    overlapNext: (_, i) => () => {
-      const index = i - 1; // due to addingNote
-      let noteToOverlapId;
-      if (regularNotesOrder.length !== index + 1) {
-        // not last
-        noteToOverlapId = regularNotesOrder[index + 1];
-      } else if (index - 1 >= 0) {
-        // last but not single
-        noteToOverlapId = 'end';
-      } else {
-        return;
-      }
-      setOverlappedNote(noteToOverlapId);
-    },
-  };
-
   return (
     <Container
       elements={[addingNoteId, ...regularNotesOrder]}
@@ -64,17 +32,18 @@ function Home({
           isNameRequired: true,
           component: Note,
           refPropName: 'noteRef',
-          extraProps: extraPropsForNoteDnD,
+          extraProps: { isSelectionMode },
         },
         unpinned: {
           test: (noteId) => !pinnedNotes[noteId] && !removedNotes[noteId],
           name: 'Другие заметки',
           component: Note,
           refPropName: 'noteRef',
-          extraProps: extraPropsForNoteDnD,
+          extraProps: { isSelectionMode },
         },
       }}
       onClickOutsideOfElements={onClickOutsideOfElements}
+      dndEnabled
     />
   );
 }
