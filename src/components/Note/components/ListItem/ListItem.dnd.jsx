@@ -90,7 +90,7 @@ function ListItemDnD(props) {
         <li
           style={{
             height: `${dragAreaHeight}px`,
-            backgroundColor: '#bbb',
+            backgroundColor: 'rgba(0,0,0,0.27)',
           }}
           ref={dropArea(dropAreaField)}
         />

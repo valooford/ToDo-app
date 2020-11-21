@@ -12,6 +12,7 @@ import NoteDragLayer from './Note.drag-layer';
 
 function NoteDnD({
   isOverlapped,
+  groupName,
   onOverlap,
   onDragEnd,
   overlapNext,
@@ -22,7 +23,7 @@ function NoteDnD({
 
   // handle dragging
   const [{ isDragging }, drag, preview] = useDrag({
-    item: { type: dragSourceTypes.NOTE },
+    item: { type: `${dragSourceTypes.NOTE}-${groupName}` },
     begin: () => {
       const clientRect = noteRef.current.getBoundingClientRect(); // save height
       overlapNext(); // overlap next item
@@ -40,7 +41,7 @@ function NoteDnD({
 
   // handle dropping
   const [{ isOver, overHeight }, drop] = useDrop({
-    accept: dragSourceTypes.NOTE, // accepted source type
+    accept: `${dragSourceTypes.NOTE}-${groupName}`, // accepted source type
     collect: (monitor) => ({
       isOver: !!monitor.isOver(),
       overHeight: monitor.isOver() && monitor.getItem().height,
@@ -64,7 +65,7 @@ function NoteDnD({
 
   // handle dropping on droppable area
   const [, dropArea] = useDrop({
-    accept: dragSourceTypes.NOTE,
+    accept: `${dragSourceTypes.NOTE}-${groupName}`,
   });
 
   return (
@@ -74,7 +75,6 @@ function NoteDnD({
         <div
           style={{
             height: `${dragAreaHeight || 140}px`, // ! equals 0 when overlapNext() on drag begin is fired
-            backgroundColor: '#bbb',
           }}
           ref={dropArea}
         />

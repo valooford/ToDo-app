@@ -68,6 +68,7 @@ export default function ContainerContainer({
       };
       if (group.test(id)) {
         if (dndEnabled) {
+          elemProps.groupName = groupKey;
           const gindex = elGroups[groupKey].length;
           elemProps.overlapNext = () => {
             setTimeout(() => {
