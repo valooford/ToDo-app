@@ -14,6 +14,7 @@ export const UPDATE_NOTE = 'notes/update-note';
 export const REMOVE_NOTE = 'notes/remove-note';
 export const RESTORE_NOTE = 'notes/restore-note';
 export const DELETE_NOTE = 'notes/delete-note';
+export const INSERT_NOTE = 'notes/insert-note';
 export const ADD_NOTE_LIST_ITEM = 'notes/add-note-list-item';
 export const REMOVE_NOTE_LIST_ITEM = 'notes/remove-note-list-item';
 export const SET_CHECK_NOTE_LIST_ITEM = 'notes/set-check-note-list-item';

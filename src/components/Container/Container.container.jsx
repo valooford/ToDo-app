@@ -8,15 +8,19 @@ export default function ContainerContainer({
   groups,
   onClickOutsideOfElements,
   dndEnabled,
+  onDrop,
 }) {
   const [overlappedItem, setOverlappedItem] = useState(null);
   const onOverlap = (id) => {
     setOverlappedItem(id);
   };
-  const onDragEnd = (/* id */) => {
+  const onDragEnd = (id) => {
     if (overlappedItem) {
       // console.log(`note ${id} was dropped on note ${overlappedNote}`);
       setOverlappedItem(null);
+    }
+    if (dndEnabled) {
+      onDrop(id, overlappedItem);
     }
   };
 

@@ -14,6 +14,7 @@ import {
   REMOVE_NOTE,
   RESTORE_NOTE,
   DELETE_NOTE,
+  INSERT_NOTE,
   ADD_NOTE_LIST_ITEM,
   REMOVE_NOTE_LIST_ITEM,
   SET_CHECK_NOTE_LIST_ITEM,
@@ -251,6 +252,20 @@ const handlers = {
         : state.archivedNotes,
       removedNotes,
     };
+  },
+  [INSERT_NOTE]: (state, { id, noteToDisplaceId }) => {
+    if (state.regularNotes[id]) {
+      const regularNotes = { ...state.regularNotes };
+      const notesOrder = regularNotes.order.filter((noteId) => noteId !== id);
+      const pos =
+        noteToDisplaceId == null
+          ? notesOrder.length
+          : notesOrder.indexOf(noteToDisplaceId);
+      notesOrder.splice(pos, 0, id);
+      regularNotes.order = notesOrder;
+      return { ...state, regularNotes };
+    }
+    return state;
   },
   // + { id, text, after }
   [ADD_NOTE_LIST_ITEM]: (state, { id, text, after }) => {
@@ -840,6 +855,12 @@ export function restoreNote(id) {
 export function deleteNote(id) {
   const ids = associativeArrToArr(id);
   return { type: DELETE_NOTE, ids };
+}
+
+// INSERT_NOTE
+export function insertNote(id, noteToDisplaceId = null) {
+  // console.log(`id: ${id}, noteToDisplaceId: ${noteToDisplaceId}`);
+  return { type: INSERT_NOTE, id, noteToDisplaceId };
 }
 
 // LIST ITEM ACTION CREATORS

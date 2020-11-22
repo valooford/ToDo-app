@@ -5,6 +5,7 @@ import AddNote from '@components/Note/AddNote.container';
 import Note from '@components/Note/Note.dnd';
 
 import { getAddingNoteId } from '@store/selectors';
+import { insertNote as insertNoteAC } from '@store/notesReducer';
 /* eslint-enable import/no-unresolved */
 import Container from './Container.container';
 
@@ -15,6 +16,7 @@ function Home({
   removedNotes,
   isSelectionMode,
   onClickOutsideOfElements,
+  insertNote,
 }) {
   return (
     <Container
@@ -44,6 +46,13 @@ function Home({
       }}
       onClickOutsideOfElements={onClickOutsideOfElements}
       dndEnabled
+      onDrop={(sourceId, targetId) => {
+        if (targetId === 'end') {
+          insertNote(sourceId);
+        } else {
+          insertNote(sourceId, targetId);
+        }
+      }}
     />
   );
 }
@@ -56,4 +65,4 @@ function mapStateToProps(state) {
     removedNotes: state.main.removedNotes,
   };
 }
-export default connect(mapStateToProps)(Home);
+export default connect(mapStateToProps, { insertNote: insertNoteAC })(Home);
