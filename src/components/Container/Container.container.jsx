@@ -40,21 +40,26 @@ export default function ContainerContainer({
 
   // refs must be stable across renders
   const [elementsRefs, setElementsRefs] = useState(() =>
-    Array(elements.length)
-      .fill()
-      .map(() => React.createRef())
+    elements.reduce((refs, id) => {
+      // eslint-disable-next-line no-param-reassign
+      refs[id] = React.createRef();
+      return refs;
+    }, {})
   );
   useEffect(() => {
     setElementsRefs((prev) =>
-      Array(elements.length)
-        .fill()
-        .map((_, i) => prev[i] || React.createRef())
+    elements.reduce((refs, id) => {
+      /* eslint-disable no-param-reassign */
+      refs[id] = prev[id] || React.createRef();
+      /* eslint-enable no-param-reassign */
+      return refs;
+    }, {})
     );
-  }, [elements.length]);
+  }, [elements]);
 
-  const elementGroups = elements.reduce((elGroups, id, index) => {
+  const elementGroups = elements.reduce((elGroups, id) => {
     /* eslint-disable no-param-reassign */
-    const elemRef = elementsRefs[index];
+    const elemRef = elementsRefs[id];
     for (let i = 0; i < groupKeys.length; i += 1) {
       const groupKey = groupKeys[i];
       const group = groups[groupKey];
