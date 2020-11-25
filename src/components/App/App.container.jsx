@@ -25,6 +25,7 @@ import Reminiscent from '@components/Container/Reminiscent';
 import Labeled from '@components/Container/Labeled';
 import Archived from '@components/Container/Archived';
 import Removed from '@components/Container/Removed';
+import SearchFilters from '@components/Container/SearchFilters';
 
 import { clearSelectedNotes as clearSelectedNotesAC } from '@store/notesReducer';
 /* eslint-enable import/no-unresolved */
@@ -131,6 +132,14 @@ function AppContainer({
                         params: { noteID },
                       },
                     }) => <NoteFocuser noteID={noteID} />}
+                  />
+                  <Route
+                    path="/search"
+                    render={() => {
+                      return (
+                        <Page quiet key="/search" component={SearchFilters} />
+                      );
+                    }}
                   />
                   <Route
                     path="*"

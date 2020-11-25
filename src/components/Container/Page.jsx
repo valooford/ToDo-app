@@ -14,7 +14,7 @@ function Page({
   ...oldProps
 }) {
   useEffect(() => {
-    setPage();
+    if (setPage) setPage();
   }, []);
 
   const { pageName, ...props } = oldProps;
@@ -33,10 +33,10 @@ function mapStateToProps(state) {
     isSelectionMode: !!state.main.selectedNotes.length,
   };
 }
-function mapDispatchToProps(dispatch, { pageName }) {
+function mapDispatchToProps(dispatch, { quiet, pageName }) {
   return bindActionCreators(
     {
-      setPage: () => setPageAC(pageName),
+      setPage: !quiet ? () => setPageAC(pageName) : null,
       clearSelectedNotes: clearSelectedNotesAC,
     },
     dispatch

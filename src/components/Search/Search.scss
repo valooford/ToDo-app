@@ -26,11 +26,7 @@
       left: 0.8 * $bigger-base-unit;
     }
     &__clean {
-      display: none;
       right: 0.8 * $bigger-base-unit;
-    }
-    input:focus + &__clean {
-      display: inline;
     }
   }
 }

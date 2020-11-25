@@ -1,0 +1,43 @@
+@import '@styles/variables';
+
+.tile {
+  width: 33%;
+  max-width: 160px;
+  max-height: 160px;
+  padding: 2.7%;
+  font-family: $font-family;
+  background-color: #eee;
+  border: none;
+  border-radius: 0;
+  cursor: pointer;
+
+  &_accented {
+    color: #fff;
+    background-color: rgb(80, 117, 240);
+    .icon {
+      color: #fff;
+    }
+  }
+}
+
+.square {
+  position: relative;
+  height: 0;
+  padding-bottom: 100%;
+}
+
+.icon {
+  position: absolute;
+  top: 50%;
+  width: 100%;
+  margin-top: -15px;
+  color: #666;
+  font-family: $icon-font-name;
+  font-size: 30px;
+}
+
+.text {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+}
