@@ -26,6 +26,9 @@ import {
   LIST_NOTE_TO_TEXT,
   SET_NOTE_COLOR,
   SET_SELECTED_NOTES,
+  SEARCH_NOTE,
+  SET_NOTE_REMINDER,
+  REMOVE_REMINDER,
 } from './actionsTypes';
 
 function removeItemFromNoteItemOrders(itemId, note) {
@@ -641,6 +644,41 @@ const handlers = {
     }
     return { ...state, selectedNotes };
   },
+  [SET_NOTE_REMINDER]: (state, { noteIds }) => {
+    const reminiscentNotes = { ...state.reminiscentNotes };
+    noteIds.forEach((id) => {
+      reminiscentNotes[id] = true;
+    });
+    return { ...state, reminiscentNotes };
+  },
+  [REMOVE_REMINDER]: (state, { noteId }) => {
+    const reminiscentNotes = { ...state.reminiscentNotes };
+    delete reminiscentNotes[noteId];
+    return { ...state, reminiscentNotes };
+  },
+  [SEARCH_NOTE]: (
+    state,
+    {
+      // query,
+      hasReminder,
+      type,
+      // hasImage,
+      label,
+      color,
+    }
+  ) => {
+    const foundNotes = [];
+    const { notes, reminiscentNotes, labeledNotes } = state;
+    Object.values(notes).forEach((note) => {
+      if (color && note.color !== color) return;
+      if (type && note.type !== type) return;
+      if (hasReminder && !reminiscentNotes[note.id]) return;
+      if (label && !labeledNotes[label][note.id]) return;
+
+      foundNotes.push(note.id);
+    });
+    return { ...state, foundNotes };
+  },
 };
 
 const normalizedInitialState = {
@@ -740,6 +778,10 @@ const normalizedInitialState = {
     // '111': true,
     length: 0,
   },
+  reminiscentNotes: {
+    111: true,
+  },
+  foundNotes: [],
 };
 
 export default function notesReducer(state = normalizedInitialState, action) {

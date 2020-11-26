@@ -215,8 +215,8 @@ export function setPlaceReminder(noteId, place) {
 }
 
 // REMOVE_REMINDER
-export function removeReminder(reminderId) {
-  return { type: REMOVE_REMINDER, reminderId };
+export function removeReminder(reminderId, noteId) {
+  return { type: REMOVE_REMINDER, reminderId, noteId };
 }
 
 // UPDATE_REMINDER

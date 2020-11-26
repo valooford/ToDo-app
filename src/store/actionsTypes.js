@@ -29,6 +29,8 @@ export const LIST_NOTE_TO_TEXT = 'notes/list-note-to-text';
 export const SET_NOTE_COLOR = 'notes/set-note-color';
 export const SET_SELECTED_NOTES = 'notes/set-selected-notes';
 
+export const SEARCH_NOTE = 'notes/search-note';
+
 // notification
 export const SET_NOTE_REMINDER = 'notification/set-note-reminder';
 export const REMOVE_REMINDER = 'notification/remove-reminder';

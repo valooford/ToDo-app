@@ -61,6 +61,7 @@ function Note(
       textFieldRef,
       listRef,
     } = {},
+    children,
   },
   ref
 ) {
@@ -280,6 +281,7 @@ function Note(
         </div>
       )}
       <div className={style.note__info}>
+        {children}
         {onClose && creationDate && editingDate && (
           <span className={style.note__creationTime}>
             <CreationTime

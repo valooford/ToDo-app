@@ -41,7 +41,7 @@ function Reminiscent({
   }, [addingNoteReminderId]);
   useEffect(() => {
     return () => {
-      removeReminder(storedAddingNoteReminderId.id);
+      removeReminder(storedAddingNoteReminderId.id, addingNoteId);
     };
   }, []);
 
@@ -114,8 +114,8 @@ function mapDispatchToProps(dispatch, { addingNoteId }) {
   return bindActionCreators(
     {
       setReminder: () => setDateReminder(addingNoteId, getClosestDate()),
-      removeReminder: (addingNoteReminderId) =>
-        removeReminderAC(addingNoteReminderId),
+      removeReminder: (addingNoteReminderId, addNoteId) =>
+        removeReminderAC(addingNoteReminderId, addNoteId),
     },
     dispatch
   );

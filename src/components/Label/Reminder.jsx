@@ -61,10 +61,10 @@ function mapStateToProps(state, { id }) {
     isUnremovable: id === getAddingNoteId(state),
   };
 }
-function mapDispatchToProps(dispatch, { reminderId }) {
+function mapDispatchToProps(dispatch, { reminderId, id }) {
   return bindActionCreators(
     {
-      removeReminder: () => removeReminderAC(reminderId),
+      removeReminder: () => removeReminderAC(reminderId, id),
     },
     dispatch
   );
