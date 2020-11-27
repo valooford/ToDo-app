@@ -4,7 +4,7 @@ import cn from 'classnames';
 import style from './ColorButton.module.scss';
 
 export default React.forwardRef(function ColorButton(
-  { color, onMouseEnter, onMouseLeave },
+  { color, onClick, onMouseEnter, onMouseLeave },
   ref
 ) {
   return (
@@ -14,6 +14,7 @@ export default React.forwardRef(function ColorButton(
       className={cn(style['color-button'], {
         [style[`color-button_${color}`]]: color,
       })}
+      onClick={onClick}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       ref={ref}

@@ -659,9 +659,9 @@ const handlers = {
   [SEARCH_NOTE]: (
     state,
     {
-      // query,
+      query,
       hasReminder,
-      type,
+      noteType,
       // hasImage,
       label,
       color,
@@ -671,10 +671,18 @@ const handlers = {
     const { notes, reminiscentNotes, labeledNotes } = state;
     Object.values(notes).forEach((note) => {
       if (color && note.color !== color) return;
-      if (type && note.type !== type) return;
+      if (noteType && note.type !== noteType) return;
       if (hasReminder && !reminiscentNotes[note.id]) return;
       if (label && !labeledNotes[label][note.id]) return;
-
+      if (query) {
+        let text = note.headerText;
+        text += note.text ? ` ${note.text}` : '';
+        text += note.items
+          ? `${note.items.map((item) => item.text).join(' ')}`
+          : '';
+        const regexp = new RegExp(query);
+        if (!regexp.test(text)) return;
+      }
       foundNotes.push(note.id);
     });
     return { ...state, foundNotes };
@@ -982,4 +990,17 @@ export function cancelNoteSelection(id) {
 }
 export function clearSelectedNotes() {
   return { type: SET_SELECTED_NOTES, effect: 'remove-all' };
+}
+
+// SEARCH_NOTE
+export function searchNotes({ query, hasReminder, noteType, label, color }) {
+  return {
+    type: SET_SELECTED_NOTES,
+    effect: 'add',
+    query,
+    hasReminder,
+    noteType,
+    label,
+    color,
+  };
 }

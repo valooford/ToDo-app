@@ -1,26 +1,48 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { compose } from 'redux';
-import { withRouter } from 'react-router-dom';
+import { useHistory, useRouteMatch, withRouter } from 'react-router-dom';
 
 import Search from './Search';
 
-function SearchContainer({ history, ...props }) {
-  const [isFocused, setIsFocused] = useState(false);
+export default function SearchContainer(props) {
+  const history = useHistory();
+  const { params: { text = '', filter, data } = {} } =
+    useRouteMatch('/search/text":text?"/:filter?/:data?') || {};
+  const [isFocused, setIsFocused] = useState(text || filter);
+  const ref = useRef(null);
+  useEffect(() => {
+    ref.current.value = text;
+  }, []);
   return (
     <Search
       // eslint-disable-next-line react/jsx-props-no-spreading
       {...props}
       isFocused={isFocused}
-      onFocus={() => {
-        history.push('/search');
-        setIsFocused(true);
+      onInput={(query) => {
+        history.push(
+          `/search/text"${query}"/${filter ? `${filter}/${data || ''}` : ''}`
+        );
       }}
+      onFocus={
+        !isFocused
+          ? () => {
+              history.push('/search');
+              setIsFocused(true);
+            }
+          : null
+      }
       onClear={() => {
-        history.push('/home');
-        setIsFocused(false);
+        if (text || filter) {
+          history.push('/search');
+        } else {
+          history.push('/home');
+          setIsFocused(false);
+        }
+        ref.current.value = '';
       }}
+      ref={ref}
     />
   );
 }
 
-export default compose(withRouter)(SearchContainer);
+compose(withRouter)(SearchContainer);

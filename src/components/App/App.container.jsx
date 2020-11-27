@@ -25,11 +25,11 @@ import Reminiscent from '@components/Container/Reminiscent';
 import Labeled from '@components/Container/Labeled';
 import Archived from '@components/Container/Archived';
 import Removed from '@components/Container/Removed';
-import SearchFilters from '@components/Container/SearchFilters';
 
 import { clearSelectedNotes as clearSelectedNotesAC } from '@store/notesReducer';
 /* eslint-enable import/no-unresolved */
 import App from './App';
+import SearchResults from '../Container/SearchResults';
 
 function AppContainer({
   onDirectMainClick, // ---not good--- better to include this in Container
@@ -134,10 +134,14 @@ function AppContainer({
                     }) => <NoteFocuser noteID={noteID} />}
                   />
                   <Route
-                    path="/search"
+                    path={[
+                      '/search/text":text?"/:filter?/:data?',
+                      '/search/:text?',
+                      '/search',
+                    ]}
                     render={() => {
                       return (
-                        <Page quiet key="/search" component={SearchFilters} />
+                        <Page quiet key="/search" component={SearchResults} />
                       );
                     }}
                   />

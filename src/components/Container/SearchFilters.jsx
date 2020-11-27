@@ -6,7 +6,7 @@ import SearchSection from '../SearchSection/SearchSection';
 
 import Container from './Container';
 
-function SearchFilters() {
+function SearchFilters({ onSelection }) {
   return (
     <Container
       groups={{
@@ -15,9 +15,30 @@ function SearchFilters() {
             id: 'types', // if note from some category exists
             node: (
               <SearchSection name="Типы">
-                <IconTile text="Напоминания" iconSymbol="&#xf0f3;" accented />
-                <IconTile text="Списки" iconSymbol="&#xe81b;" accented />
-                <IconTile text="Изображения" iconSymbol="&#xe802;" accented />
+                <IconTile
+                  text="Напоминания"
+                  iconSymbol="&#xf0f3;"
+                  accented
+                  onClick={() => {
+                    onSelection('reminder');
+                  }}
+                />
+                <IconTile
+                  text="Списки"
+                  iconSymbol="&#xe81b;"
+                  accented
+                  onClick={() => {
+                    onSelection('list');
+                  }}
+                />
+                <IconTile
+                  text="Изображения"
+                  iconSymbol="&#xe802;"
+                  accented
+                  onClick={() => {
+                    onSelection('image');
+                  }}
+                />
               </SearchSection>
             ),
           },
@@ -25,8 +46,20 @@ function SearchFilters() {
             id: 'tags', // if at least 1 tagged note exists
             node: (
               <SearchSection name="Ярлыки">
-                <IconTile text="tag1" iconSymbol="&#xe81d;" />
-                <IconTile text="tag2" iconSymbol="&#xe81d;" />
+                <IconTile
+                  text="tag1"
+                  iconSymbol="&#xe81d;"
+                  onClick={() => {
+                    onSelection('tags', 'tag1');
+                  }}
+                />
+                <IconTile
+                  text="tag2"
+                  iconSymbol="&#xe81d;"
+                  onClick={() => {
+                    onSelection('tags', 'tag2');
+                  }}
+                />
               </SearchSection>
             ),
           },
@@ -35,9 +68,26 @@ function SearchFilters() {
             node: (
               <SearchSection name="Цвета">
                 {/* ...цвета */}
-                <ColorButton titleText="По умолчанию" />
-                <ColorButton color="red" titleText="Красный" />
-                <ColorButton color="green" titleText="Зеленый" />
+                <ColorButton
+                  titleText="По умолчанию"
+                  onClick={() => {
+                    onSelection('color', 'default');
+                  }}
+                />
+                <ColorButton
+                  color="red"
+                  titleText="Красный"
+                  onClick={() => {
+                    onSelection('color', 'red');
+                  }}
+                />
+                <ColorButton
+                  color="green"
+                  titleText="Зеленый"
+                  onClick={() => {
+                    onSelection('color', 'green');
+                  }}
+                />
               </SearchSection>
             ),
           },
