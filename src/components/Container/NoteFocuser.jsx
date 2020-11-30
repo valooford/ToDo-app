@@ -9,13 +9,25 @@ import Removed from '@components/Container/Removed';
 
 import { focusNote } from '@store/notesReducer';
 /* eslint-enable import/no-unresolved */
+// import SearchResults from './SearchResults';
 
-function NoteFocuser({ isRegular, isArchived, isRemoved, onMount }) {
+function NoteFocuser({
+  // isSearching,
+  isRegular,
+  isArchived,
+  isRemoved,
+  onMount,
+}) {
   useEffect(() => {
     onMount();
   }, []);
+  let quiet;
   let pageName;
   let component;
+  // if (isSearching) {
+  //   quiet = true;
+  //   component = SearchResults;
+  // } else
   if (isRemoved) {
     pageName = '/trash';
     component = Removed;
@@ -26,11 +38,12 @@ function NoteFocuser({ isRegular, isArchived, isRemoved, onMount }) {
     pageName = '/archive';
     component = Archived;
   } else return null;
-  return <Page pageName={pageName} component={component} />;
+  return <Page quiet={quiet} pageName={pageName} component={component} />;
 }
 
 function mapStateToProps(state, { noteID }) {
   return {
+    // isSearching: !!state.main.foundNotes.length,
     isRegular: state.main.regularNotes[noteID],
     isArchived: state.main.archivedNotes[noteID],
     isRemoved: state.main.removedNotes[noteID],

@@ -1,93 +1,106 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import ColorButton from '../ColorButton/ColorButton.titled';
 import IconTile from '../IconTile/IconTile';
 import SearchSection from '../SearchSection/SearchSection';
 
 import Container from './Container';
 
-function SearchFilters({ onSelection }) {
+const colorNames = {
+  default: 'По умолчанию',
+  red: 'Красный',
+  orange: 'Оранжевый',
+  yellow: 'Желтый',
+  green: 'Зеленый',
+  aquamarine: 'Сине-зеленый',
+  blue: 'Синий',
+  darkblue: 'Темно-синий',
+  purple: 'Фиолетовый',
+  pink: 'Розовый',
+  brown: 'Коричневый',
+  grey: 'Серый',
+};
+
+export default function SearchFilters({
+  hasNotesWithReminders,
+  hasLists,
+  hasImages,
+  labels,
+  colors,
+  onSelection,
+}) {
   return (
     <Container
       groups={{
         sections: [
-          {
-            id: 'types', // if note from some category exists
+          // if note from some category exists
+          (hasNotesWithReminders || hasLists || hasImages) && {
+            id: 'types',
             node: (
               <SearchSection name="Типы">
-                <IconTile
-                  text="Напоминания"
-                  iconSymbol="&#xf0f3;"
-                  accented
-                  onClick={() => {
-                    onSelection('reminder');
-                  }}
-                />
-                <IconTile
-                  text="Списки"
-                  iconSymbol="&#xe81b;"
-                  accented
-                  onClick={() => {
-                    onSelection('list');
-                  }}
-                />
-                <IconTile
-                  text="Изображения"
-                  iconSymbol="&#xe802;"
-                  accented
-                  onClick={() => {
-                    onSelection('image');
-                  }}
-                />
+                {hasNotesWithReminders && (
+                  <IconTile
+                    text="Напоминания"
+                    iconSymbol="&#xf0f3;"
+                    accented
+                    onClick={() => {
+                      onSelection('reminder');
+                    }}
+                  />
+                )}
+                {hasLists && (
+                  <IconTile
+                    text="Списки"
+                    iconSymbol="&#xe81b;"
+                    accented
+                    onClick={() => {
+                      onSelection('list');
+                    }}
+                  />
+                )}
+                {hasImages && (
+                  <IconTile
+                    text="Изображения"
+                    iconSymbol="&#xe802;"
+                    accented
+                    onClick={() => {
+                      onSelection('image');
+                    }}
+                  />
+                )}
               </SearchSection>
             ),
           },
-          {
-            id: 'tags', // if at least 1 tagged note exists
+          labels.length && {
+            id: 'tags',
             node: (
               <SearchSection name="Ярлыки">
-                <IconTile
-                  text="tag1"
-                  iconSymbol="&#xe81d;"
-                  onClick={() => {
-                    onSelection('tags', 'tag1');
-                  }}
-                />
-                <IconTile
-                  text="tag2"
-                  iconSymbol="&#xe81d;"
-                  onClick={() => {
-                    onSelection('tags', 'tag2');
-                  }}
-                />
+                {labels.map((label) => (
+                  <IconTile
+                    text={label}
+                    iconSymbol="&#xe81d;"
+                    onClick={() => {
+                      onSelection('tags', label);
+                    }}
+                    key={label}
+                  />
+                ))}
               </SearchSection>
             ),
           },
-          {
-            id: 'colors', // if 2 or more colors are presented
+          colors.length > 1 && {
+            id: 'colors',
             node: (
               <SearchSection name="Цвета">
-                {/* ...цвета */}
-                <ColorButton
-                  titleText="По умолчанию"
-                  onClick={() => {
-                    onSelection('color', 'default');
-                  }}
-                />
-                <ColorButton
-                  color="red"
-                  titleText="Красный"
-                  onClick={() => {
-                    onSelection('color', 'red');
-                  }}
-                />
-                <ColorButton
-                  color="green"
-                  titleText="Зеленый"
-                  onClick={() => {
-                    onSelection('color', 'green');
-                  }}
-                />
+                {colors.map((color) => (
+                  <ColorButton
+                    color={color}
+                    titleText={colorNames[color]}
+                    onClick={() => {
+                      onSelection('color', color);
+                    }}
+                    key={color}
+                  />
+                ))}
               </SearchSection>
             ),
           },
@@ -96,9 +109,3 @@ function SearchFilters({ onSelection }) {
     />
   );
 }
-
-// function mapStateToProps(state) {
-//   return {};
-// }
-
-export default connect(null, null)(SearchFilters);

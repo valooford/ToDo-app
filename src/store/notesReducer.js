@@ -678,9 +678,11 @@ const handlers = {
         let text = note.headerText;
         text += note.text ? ` ${note.text}` : '';
         text += note.items
-          ? `${note.items.map((item) => item.text).join(' ')}`
+          ? `${Object.values(note.items)
+              .map((item) => item.text)
+              .join(' ')}`
           : '';
-        const regexp = new RegExp(query);
+        const regexp = new RegExp(query, 'i');
         if (!regexp.test(text)) return;
       }
       foundNotes.push(note.id);
@@ -993,13 +995,20 @@ export function clearSelectedNotes() {
 }
 
 // SEARCH_NOTE
-export function searchNotes({ query, hasReminder, noteType, label, color }) {
+export function searchNotes({
+  query,
+  hasReminder,
+  noteType,
+  hasImage,
+  label,
+  color,
+}) {
   return {
-    type: SET_SELECTED_NOTES,
-    effect: 'add',
+    type: SEARCH_NOTE,
     query,
     hasReminder,
     noteType,
+    hasImage,
     label,
     color,
   };

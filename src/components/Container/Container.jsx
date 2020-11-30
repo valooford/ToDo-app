@@ -16,7 +16,7 @@ function getContainerItems(elements) {
 // *
 export default function Container({ groups, onClickOutsideOfElements }) {
   const groupsElements = Object.keys(groups).reduce((result, groupKey) => {
-    const group = groups[groupKey];
+    const group = groups[groupKey].filter((el) => el);
     const { name } = group;
     if (group.length > 0) {
       result.push({ items: getContainerItems(group), name, key: groupKey });

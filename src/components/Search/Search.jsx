@@ -10,7 +10,13 @@ export default React.forwardRef(function Search(
   return (
     <span className={style.search}>
       <i className={style.search__icon}>
-        <IconButton iconSymbol="&#xe814;" titleText="Поиск" />
+        <IconButton
+          iconSymbol="&#xe814;"
+          titleText="Поиск"
+          onClick={() => {
+            ref.current.focus();
+          }}
+        />
       </i>
       <input
         type="text"
