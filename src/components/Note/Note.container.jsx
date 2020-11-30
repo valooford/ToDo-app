@@ -104,6 +104,16 @@ function NoteContainer({
   history,
   currentPage,
 }) {
+  const [savedHeight, setSavedHeight] = useState(0);
+
+  useEffect(() => {
+    setTimeout(() => {
+      const curHeight =
+        noteRef.current && noteRef.current.getBoundingClientRect().height;
+      setSavedHeight(curHeight);
+    }, 0);
+  }, [isFocused]);
+
   const onNoteFocus = () => {
     const path = `/${items ? 'LIST' : 'NOTE'}/${id}`;
     history.push(path);
@@ -513,7 +523,7 @@ function NoteContainer({
   if (isFocused && !isAddNote) {
     return (
       <>
-        <div>FILLER FILLER FILLER FILLER FILLER</div>
+        <div style={{ height: `${savedHeight}px` }} />
         <Modal onClose={onClose}>{noteElem}</Modal>
       </>
     );
