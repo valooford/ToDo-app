@@ -42,6 +42,8 @@ function Note(
       onHeaderChange,
       onTextFieldChange,
       onMoreButtonClick,
+      onUndo,
+      onRedo,
       onColorsButtonClick,
       onColorsButtonMouseEnter,
       onColorsButtonMouseLeave,
@@ -131,34 +133,33 @@ function Note(
       ref: moreButtonRef,
     });
   }
-  // buttons.push({
-  //   iconSymbol: '\ue807',
-  //   titleText: 'Отменить',
-  //   modificators: 'icon-button_smaller',
-  //   disabled: true,
-  // });
-  // buttons.push({
-  //   iconSymbol: '\ue808',
-  //   titleText: 'Повторить',
-  //   modificators: 'icon-button_smaller',
-  //   disabled: true,
-  // });
-  // +
-  const iconButtons = buttons
-    .filter((params) => !params.disabled) // + add notes change history
-    .map((params) => (
-      <IconButton
-        iconSymbol={params.iconSymbol}
-        titleText={params.titleText}
-        modificators={params.modificators}
-        onClick={params.onClick}
-        onMouseEnter={params.onMouseEnter}
-        onMouseLeave={params.onMouseLeave}
-        disabled={params.disabled}
-        ref={params.ref || null}
-        key={params.titleText}
-      />
-    ));
+  if (onClose) {
+    buttons.push({
+      iconSymbol: '\ue807',
+      titleText: 'Отменить',
+      modificators: 'icon-button_smaller',
+      disabled: !onUndo,
+    });
+    buttons.push({
+      iconSymbol: '\ue808',
+      titleText: 'Повторить',
+      modificators: 'icon-button_smaller',
+      disabled: !onRedo,
+    });
+  }
+  const iconButtons = buttons.map((params) => (
+    <IconButton
+      iconSymbol={params.iconSymbol}
+      titleText={params.titleText}
+      modificators={params.modificators}
+      onClick={params.onClick}
+      onMouseEnter={params.onMouseEnter}
+      onMouseLeave={params.onMouseLeave}
+      disabled={params.disabled}
+      ref={params.ref || null}
+      key={params.titleText}
+    />
+  ));
   return (
     // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
     <form
