@@ -144,9 +144,10 @@ const handlers = {
       {
         notes: {},
         regularNotes: { order: [] },
-        history: [...state.history, state],
       }
     );
+    const history = [state, ...state.history.slice(state.history.pointer)];
+    history.pointer = 0;
     return {
       ...state,
       notes: {
@@ -162,9 +163,12 @@ const handlers = {
           ...state.regularNotes.order.slice(1),
         ],
       },
+      history,
     };
   },
   [UPDATE_NOTE]: (state, { id, headerText, text, itemId, itemText }) => {
+    const history = [state, ...state.history.slice(state.history.pointer)];
+    history.pointer = 0;
     return {
       ...state,
       notes: {
@@ -189,7 +193,7 @@ const handlers = {
           editingDate: new Date(),
         },
       },
-      history: [...state.history, state],
+      history,
     };
   },
   [REMOVE_NOTE]: (state, { ids }) => {
@@ -325,9 +329,13 @@ const handlers = {
     const note = removeItemFromNoteItemOrders(itemId, notes[id]);
     note.editingDate = new Date();
     notes[id] = note;
-    return { ...state, notes, history: [...state.history, state] };
+    const history = [state, ...state.history.slice(state.history.pointer)];
+    history.pointer = 0;
+    return { ...state, notes, history };
   },
   [SET_CHECK_NOTE_LIST_ITEM]: (state, { id, itemId, isMarked }) => {
+    const history = [state, ...state.history.slice(state.history.pointer)];
+    history.pointer = 0;
     return {
       ...state,
       notes: {
@@ -344,7 +352,7 @@ const handlers = {
           editingDate: new Date(),
         },
       },
-      history: [...state.history, state],
+      history,
     };
   },
   [UNCHECK_ALL_LIST_ITEMS]: (state, { id }) => {
@@ -435,7 +443,9 @@ const handlers = {
     if (newItem) note.items[itemId] = newItem;
     note.itemsOrder = itemsOrder;
     notes[id] = note;
-    return { ...state, notes, history: [...state.history, state] };
+    const history = [state, ...state.history.slice(state.history.pointer)];
+    history.pointer = 0;
+    return { ...state, notes, history };
   },
   [INSERT_LIST_SUB_ITEM]: (
     state,
@@ -464,7 +474,9 @@ const handlers = {
     note.items[itemId] = item;
 
     notes[id] = note;
-    return { ...state, notes, history: [...state.history, state] };
+    const history = [state, ...state.history.slice(state.history.pointer)];
+    history.pointer = 0;
+    return { ...state, notes, history };
   },
   [TEXT_NOTE_TO_LIST]: (state, { id }) => {
     const { text, ...note } = state.notes[id];
@@ -479,6 +491,8 @@ const handlers = {
       };
       return itemsFromText;
     }, {});
+    const history = [];
+    history.pointer = 0;
     return {
       ...state,
       notes: {
@@ -491,11 +505,13 @@ const handlers = {
           editingDate: new Date(),
         },
       },
-      history: [],
+      history,
     };
   },
   [LIST_NOTE_TO_TEXT]: (state, { id }) => {
     const { items, itemsOrder, ...note } = state.notes[id];
+    const history = [];
+    history.pointer = 0;
     return {
       ...state,
       notes: {
@@ -507,15 +523,18 @@ const handlers = {
           editingDate: new Date(),
         },
       },
-      history: [],
+      history,
     };
   },
   [SET_FOCUSED_NOTE]: (state, { focusedId }) => {
     const newState = {
       ...state,
       focusedNoteId: focusedId,
-      history: focusedId == null ? [] : state.history,
     };
+    if (focusedId == null) {
+      newState.history = [];
+      newState.pointer = 0;
+    }
     if (focusedId === state.regularNotes.order[0]) {
       const date = new Date();
       newState.notes[focusedId].creationDate = date;
@@ -607,10 +626,17 @@ const handlers = {
         labeledNotes[tag][id] = true;
       }
     });
+    let history;
+    if (remove) {
+      history = [state, ...state.history.slice(state.history.pointer)];
+      history.pointer = 0;
+    } else {
+      history = state.history;
+    }
     return {
       ...state,
       labeledNotes,
-      history: remove ? [...state.history, state] : state.history,
+      history,
     };
   },
   [SET_NOTE_COLOR]: (state, { ids, color }) => {
@@ -668,10 +694,12 @@ const handlers = {
   [REMOVE_REMINDER]: (state, { noteId }) => {
     const reminiscentNotes = { ...state.reminiscentNotes };
     delete reminiscentNotes[noteId];
+    const history = [state, ...state.history.slice(state.history.pointer)];
+    history.pointer = 0;
     return {
       ...state,
       reminiscentNotes,
-      history: [...state.history, state],
+      history,
     };
   },
   [SEARCH_NOTE]: (
@@ -707,9 +735,16 @@ const handlers = {
     });
     return { ...state, foundNotes };
   },
-  [MANAGE_NOTES_HISTORY]: (state /* , { direction } */) => {
+  [MANAGE_NOTES_HISTORY]: (state, { shift }) => {
+    const history = [...state.history];
+    const { pointer } = state.history;
+    if (pointer != null) {
+      history.pointer = state.history.pointer + shift;
+    } else {
+      history.pointer = 0;
+    }
     // ...setting pointer position
-    return state;
+    return { ...history[history.pointer], history };
   },
 };
 
