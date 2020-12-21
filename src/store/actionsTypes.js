@@ -1,6 +1,10 @@
 // app
 export const SET_APP_PAGE = "app/set-app-page";
 
+// history
+export const UNDO = "history/undo";
+export const REDO = "history/redo";
+
 // notes
 export const SET_FOCUSED_NOTE = "notes/set-focused-note";
 export const SET_NOTE_PIN = "notes/set-note-pin";
@@ -30,7 +34,6 @@ export const SET_NOTE_COLOR = "notes/set-note-color";
 export const SET_SELECTED_NOTES = "notes/set-selected-notes";
 
 export const SEARCH_NOTE = "notes/search-note";
-export const MANAGE_NOTES_HISTORY = "notes/manage-note-history";
 
 // notification
 export const SET_NOTE_REMINDER = "notification/set-note-reminder";
