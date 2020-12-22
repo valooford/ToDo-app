@@ -1,11 +1,12 @@
-import { createStore, combineReducers, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import appReducer from './appReducer';
+import historyEnhancer from './historyEnhancer';
 import notesReducer from './notesReducer';
 import notificationReducer from './notificationReducer';
 
 const store = createStore(
-  combineReducers({
+  historyEnhancer({
     app: appReducer,
     notification: notificationReducer,
     main: notesReducer,

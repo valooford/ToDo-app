@@ -34,6 +34,7 @@ import {
   cancelNoteSelection,
 } from '@store/notesReducer';
 import { updateReminder } from '@store/notificationReducer';
+import { undoHistory, redoHistory } from '@store/historyEnhancer';
 import {
   getAddingNoteId,
   getReminderIdByNoteId,
@@ -65,6 +66,8 @@ function NoteContainer({
   isRemoved,
   isReminderPassed,
   isReminderReadyToUpdate,
+  isUndoable,
+  isRedoable,
   labeledNotes,
   note: {
     type,
@@ -96,7 +99,9 @@ function NoteContainer({
   clearPopup,
   onNoteSelection,
   onCancelNoteSelection,
-  noteRef = React.createRef(),
+  onUndo,
+  onRedo,
+  noteRef,
   neighbourRef,
   isSelectionMode,
 
@@ -104,6 +109,8 @@ function NoteContainer({
   history,
   currentPage,
 }) {
+  // eslint-disable-next-line no-param-reassign
+  if (!noteRef) noteRef = React.createRef(); // incoming noteRef equals null sometimes (DnD maybe)
   const [savedHeight, setSavedHeight] = useState(0);
 
   useEffect(() => {
@@ -460,6 +467,13 @@ function NoteContainer({
     }
   }
 
+  if (isUndoable) {
+    eventHandlers.onUndo = onUndo;
+  }
+  if (isRedoable) {
+    eventHandlers.onRedo = onRedo;
+  }
+
   const noteElem = (
     <ListDragContext.Provider value={listRef}>
       <Note
@@ -545,6 +559,8 @@ function mapStateToProps(state, { id }) {
     isReminderPassed,
     isReminderReadyToUpdate:
       isReminderPassed && state.app.page === '/reminders',
+    isUndoable: !!state.history.past.length,
+    isRedoable: !!state.history.future.length,
     labeledNotes: state.main.labeledNotes,
     currentPage: getCurrentPage(state),
   };
@@ -571,6 +587,8 @@ function mapDispatchToProps(dispatch, { id, reminderId }) {
       onListItemUncheck: (itemId) => uncheckNoteListItem(id, itemId),
       onNoteSelection: () => selectNote(id),
       onCancelNoteSelection: () => cancelNoteSelection(id),
+      onUndo: undoHistory,
+      onRedo: redoHistory,
     },
     dispatch
   );

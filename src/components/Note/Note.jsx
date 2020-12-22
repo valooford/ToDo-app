@@ -138,12 +138,14 @@ function Note(
       iconSymbol: '\ue807',
       titleText: 'Отменить',
       modificators: 'icon-button_smaller',
+      onClick: onUndo,
       disabled: !onUndo,
     });
     buttons.push({
       iconSymbol: '\ue808',
       titleText: 'Повторить',
       modificators: 'icon-button_smaller',
+      onClick: onRedo,
       disabled: !onRedo,
     });
   }

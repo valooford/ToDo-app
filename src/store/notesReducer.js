@@ -1,5 +1,5 @@
 /* eslint-disable import/no-unresolved */
-import { associativeArrToArr } from "@/utils";
+import { associativeArrToArr } from '@/utils';
 /* eslint-enable import/no-unresolved */
 import {
   SET_FOCUSED_NOTE,
@@ -29,7 +29,7 @@ import {
   SEARCH_NOTE,
   SET_NOTE_REMINDER,
   REMOVE_REMINDER,
-} from "./actionsTypes";
+} from './actionsTypes';
 
 function removeItemFromNoteItemOrders(itemId, note) {
   const item = note.items[itemId];
@@ -82,10 +82,10 @@ const handlers = {
         ...state.notes,
         [newAddingNoteId]: {
           id: newAddingNoteId,
-          type: "default",
-          headerText: "",
-          text: "",
-          color: "default",
+          type: 'default',
+          headerText: '',
+          text: '',
+          color: 'default',
         },
         [newNoteId]: {
           id: newNoteId,
@@ -170,10 +170,10 @@ const handlers = {
         [id]: {
           ...state.notes[id],
           headerText:
-            typeof headerText === "string"
+            typeof headerText === 'string'
               ? headerText
               : state.notes[id].headerText,
-          text: typeof text === "string" ? text : state.notes[id].text,
+          text: typeof text === 'string' ? text : state.notes[id].text,
           items:
             itemId != null
               ? {
@@ -474,7 +474,7 @@ const handlers = {
   [TEXT_NOTE_TO_LIST]: (state, { id }) => {
     const { text, ...note } = state.notes[id];
     const itemsId = Date.now();
-    const items = text.split("\n").reduce((itemsFromText, itemText, i) => {
+    const items = text.split('\n').reduce((itemsFromText, itemText, i) => {
       const itemId = `${itemsId}-${i}`;
       // eslint-disable-next-line no-param-reassign
       itemsFromText[itemId] = {
@@ -490,7 +490,7 @@ const handlers = {
         ...state.notes,
         [id]: {
           ...note,
-          type: "list",
+          type: 'list',
           items,
           itemsOrder: Object.keys(items),
           editingDate: new Date(),
@@ -506,8 +506,8 @@ const handlers = {
         ...state.notes,
         [id]: {
           ...note,
-          type: "default",
-          text: itemsOrder.map((itemId) => items[itemId].text).join("\n"),
+          type: 'default',
+          text: itemsOrder.map((itemId) => items[itemId].text).join('\n'),
           editingDate: new Date(),
         },
       },
@@ -581,10 +581,10 @@ const handlers = {
   [MANAGE_TAG]: (state, { operation, tag, value }) => {
     const labeledNotes = { ...state.labeledNotes };
     switch (operation) {
-      case "add":
+      case 'add':
         labeledNotes[tag] = { id: Date.now() };
         return { ...state, labeledNotes };
-      case "rename":
+      case 'rename':
         if (labeledNotes[value])
           labeledNotes[value] = {
             ...labeledNotes[value],
@@ -593,7 +593,7 @@ const handlers = {
         labeledNotes[value] = labeledNotes[tag];
         delete labeledNotes[tag];
         return { ...state, labeledNotes };
-      case "remove":
+      case 'remove':
         delete labeledNotes[tag];
         return { ...state, labeledNotes };
       default:
@@ -603,11 +603,13 @@ const handlers = {
   [SET_NOTE_TAG]: (state, { ids, tag, remove }) => {
     const labeledNotes = { ...state.labeledNotes };
     ids.forEach((id) => {
+      const label = { ...labeledNotes[tag] };
       if (remove) {
-        delete labeledNotes[tag][id];
+        delete label[id];
       } else {
-        labeledNotes[tag][id] = true;
+        label[id] = true;
       }
+      labeledNotes[tag] = label;
     });
     return {
       ...state,
@@ -634,7 +636,7 @@ const handlers = {
   [SET_SELECTED_NOTES]: (state, { effect, id }) => {
     let selectedNotes;
     switch (effect) {
-      case "add":
+      case 'add':
         if (state.selectedNotes[id]) return state;
         selectedNotes = {
           ...state.selectedNotes,
@@ -642,7 +644,7 @@ const handlers = {
           length: state.selectedNotes.length + 1,
         };
         break;
-      case "remove":
+      case 'remove':
         if (!state.selectedNotes[id]) return state;
         selectedNotes = {
           ...state.selectedNotes,
@@ -650,7 +652,7 @@ const handlers = {
         };
         delete selectedNotes[id];
         break;
-      case "remove-all":
+      case 'remove-all':
         if (!state.selectedNotes.length) return state;
         selectedNotes = { length: 0 };
         break;
@@ -669,10 +671,7 @@ const handlers = {
   [REMOVE_REMINDER]: (state, { noteId }) => {
     const reminiscentNotes = { ...state.reminiscentNotes };
     delete reminiscentNotes[noteId];
-    return {
-      ...state,
-      reminiscentNotes,
-    };
+    return { ...state, reminiscentNotes };
   },
   [SEARCH_NOTE]: (
     state,
@@ -694,13 +693,13 @@ const handlers = {
       if (label && !labeledNotes[label][note.id]) return;
       if (query) {
         let text = note.headerText;
-        text += note.text ? ` ${note.text}` : "";
+        text += note.text ? ` ${note.text}` : '';
         text += note.items
           ? `${Object.values(note.items)
               .map((item) => item.text)
-              .join(" ")}`
-          : "";
-        const regexp = new RegExp(query, "i");
+              .join(' ')}`
+          : '';
+        const regexp = new RegExp(query, 'i');
         if (!regexp.test(text)) return;
       }
       foundNotes.push(note.id);
@@ -711,78 +710,78 @@ const handlers = {
 
 const normalizedInitialState = {
   notes: {
-    "000": {
-      id: "000",
-      type: "default",
-      headerText: "",
-      text: "",
-      color: "default",
+    '000': {
+      id: '000',
+      type: 'default',
+      headerText: '',
+      text: '',
+      color: 'default',
     },
     111: {
-      id: "111",
-      type: "default",
-      headerText: "Мой заголовок",
-      text: "Привет\nПока",
+      id: '111',
+      type: 'default',
+      headerText: 'Мой заголовок',
+      text: 'Привет\nПока',
       creationDate: new Date(2020, 5, 29, 10),
       editingDate: new Date(2020, 6, 1, 1, 12),
-      color: "default",
+      color: 'default',
     },
     222: {
-      id: "222",
-      type: "list",
-      headerText: "Список",
+      id: '222',
+      type: 'list',
+      headerText: 'Список',
       items: {
-        "222-1": {
-          id: "222-1",
-          text: "first",
+        '222-1': {
+          id: '222-1',
+          text: 'first',
           sub: [],
         },
-        "222-2": {
-          id: "222-2",
-          text: "second",
-          sub: ["222-4"],
+        '222-2': {
+          id: '222-2',
+          text: 'second',
+          sub: ['222-4'],
           isMarked: true,
         },
-        "222-3": {
-          id: "222-3",
-          text: "third",
+        '222-3': {
+          id: '222-3',
+          text: 'third',
           sub: [],
         },
-        "222-4": {
-          id: "222-4",
-          text: "nested",
+        '222-4': {
+          id: '222-4',
+          text: 'nested',
           sub: [],
-          subOf: "222-2",
+          subOf: '222-2',
         },
-        "222-5": {
-          id: "222-5",
-          text: "fifth",
-          sub: ["222-6"],
+        '222-5': {
+          id: '222-5',
+          text: 'fifth',
+          sub: ['222-6'],
         },
-        "222-6": {
-          id: "222-6",
-          text: "sixth",
+        '222-6': {
+          id: '222-6',
+          text: 'sixth',
           sub: [],
-          subOf: "222-5",
+          subOf: '222-5',
         },
-        "222-7": {
-          id: "222-7",
-          text: "seventh",
+        '222-7': {
+          id: '222-7',
+          text: 'seventh',
           sub: [],
         },
       },
-      itemsOrder: ["222-1", "222-2", "222-3", "222-7", "222-5"],
+      itemsOrder: ['222-1', '222-2', '222-3', '222-7', '222-5'],
       creationDate: new Date(2020, 5, 30, 10),
       editingDate: new Date(2020, 6, 1, 1, 12),
       // color: 'blue',
-      color: "default",
+      color: 'default',
     },
   },
-  addingNoteId: "000",
+  addingNoteId: '000',
   regularNotes: {
     111: true,
     222: true,
-    order: ["111", "222"],
+    order: ['111', '222'],
   },
   pinnedNotes: {
     // '222': true,
@@ -796,7 +795,7 @@ const normalizedInitialState = {
     order: [],
   },
   labeledNotes: {
-    "Label 1": {
+    'Label 1': {
       id: 100,
       111: true,
     },
@@ -824,7 +823,7 @@ export function focusNote(id) {
   return { type: SET_FOCUSED_NOTE, focusedId: id };
 }
 export function blurNote() {
-  return { type: SET_FOCUSED_NOTE, focusedId: null };
+  return { type: SET_FOCUSED_NOTE, focusedId: null, clearHistory: true };
 }
 
 /* SET_NOTE_PIN
@@ -856,13 +855,13 @@ export function setNoteAsArchived(id) {
 
 // MANAGE_TAG
 export function addNewTag(tag) {
-  return { type: MANAGE_TAG, operation: "add", tag };
+  return { type: MANAGE_TAG, operation: 'add', tag };
 }
 export function renameTag(tag, value) {
-  return { type: MANAGE_TAG, operation: "rename", tag, value };
+  return { type: MANAGE_TAG, operation: 'rename', tag, value };
 }
 export function removeTag(tag) {
-  return { type: MANAGE_TAG, operation: "remove", tag };
+  return { type: MANAGE_TAG, operation: 'remove', tag };
 }
 
 /* SET_NOTE_TAG
@@ -876,7 +875,7 @@ export function setNoteTag(id, tag) {
 export function removeNoteTag(id, tag) {
   // const ids = associativeArrToArr(id);
   const ids = id.forEach ? id : [id];
-  return { type: SET_NOTE_TAG, ids, tag, remove: true };
+  return { type: SET_NOTE_TAG, ids, tag, remove: true, saveHistory: true };
 }
 
 // ADD_NOTE
@@ -889,20 +888,20 @@ export function addNewNote() {
  */
 export function copyNote(id) {
   const ids = associativeArrToArr(id);
-  return { type: COPY_NOTE, ids };
+  return { type: COPY_NOTE, ids, saveHistory: true };
 }
 
 /* UPDATE_NOTE
  * id: actual id only
  */
 export function updateNoteHeader(id, headerText) {
-  return { type: UPDATE_NOTE, id, headerText };
+  return { type: UPDATE_NOTE, id, headerText, saveHistory: true };
 }
 export function updateNoteText(id, text) {
-  return { type: UPDATE_NOTE, id, text };
+  return { type: UPDATE_NOTE, id, text, saveHistory: true };
 }
 export function updateNoteListItem(id, itemId, itemText) {
-  return { type: UPDATE_NOTE, id, itemId, itemText };
+  return { type: UPDATE_NOTE, id, itemId, itemText, saveHistory: true };
 }
 
 /* REMOVE_NOTE
@@ -938,19 +937,31 @@ export function addNoteListItem(id, text, after = null) {
   return { type: ADD_NOTE_LIST_ITEM, id, text, after };
 }
 export function removeNoteListItem(id, itemId) {
-  return { type: REMOVE_NOTE_LIST_ITEM, id, itemId };
+  return { type: REMOVE_NOTE_LIST_ITEM, id, itemId, saveHistory: true };
 }
 export function checkNoteListItem(id, itemId) {
-  return { type: SET_CHECK_NOTE_LIST_ITEM, id, itemId, isMarked: true };
+  return {
+    type: SET_CHECK_NOTE_LIST_ITEM,
+    id,
+    itemId,
+    isMarked: true,
+    saveHistory: true,
+  };
 }
 export function uncheckNoteListItem(id, itemId) {
-  return { type: SET_CHECK_NOTE_LIST_ITEM, id, itemId, isMarked: false };
+  return {
+    type: SET_CHECK_NOTE_LIST_ITEM,
+    id,
+    itemId,
+    isMarked: false,
+    saveHistory: true,
+  };
 }
 export function uncheckAllListItems(id) {
-  return { type: UNCHECK_ALL_LIST_ITEMS, id };
+  return { type: UNCHECK_ALL_LIST_ITEMS, id, saveHistory: true };
 }
 export function removeCheckedListItems(id) {
-  return { type: REMOVE_CHECKED_LIST_ITEMS, id };
+  return { type: REMOVE_CHECKED_LIST_ITEMS, id, saveHistory: true };
 }
 
 // LIST ITEM MOVEMENT ACTION CREACORS
@@ -966,6 +977,7 @@ export function insertListItem(
     itemId,
     itemToDisplaceId,
     recvSubItemsFromSubId: subItemId,
+    saveHistory: true,
   };
 }
 export function insertListSubItem(id, itemId, parentItemId, subItemId = null) {
@@ -975,6 +987,7 @@ export function insertListSubItem(id, itemId, parentItemId, subItemId = null) {
     itemId,
     parentItemId,
     subItemToDisplaceId: subItemId,
+    saveHistory: true,
   };
 }
 
@@ -982,13 +995,13 @@ export function insertListSubItem(id, itemId, parentItemId, subItemId = null) {
  * id: actual id only
  */
 export function textNoteToList(id) {
-  return { type: TEXT_NOTE_TO_LIST, id };
+  return { type: TEXT_NOTE_TO_LIST, id, clearHistory: true };
 }
 /* LIST_NOTE_TO_TEXT
  * id: actual id only
  */
 export function listNoteToText(id) {
-  return { type: LIST_NOTE_TO_TEXT, id };
+  return { type: LIST_NOTE_TO_TEXT, id, clearHistory: true };
 }
 
 /* SET_NOTE_COLOR
@@ -1003,13 +1016,13 @@ export function setNoteColor(id, color) {
  * id: actual id only
  */
 export function selectNote(id) {
-  return { type: SET_SELECTED_NOTES, effect: "add", id };
+  return { type: SET_SELECTED_NOTES, effect: 'add', id };
 }
 export function cancelNoteSelection(id) {
-  return { type: SET_SELECTED_NOTES, effect: "remove", id };
+  return { type: SET_SELECTED_NOTES, effect: 'remove', id };
 }
 export function clearSelectedNotes() {
-  return { type: SET_SELECTED_NOTES, effect: "remove-all" };
+  return { type: SET_SELECTED_NOTES, effect: 'remove-all' };
 }
 
 // SEARCH_NOTE
