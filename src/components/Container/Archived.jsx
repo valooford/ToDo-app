@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-/* eslint-disable import/no-unresolved */
+
 import Note from '@components/Note/Note.container';
-/* eslint-enable import/no-unresolved */
+
 import Container from './Container.container';
 
 function Archived({

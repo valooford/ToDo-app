@@ -1,7 +1,7 @@
 import React from 'react';
-/* eslint-disable import/no-unresolved */
+
 import IconedMenuItem from '@components/MenuItem/MenuItem';
-/* eslint-enable import/no-unresolved */
+
 import style from './Aside-cfg.module.scss';
 
 // КОНТЕЙНЕР БОКОВОГО МЕНЮ / ASIDE

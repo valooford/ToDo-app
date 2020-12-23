@@ -1,8 +1,8 @@
 import React from 'react';
-/* eslint-disable import/no-unresolved */
+
 import IconButtonComponent from '@components/IconButton/IconButton';
 import Search from '@components/Search/Search.container';
-/* eslint-enable import/no-unresolved */
+
 import style from './Header-cfg.module.scss';
 
 const buttonsParams = [

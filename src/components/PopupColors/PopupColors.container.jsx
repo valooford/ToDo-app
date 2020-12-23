@@ -1,14 +1,13 @@
 import React, { useRef } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-/* eslint-disable import/no-unresolved */
+
 import { associativeArrToArr } from '@/utils';
 
 import PopupColors from '@components/PopupColors/PopupColors';
 import IconButtonTitled from '@components/IconButton/IconButton.titled';
 
 import { setNoteColor } from '@store/notesReducer';
-/* eslint-enable import/no-unresolved */
 
 function PopupColorsContainer({
   itemToFocusRef,

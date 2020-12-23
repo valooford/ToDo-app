@@ -1,8 +1,8 @@
 import React from 'react';
-/* eslint-disable import/no-unresolved */
+
 import { getFormattedDate } from '@/utils';
 import { withTitle } from '@components/Title/Title.container';
-/* eslint-enable import/no-unresolved */
+
 import CreationTime from './CreationTime';
 
 const CreationTimeTitled = withTitle(CreationTime);

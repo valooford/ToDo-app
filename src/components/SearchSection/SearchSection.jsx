@@ -1,5 +1,4 @@
 import React from 'react';
-
 import style from './SearchSection.module.scss';
 
 export default function SearchSection({ name, children }) {

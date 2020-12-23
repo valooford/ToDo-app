@@ -65,13 +65,14 @@ module.exports = merge(common, {
     ],
   },
   plugins: [
-    new CleanWebpackPlugin(), // cleans output folder
     // merging all styles into a single CSS file
     new MiniCssExtractPlugin({ filename: '[name].[contenthash].css' }),
     new OptimizeCssAssetsPlugin(), // CSS minification
+    new CleanWebpackPlugin(), // cleans output folder
   ],
   // devtool: 'source-map', // debugging in prod
   output: {
     filename: '[name].[contenthash].js',
+    publicPath: '', // relative to HTML page (same directory)
   },
 });

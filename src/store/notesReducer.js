@@ -1,6 +1,5 @@
-/* eslint-disable import/no-unresolved */
 import { associativeArrToArr } from '@/utils';
-/* eslint-enable import/no-unresolved */
+
 import {
   SET_FOCUSED_NOTE,
   SET_NOTE_PIN,

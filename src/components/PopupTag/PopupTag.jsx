@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import cn from 'classnames';
-/* eslint-disable import/no-unresolved */
+
 import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
-/* eslint-enable import/no-unresolved */
+
 import style from './PopupTag.module.scss';
 
 export default function PopupTag({

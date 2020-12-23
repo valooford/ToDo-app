@@ -17,12 +17,12 @@ module.exports = {
       alias: {
         // aliases for elegant import (__dirname is required)
         'react-dom': '@hot-loader/react-dom',
-        '@': path.resolve(__dirname, './src'),
+        '@': path.resolve(__dirname, './src/'),
         '@api': '@/api',
         '@assets': '@/assets',
         '@components': '@/components',
-        '@styles': '@/styles',
         '@store': '@/store',
+        '@styles': '@/styles',
       },
     },
     module: {

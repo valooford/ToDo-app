@@ -1,7 +1,7 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-/* eslint-disable import/no-unresolved */
+
 import { useEffectOnMouseDownOutside, associativeArrToArr } from '@/utils';
 
 import PopupReminder from '@components/PopupReminder/PopupReminder';
@@ -16,7 +16,6 @@ import {
   setFoundPlaces as setFoundPlacesAC,
 } from '@store/notificationReducer';
 import { getReminder, getReminderIdByNoteId } from '@store/selectors';
-/* eslint-enable import/no-unresolved */
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ POPUP-REMINDER
 // *

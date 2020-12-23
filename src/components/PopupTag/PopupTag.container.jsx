@@ -2,10 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-/* eslint-disable import/no-unresolved */
 import { setNoteTag, removeNoteTag, addNewTag } from '@store/notesReducer';
 import { useEffectOnMouseDownOutside } from '@/utils';
-/* eslint-enable import/no-unresolved */
 
 import PopupTag from './PopupTag';
 

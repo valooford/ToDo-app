@@ -1,7 +1,7 @@
 import React from 'react';
-import ColorButton from '../ColorButton/ColorButton.titled';
-import IconTile from '../IconTile/IconTile';
-import SearchSection from '../SearchSection/SearchSection';
+import ColorButton from '@components/ColorButton/ColorButton.titled';
+import IconTile from '@components/IconTile/IconTile';
+import SearchSection from '@components/SearchSection/SearchSection';
 
 import Container from './Container';
 

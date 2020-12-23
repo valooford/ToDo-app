@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 
-/* eslint-disable import/no-unresolved */
 import Page from '@components/Container/Page';
 import Home from '@components/Container/Home';
 import Archived from '@components/Container/Archived';
 import Removed from '@components/Container/Removed';
 
 import { focusNote } from '@store/notesReducer';
-/* eslint-enable import/no-unresolved */
+
 // import SearchResults from './SearchResults';
 
 function NoteFocuser({

@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-/* eslint-disable import/no-unresolved */
+
 import { focusNote, updateNoteText } from '@store/notesReducer';
 import { getAddingNoteId } from '@store/selectors';
 
 import IconButtonTitled from '@components/IconButton/IconButton.titled';
-/* eslint-enable import/no-unresolved */
+
 import Note from './Note.container';
 import AddNote from './AddNote';
 

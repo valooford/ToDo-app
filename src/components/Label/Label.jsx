@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import cn from 'classnames';
-/* eslint-disable import/no-unresolved */
 
 import IconButtonComponent from '@components/IconButton/IconButton';
-/* eslint-enable import/no-unresolved */
+
 import style from './Label-cfg.module.scss';
 
 // КОМПОНЕНТ МЕТКИ / LABEL

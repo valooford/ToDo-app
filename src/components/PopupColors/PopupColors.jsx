@@ -1,7 +1,5 @@
 import React from 'react';
-/* eslint-disable import/no-unresolved */
 import IconButtonComponent from '@components/IconButton/IconButton';
-/* eslint-enable import/no-unresolved */
 
 import style from './PopupColors-cfg.module.scss';
 

@@ -1,9 +1,9 @@
 import React from 'react';
 import cn from 'classnames';
-/* eslint-disable import/no-unresolved */
+
 import Textarea from '@components/Textarea/Textarea';
 import IconButton from '@components/IconButton/IconButton';
-/* eslint-enable import/no-unresolved */
+
 import style from './ListItem-cfg.module.scss';
 
 export { style };

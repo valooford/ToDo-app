@@ -1,7 +1,5 @@
-/* eslint-disable import/no-unresolved */
-import { getPlaces } from "@api/places";
-import { associativeArrToArr } from "@/utils";
-/* eslint-enable import/no-unresolved */
+import { getPlaces } from '@api/places';
+import { associativeArrToArr } from '@/utils';
 
 import {
   SET_NOTE_REMINDER,
@@ -9,7 +7,7 @@ import {
   REMOVE_NOTE,
   UPDATE_REMINDER,
   SET_FOUND_PLACES,
-} from "./actionsTypes";
+} from './actionsTypes';
 
 const handlers = {
   [SET_NOTE_REMINDER]: (state, { noteIds, place, date, period }) => {
@@ -118,10 +116,10 @@ const handlers = {
     const { method, count, days, keep } = every;
     newReminder.date = new Date(date);
     switch (method) {
-      case "daily":
+      case 'daily':
         newReminder.date.setDate(date.getDate() + count);
         break;
-      case "weekly":
+      case 'weekly':
         if (!days.length) {
           newReminder.date.setDate(date.getDate() + count * 7);
         } else {
@@ -135,16 +133,16 @@ const handlers = {
           newReminder.date.setDate(date.getDate() + daysUntilNextDate);
         }
         break;
-      case "monthly":
+      case 'monthly':
         newReminder.date.setMonth(date.getMonth() + count); // keep === 'date'
-        if (keep === "day") {
+        if (keep === 'day') {
           const dayOfTheWeek = date.getDay();
           const currentDayOfTheWeek = newReminder.date.getDay();
           const dayInterval = dayOfTheWeek - currentDayOfTheWeek;
           newReminder.date.setDate(date.getDate() + dayInterval);
         }
         break;
-      case "yearly":
+      case 'yearly':
         newReminder.date.setFullYear(date.getFullYear() + count);
         break;
       default:
@@ -165,14 +163,14 @@ const handlers = {
 
 const initialState = {
   reminders: {
-    "note-111": {
-      id: "note-111",
+    'note-111': {
+      id: 'note-111',
       noteId: 111,
       // place: 'shopping mall',
       // or
       date: new Date(2020, 7, 1, 1),
       period: {
-        every: { method: "monthly", count: 2, keep: "day" },
+        every: { method: 'monthly', count: 2, keep: 'day' },
         // or
         // every: { method: 'weekly', count: 1, days: [0, 1] },
         // end: {
@@ -184,7 +182,7 @@ const initialState = {
     },
   },
   noteReminders: {
-    111: "note-111",
+    111: 'note-111',
     order: [111],
   },
   foundPlaces: [
@@ -235,7 +233,7 @@ let setFoundPlacesPromise = Promise.resolve(1);
 export function findPlaces(query) {
   return async (dispatch) => {
     setFoundPlacesPromise = setFoundPlacesPromise.then(async () => {
-      if (query == null || query === "") {
+      if (query == null || query === '') {
         dispatch(setFoundPlaces([]));
         return;
       }
@@ -248,7 +246,7 @@ export function findPlaces(query) {
               name,
               location: { address, city, state, country },
             } = place;
-            const location = [city, state, country].filter((v) => v).join(", ");
+            const location = [city, state, country].filter((v) => v).join(', ');
             return {
               name,
               address,

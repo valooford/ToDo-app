@@ -1,8 +1,8 @@
 import React from 'react';
 import cn from 'classnames';
-/* eslint-disable import/no-unresolved */
+
 import IconButtonComponent from '@components/IconButton/IconButton';
-/* eslint-enable import/no-unresolved */
+
 import style from './Note-cfg.module.scss';
 
 // КОМПОНЕНТ БЛОКА ДОБАВЛЕНИЯ ЗАМЕТКИ / ADD-NOTE

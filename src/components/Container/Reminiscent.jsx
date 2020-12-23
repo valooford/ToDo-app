@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
-/* eslint-disable import/no-unresolved */
+
 import AddNote from '@components/Note/AddNote.container';
 import Note from '@components/Note/Note.container';
 
@@ -14,7 +14,7 @@ import {
   getReminders,
   getReminderIdByNoteId,
 } from '@store/selectors';
-/* eslint-enable import/no-unresolved */
+
 import Container from './Container.container';
 
 function Reminiscent({

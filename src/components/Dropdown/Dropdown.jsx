@@ -1,12 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import cn from 'classnames';
 
-/* eslint-disable import/no-unresolved */
 import IconButtonComponent from '@components/IconButton/IconButton';
 import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
 
 import { useEffectOnMouseDownOutside } from '@/utils';
-/* eslint-enable import/no-unresolved */
+
 import style from './Dropdown-cfg.module.scss';
 
 function Dropdown(

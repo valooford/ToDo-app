@@ -1,7 +1,7 @@
 import React from 'react';
-/* eslint-disable import/no-unresolved */
+
 import IconButton from '@components/IconButton/IconButton';
-/* eslint-enable import/no-unresolved */
+
 import style from './SelectionBar-cfg.module.scss';
 
 // КОМПОНЕНТ МЕНЮ ПРИ ВЫДЕЛЕНИИ / SELECTION-BAR

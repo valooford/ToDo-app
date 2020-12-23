@@ -2,7 +2,6 @@ import React from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 
-/* eslint-disable import/no-unresolved */
 import { removeReminder as removeReminderAC } from '@store/notificationReducer';
 import {
   getReminder,
@@ -13,7 +12,7 @@ import { getFormattedDate } from '@/utils';
 
 import IconButtonTitled from '@components/IconButton/IconButton.titled';
 import { withTitle } from '@components/Title/Title.container';
-/* eslint-enable import/no-unresolved */
+
 import Label from './Label';
 
 const LabelTitled = withTitle(Label);

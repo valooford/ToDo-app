@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-/* eslint-disable import/no-unresolved */
 import IconButtonTitled from '@components/IconButton/IconButton.titled';
 
 import {
@@ -9,7 +8,7 @@ import {
   renameTag as renameTagAC,
   removeTag as removeTagAC,
 } from '@store/notesReducer';
-/* eslint-enable import/no-unresolved */
+
 import TagEditor from './TagEditor';
 
 function TagEditorContainer({

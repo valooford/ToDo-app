@@ -1,6 +1,7 @@
 import React from 'react';
 import cn from 'classnames';
 import { Link } from 'react-router-dom';
+
 import style from './MenuItem-cfg.module.scss';
 
 // КОМПОНЕНТ ПУНКТА МЕНЮ С ИКОНКОЙ / ICONED-MENU-ITEM

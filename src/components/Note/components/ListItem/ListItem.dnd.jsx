@@ -2,9 +2,7 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 
-/* eslint-disable import/no-unresolved */
 import dragSourceTypes from '@/dragSourceTypes';
-/* eslint-enable import/no-unresolved */
 
 import ListItem from './ListItem';
 import ListItemDragLayer from './ListItem.drag-layer';

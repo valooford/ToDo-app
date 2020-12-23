@@ -1,11 +1,10 @@
 import React, { useRef, useState } from 'react';
 import { connect } from 'react-redux';
-/* eslint-disable import/no-unresolved */
+
 import Modal from '@components/Modal/Modal.container';
 import TagEditor from '@components/TagEditor/TagEditor.container';
 
 import { getCurrentPage } from '@store/selectors';
-/* eslint-enable import/no-unresolved */
 
 import Aside from './Aside';
 

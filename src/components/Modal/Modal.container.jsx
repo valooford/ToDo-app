@@ -1,8 +1,8 @@
 import React, { useContext } from 'react';
 import ReactDOM from 'react-dom';
-/* eslint-disable import/no-unresolved */
+
 import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
-/* eslint-enable import/no-unresolved */
+
 import Modal from './Modal';
 
 export const ModalContext = React.createContext();

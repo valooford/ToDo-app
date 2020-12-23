@@ -2,7 +2,6 @@ import React, { useRef, useState } from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 
-/* eslint-disable import/no-unresolved */
 import { withPopup } from '@components/Popup/Popup';
 import PopupMenu from '@components/PopupMenu/PopupMenu.container';
 import PopupColors from '@components/PopupColors/PopupColors.container';
@@ -14,7 +13,7 @@ import {
   unpinNote as unpinNoteAC,
   clearSelectedNotes as clearSelectedNotesAC,
 } from '@store/notesReducer';
-/* eslint-enable import/no-unresolved */
+
 import SelectionBar from './SelectionBar';
 
 function SelectionBarContainer({

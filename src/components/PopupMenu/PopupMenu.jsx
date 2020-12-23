@@ -1,7 +1,5 @@
 import React from 'react';
-/* eslint-disable import/no-unresolved */
 import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
-/* eslint-enable import/no-unresolved */
 
 import style from './PopupMenu-cfg.module.scss';
 

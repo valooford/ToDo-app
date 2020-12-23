@@ -3,9 +3,7 @@ import { connect } from 'react-redux';
 import { useDrag, useDrop } from 'react-dnd';
 import { getEmptyImage } from 'react-dnd-html5-backend';
 
-/* eslint-disable import/no-unresolved */
 import dragSourceTypes from '@/dragSourceTypes';
-/* eslint-enable import/no-unresolved */
 
 import Note from './Note.container';
 import NoteDragLayer from './Note.drag-layer';

@@ -1,13 +1,12 @@
 import React from 'react';
 import cn from 'classnames';
 
-/* eslint-disable import/no-unresolved */
 import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
 import IconButtonComponent from '@components/IconButton/IconButton';
 import Dropdown from '@components/Dropdown/Dropdown';
 import LocationOption from '@components/LocationOption/LocationOption';
 import Button from '@components/Button/Button';
-/* eslint-enable import/no-unresolved */
+
 import style from './PopupReminder-cfg.module.scss';
 
 export default function PopupReminderPlace({

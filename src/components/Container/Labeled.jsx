@@ -2,13 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
-/* eslint-disable import/no-unresolved */
+
 import AddNote from '@components/Note/AddNote.container';
 import Note from '@components/Note/Note.container';
 
 import { setNoteTag, removeNoteTag } from '@store/notesReducer';
 import { getAddingNoteId } from '@store/selectors';
-/* eslint-enable import/no-unresolved */
+
 import Container from './Container.container';
 
 function Labeled({

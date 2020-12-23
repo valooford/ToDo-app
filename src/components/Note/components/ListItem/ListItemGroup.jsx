@@ -2,13 +2,11 @@ import React, { useRef, useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-/* eslint-disable import/no-unresolved */
 import {
   addNoteListItem,
   insertListItem,
   insertListSubItem,
 } from '@store/notesReducer';
-/* eslint-enable import/no-unresolved */
 
 import ListItemDnD from './ListItem.dnd';
 

@@ -1,9 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import cn from 'classnames';
-/* eslint-disable import/no-unresolved */
+
 import IconButtonComponent from '@components/IconButton/IconButton';
 import Button from '@components/Button/Button';
-/* eslint-enable import/no-unresolved */
 
 import style from './TagEditor.module.scss';
 

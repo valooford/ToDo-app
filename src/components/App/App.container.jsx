@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { HashRouter, Route, Switch, withRouter } from 'react-router-dom';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-/* eslint-disable import/no-unresolved */
+
 import { ModalContext } from '@components/Modal/Modal.container';
 import Title, {
   TitleContext,
@@ -27,7 +27,7 @@ import Archived from '@components/Container/Archived';
 import Removed from '@components/Container/Removed';
 
 import { clearSelectedNotes as clearSelectedNotesAC } from '@store/notesReducer';
-/* eslint-enable import/no-unresolved */
+
 import App from './App';
 import SearchResults from '../Container/SearchResults';
 

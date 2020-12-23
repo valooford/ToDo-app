@@ -1,9 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import cn from 'classnames';
 
-/* eslint-disable import/no-unresolved */
 import { months, getFormattedDate } from '@/utils';
-/* eslint-enable import/no-unresolved */
 
 import style from './Calendar-cfg.module.scss';
 

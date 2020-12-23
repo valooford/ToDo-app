@@ -1,7 +1,6 @@
 import React from 'react';
 import cn from 'classnames';
 
-/* eslint-disable import/no-unresolved */
 import {
   getFormattedDate,
   getPeriodString,
@@ -15,7 +14,7 @@ import DropdownComponent from '@components/Dropdown/Dropdown';
 import Calendar from '@components/Calendar/Calendar';
 import Option from '@components/Option/Option';
 import Button from '@components/Button/Button';
-/* eslint-enable import/no-unresolved */
+
 import style from './PopupReminder-cfg.module.scss';
 
 export default function PopupReminderDate({

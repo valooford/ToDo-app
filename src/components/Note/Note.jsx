@@ -1,10 +1,10 @@
 import React from 'react';
 import cn from 'classnames';
-/* eslint-disable import/no-unresolved */
+
 import Button from '@components/Button/Button';
 import IconButtonComponent from '@components/IconButton/IconButton';
 import Textarea from '@components/Textarea/Textarea';
-/* eslint-enable import/no-unresolved */
+
 import ListItemComponent from './components/ListItem/ListItem';
 import CreationTimeComponent from './components/CreationTime/CreationTime';
 // ...add some tag/reminder general-purpose component

@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-/* eslint-disable import/no-unresolved */
+
 import AddNote from '@components/Note/AddNote.container';
 import Note from '@components/Note/Note.dnd';
 
 import { getAddingNoteId } from '@store/selectors';
 import { insertNote as insertNoteAC } from '@store/notesReducer';
-/* eslint-enable import/no-unresolved */
+
 import Container from './Container.container';
 
 function Home({

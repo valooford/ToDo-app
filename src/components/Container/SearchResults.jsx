@@ -3,11 +3,13 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { useHistory, useParams, withRouter } from 'react-router-dom';
 
+import Note from '@components/Note/Note.container';
+
+import { searchNotes } from '@store/notesReducer';
+import { getAddingNoteId } from '@store/selectors';
+
 import SearchFilters from './SearchFilters';
 import Container from './Container.container';
-import Note from '../Note/Note.container';
-import { searchNotes } from '../../store/notesReducer';
-import { getAddingNoteId } from '../../store/selectors';
 
 function SearchResults({
   foundNotes,

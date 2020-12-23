@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import cn from 'classnames';
 
-/* eslint-disable import/no-unresolved */
 import { getFormattedDate, getPeriodString } from '@/utils';
 
 import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
@@ -10,7 +9,7 @@ import DropdownComponent from '@components/Dropdown/Dropdown';
 import Option from '@components/Option/Option';
 import Calendar from '@components/Calendar/Calendar';
 import Button from '@components/Button/Button';
-/* eslint-enable import/no-unresolved */
+
 import style from './PopupReminder-cfg.module.scss';
 
 const everyFieldsetUnitsOptions = [

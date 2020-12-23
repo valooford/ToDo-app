@@ -1,9 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-/* eslint-disable import/no-unresolved */
 import { getDateParamsFromString } from '@/utils';
 
-/* eslint-enable import/no-unresolved */
 import MainFieldset from './PopupReminder.main';
 import DateFieldset from './PopupReminder.date';
 import PlaceFieldset from './PopupReminder.place';

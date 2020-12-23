@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
-/* eslint-disable import/no-unresolved */
+
 import { useEffectOnMouseDownOutside } from '@/utils';
 
 import Modal from '@components/Modal/Modal.container';
@@ -41,7 +41,7 @@ import {
   hasPassedReminder,
   getCurrentPage,
 } from '@store/selectors';
-/* eslint-enable import/no-unresolved */
+
 import Note from './Note';
 import ListItemDnD, {
   ListDragContext,

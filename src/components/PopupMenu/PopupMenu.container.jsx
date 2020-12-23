@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-/* eslint-disable import/no-unresolved */
+
 import { useEffectOnMouseDownOutside, associativeArrToArr } from '@/utils';
 
 import PopupMenu from '@components/PopupMenu/PopupMenu';
@@ -14,7 +14,6 @@ import {
   textNoteToList,
   listNoteToText,
 } from '@store/notesReducer';
-/* eslint-enable import/no-unresolved */
 
 // функция получения элементов всплывающего меню
 function getMenuItems({
