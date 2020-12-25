@@ -22,10 +22,10 @@ function ListItemGroup({
   const [overlappedItem, setOverlappedItem] = useState(null);
   const [overlappedParentItem, setOverlappedParentItem] = useState(null);
 
-  const onDragEnd = (item) => {
+  const onDragEnd = (item) =>
     // + check overlappedItem for 'add'
     // + check for item inserting to itself
-    return (isNested) => {
+    (isNested) => {
       if (overlappedItem === 'add') {
         const possibleParentItems = items.filter(
           ({ id: iid }) => iid !== item.id
@@ -83,7 +83,6 @@ function ListItemGroup({
       setOverlappedParentItem(null);
       setDraggingItem(null);
     };
-  };
 
   // focus handling
   const [focusingItemInfo, setFocusingItemInfo] = useState(null);

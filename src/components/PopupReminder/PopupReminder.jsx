@@ -57,11 +57,12 @@ export default function PopupReminder({
   Dropdown,
 }) {
   // resetting found places on mount
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       resetFoundPlaces();
-    };
-  }, []);
+    },
+    []
+  );
 
   // a currentFieldset is used to show a different content inside the PopupReminder
   const [currentFieldset, setCurrentFieldset] = useState(() => {

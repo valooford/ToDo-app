@@ -39,11 +39,12 @@ function Reminiscent({
   useEffect(() => {
     storedAddingNoteReminderId.id = addingNoteReminderId;
   }, [addingNoteReminderId]);
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       removeReminder(storedAddingNoteReminderId.id, addingNoteId);
-    };
-  }, []);
+    },
+    []
+  );
 
   const noteRemindersOrder = noteReminders.order;
   return (

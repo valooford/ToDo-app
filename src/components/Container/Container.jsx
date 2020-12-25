@@ -3,13 +3,11 @@ import React from 'react';
 import style from './Container-cfg.module.scss';
 
 function getContainerItems(elements) {
-  return elements.map((element) => {
-    return (
-      <div className={style.container__item} key={element.id}>
-        {element.node}
-      </div>
-    );
-  });
+  return elements.map((element) => (
+    <div className={style.container__item} key={element.id}>
+      {element.node}
+    </div>
+  ));
 }
 
 // КОМПОНЕНТ КОНТЕЙНЕРА / CONTAINER

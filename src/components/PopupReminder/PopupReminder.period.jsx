@@ -161,21 +161,19 @@ export default function PopupReminderPeriod({
             />
             {periodFieldsetData.every.method === 'weekly' && (
               <div className={style['popup-reminder__days-of-the-week']}>
-                {daysOfTheWeek.map(({ text, day }) => {
-                  return (
-                    <button
-                      className={cn(style['popup-reminder__day-button'], {
-                        [style['popup-reminder__day-button_selected']]:
-                          periodFieldsetData.every.days.indexOf(day) !== -1,
-                      })}
-                      type="button"
-                      onClick={togglePeriodEveryDays(day)}
-                      key={day}
-                    >
-                      {text}
-                    </button>
-                  );
-                })}
+                {daysOfTheWeek.map(({ text, day }) => (
+                  <button
+                    className={cn(style['popup-reminder__day-button'], {
+                      [style['popup-reminder__day-button_selected']]:
+                        periodFieldsetData.every.days.indexOf(day) !== -1,
+                    })}
+                    type="button"
+                    onClick={togglePeriodEveryDays(day)}
+                    key={day}
+                  >
+                    {text}
+                  </button>
+                ))}
               </div>
             )}
             {periodFieldsetData.every.method === 'monthly' && (

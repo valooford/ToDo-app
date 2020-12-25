@@ -156,9 +156,7 @@ const handlers = {
       reminders: { ...state.reminders, [reminderId]: newReminder },
     };
   },
-  [SET_FOUND_PLACES]: (state, { foundPlaces }) => {
-    return { ...state, foundPlaces };
-  },
+  [SET_FOUND_PLACES]: (state, { foundPlaces }) => ({ ...state, foundPlaces }),
 };
 
 const initialState = {

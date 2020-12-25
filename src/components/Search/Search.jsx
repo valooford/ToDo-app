@@ -3,10 +3,7 @@ import style from './Search-cfg.module.scss';
 
 // КОМПОНЕНТ ПОЛЯ ДЛЯ ПОИСКА / SEARCH
 // *
-export default React.forwardRef(function Search(
-  { IconButton, isFocused, onInput, onFocus, onClear },
-  ref
-) {
+function Search({ IconButton, isFocused, onInput, onFocus, onClear }, ref) {
   return (
     <span className={style.search}>
       <i className={style.search__icon}>
@@ -38,4 +35,6 @@ export default React.forwardRef(function Search(
       )}
     </span>
   );
-});
+}
+
+export default React.forwardRef(Search);

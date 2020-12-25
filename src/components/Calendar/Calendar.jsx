@@ -262,58 +262,56 @@ function Calendar({ date, onSelect }, ref) {
           }}
           ref={tbodyRef}
         >
-          {days.map((week) => {
-            return (
-              <tr key={week.join('')}>
-                {week.map((day) => {
-                  // check for displaying next month
-                  if (day === 1) {
-                    monthCounter += 1;
-                  }
-                  // check for nowadays
-                  if (
-                    !presentFlag &&
-                    monthCounter === fromTodayMonthInterval &&
-                    day === today.getDate()
-                  ) {
-                    presentFlag = true;
-                  }
-                  let buttonRef = null;
-                  if (
-                    monthCounter === -fromSelectedDateMonthInterval &&
-                    day === date.getDate()
-                  ) {
-                    buttonRef = selectedDateRef;
-                  } else if (day === 1 && monthCounter === 0) {
-                    buttonRef = firstDayOfTheMonthRef;
-                  }
-                  return (
-                    <td key={day}>
-                      <button
-                        type="button"
-                        className={cn(style['calendar__date-button'], {
-                          [style['calendar__date-button_prev-month']]:
-                            monthCounter === -1,
-                          [style['calendar__date-button_next-month']]:
-                            monthCounter === 1,
-                          [style['calendar__date-button_today']]:
-                            monthCounter === -fromTodayMonthInterval &&
-                            day === today.getDate(),
-                          [style['calendar__date-button_selected']]:
-                            monthCounter === -fromSelectedDateMonthInterval &&
-                            day === date.getDate(),
-                        })}
-                        disabled={!presentFlag}
-                        ref={buttonRef}
-                      >
-                        {day}
-                      </button>
-                    </td>
-                  );
-                })}
-              </tr>
-            );
-          })}
+          {days.map((week) => (
+            <tr key={week.join('')}>
+              {week.map((day) => {
+                // check for displaying next month
+                if (day === 1) {
+                  monthCounter += 1;
+                }
+                // check for nowadays
+                if (
+                  !presentFlag &&
+                  monthCounter === fromTodayMonthInterval &&
+                  day === today.getDate()
+                ) {
+                  presentFlag = true;
+                }
+                let buttonRef = null;
+                if (
+                  monthCounter === -fromSelectedDateMonthInterval &&
+                  day === date.getDate()
+                ) {
+                  buttonRef = selectedDateRef;
+                } else if (day === 1 && monthCounter === 0) {
+                  buttonRef = firstDayOfTheMonthRef;
+                }
+                return (
+                  <td key={day}>
+                    <button
+                      type="button"
+                      className={cn(style['calendar__date-button'], {
+                        [style['calendar__date-button_prev-month']]:
+                          monthCounter === -1,
+                        [style['calendar__date-button_next-month']]:
+                          monthCounter === 1,
+                        [style['calendar__date-button_today']]:
+                          monthCounter === -fromTodayMonthInterval &&
+                          day === today.getDate(),
+                        [style['calendar__date-button_selected']]:
+                          monthCounter === -fromSelectedDateMonthInterval &&
+                          day === date.getDate(),
+                      })}
+                      disabled={!presentFlag}
+                      ref={buttonRef}
+                    >
+                      {day}
+                    </button>
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
         </tbody>
       </table>
     </span>

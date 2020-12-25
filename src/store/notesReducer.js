@@ -161,33 +161,31 @@ const handlers = {
       },
     };
   },
-  [UPDATE_NOTE]: (state, { id, headerText, text, itemId, itemText }) => {
-    return {
-      ...state,
-      notes: {
-        ...state.notes,
-        [id]: {
-          ...state.notes[id],
-          headerText:
-            typeof headerText === 'string'
-              ? headerText
-              : state.notes[id].headerText,
-          text: typeof text === 'string' ? text : state.notes[id].text,
-          items:
-            itemId != null
-              ? {
-                  ...state.notes[id].items,
-                  [itemId]: {
-                    ...state.notes[id].items[itemId],
-                    text: itemText,
-                  },
-                }
-              : state.notes[id].items,
-          editingDate: new Date(),
-        },
+  [UPDATE_NOTE]: (state, { id, headerText, text, itemId, itemText }) => ({
+    ...state,
+    notes: {
+      ...state.notes,
+      [id]: {
+        ...state.notes[id],
+        headerText:
+          typeof headerText === 'string'
+            ? headerText
+            : state.notes[id].headerText,
+        text: typeof text === 'string' ? text : state.notes[id].text,
+        items:
+          itemId != null
+            ? {
+                ...state.notes[id].items,
+                [itemId]: {
+                  ...state.notes[id].items[itemId],
+                  text: itemText,
+                },
+              }
+            : state.notes[id].items,
+        editingDate: new Date(),
       },
-    };
-  },
+    },
+  }),
   [REMOVE_NOTE]: (state, { ids }) => {
     const removedNotes = { ...state.removedNotes };
     const pinnedNotes = { ...state.pinnedNotes };
@@ -326,74 +324,68 @@ const handlers = {
       notes,
     };
   },
-  [SET_CHECK_NOTE_LIST_ITEM]: (state, { id, itemId, isMarked }) => {
-    return {
-      ...state,
-      notes: {
-        ...state.notes,
-        [id]: {
-          ...state.notes[id],
-          items: {
-            ...state.notes[id].items,
-            [itemId]: {
-              ...state.notes[id].items[itemId],
-              isMarked,
-            },
+  [SET_CHECK_NOTE_LIST_ITEM]: (state, { id, itemId, isMarked }) => ({
+    ...state,
+    notes: {
+      ...state.notes,
+      [id]: {
+        ...state.notes[id],
+        items: {
+          ...state.notes[id].items,
+          [itemId]: {
+            ...state.notes[id].items[itemId],
+            isMarked,
           },
-          editingDate: new Date(),
         },
+        editingDate: new Date(),
       },
-    };
-  },
-  [UNCHECK_ALL_LIST_ITEMS]: (state, { id }) => {
-    return {
-      ...state,
-      notes: {
-        ...state.notes,
-        [id]: {
-          ...state.notes[id],
-          items: Object.keys(state.notes[id].items).reduce(
-            (uncheckedItems, itemId) => {
-              /* eslint-disable no-param-reassign */
-              const item = state.notes[id].items[itemId];
-              if (item.isMarked)
-                uncheckedItems[itemId] = { ...item, isMarked: false };
-              else uncheckedItems[itemId] = item;
-              return uncheckedItems;
-              /* eslint-enable no-param-reassign */
-            },
-            {}
-          ),
-          editingDate: new Date(),
-        },
+    },
+  }),
+  [UNCHECK_ALL_LIST_ITEMS]: (state, { id }) => ({
+    ...state,
+    notes: {
+      ...state.notes,
+      [id]: {
+        ...state.notes[id],
+        items: Object.keys(state.notes[id].items).reduce(
+          (uncheckedItems, itemId) => {
+            /* eslint-disable no-param-reassign */
+            const item = state.notes[id].items[itemId];
+            if (item.isMarked)
+              uncheckedItems[itemId] = { ...item, isMarked: false };
+            else uncheckedItems[itemId] = item;
+            return uncheckedItems;
+            /* eslint-enable no-param-reassign */
+          },
+          {}
+        ),
+        editingDate: new Date(),
       },
-    };
-  },
-  [REMOVE_CHECKED_LIST_ITEMS]: (state, { id }) => {
-    return {
-      ...state,
-      notes: {
-        ...state.notes,
-        [id]: {
-          ...state.notes[id],
-          items: Object.keys(state.notes[id].items).reduce(
-            (filteredItems, itemId) => {
-              /* eslint-disable no-param-reassign */
-              const item = state.notes[id].items[itemId];
-              if (!item.isMarked) filteredItems[itemId] = item;
-              return filteredItems;
-              /* eslint-enable no-param-reassign */
-            },
-            {}
-          ),
-          itemsOrder: state.notes[id].itemsOrder.filter(
-            (itemId) => !state.notes[id].items[itemId].isMarked
-          ),
-          editingDate: new Date(),
-        },
+    },
+  }),
+  [REMOVE_CHECKED_LIST_ITEMS]: (state, { id }) => ({
+    ...state,
+    notes: {
+      ...state.notes,
+      [id]: {
+        ...state.notes[id],
+        items: Object.keys(state.notes[id].items).reduce(
+          (filteredItems, itemId) => {
+            /* eslint-disable no-param-reassign */
+            const item = state.notes[id].items[itemId];
+            if (!item.isMarked) filteredItems[itemId] = item;
+            return filteredItems;
+            /* eslint-enable no-param-reassign */
+          },
+          {}
+        ),
+        itemsOrder: state.notes[id].itemsOrder.filter(
+          (itemId) => !state.notes[id].items[itemId].isMarked
+        ),
+        editingDate: new Date(),
       },
-    };
-  },
+    },
+  }),
   [INSERT_LIST_ITEM]: (
     state,
     { id, itemId, itemToDisplaceId, recvSubItemsFromSubId }

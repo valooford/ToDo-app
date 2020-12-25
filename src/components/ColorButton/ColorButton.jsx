@@ -3,10 +3,7 @@ import cn from 'classnames';
 
 import style from './ColorButton.module.scss';
 
-export default React.forwardRef(function ColorButton(
-  { color, onClick, onMouseEnter, onMouseLeave },
-  ref
-) {
+function ColorButton({ color, onClick, onMouseEnter, onMouseLeave }, ref) {
   return (
     // eslint-disable-next-line jsx-a11y/control-has-associated-label
     <button
@@ -20,4 +17,6 @@ export default React.forwardRef(function ColorButton(
       ref={ref}
     />
   );
-});
+}
+
+export default React.forwardRef(ColorButton);

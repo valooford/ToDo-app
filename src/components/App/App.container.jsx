@@ -76,15 +76,13 @@ function AppContainer({
                 <Switch>
                   <Route
                     path="/reminders"
-                    render={() => {
-                      return (
-                        <Page
-                          pageName="/reminders"
-                          key="/reminders"
-                          component={Reminiscent}
-                        />
-                      );
-                    }}
+                    render={() => (
+                      <Page
+                        pageName="/reminders"
+                        key="/reminders"
+                        component={Reminiscent}
+                      />
+                    )}
                   />
                   <Route
                     path="/label/:labelID"
@@ -92,16 +90,14 @@ function AppContainer({
                       match: {
                         params: { labelID },
                       },
-                    }) => {
-                      return (
-                        <Page
-                          label={labelID}
-                          pageName={`/label/${labelID}`}
-                          key="/label"
-                          component={Labeled}
-                        />
-                      );
-                    }}
+                    }) => (
+                      <Page
+                        label={labelID}
+                        pageName={`/label/${labelID}`}
+                        key="/label"
+                        component={Labeled}
+                      />
+                    )}
                   />
                   <Route
                     path="/archive"
@@ -115,15 +111,13 @@ function AppContainer({
                   />
                   <Route
                     path="/trash"
-                    render={() => {
-                      return (
-                        <Page
-                          pageName="/trash"
-                          key="/trash"
-                          component={Removed}
-                        />
-                      );
-                    }}
+                    render={() => (
+                      <Page
+                        pageName="/trash"
+                        key="/trash"
+                        component={Removed}
+                      />
+                    )}
                   />
                   <Route
                     path={['/NOTE/:noteID', '/LIST/:noteID']}
@@ -139,11 +133,9 @@ function AppContainer({
                       '/search/:text?',
                       '/search',
                     ]}
-                    render={() => {
-                      return (
-                        <Page quiet key="/search" component={SearchResults} />
-                      );
-                    }}
+                    render={() => (
+                      <Page quiet key="/search" component={SearchResults} />
+                    )}
                   />
                   <Route
                     path="*"
@@ -163,15 +155,17 @@ function AppContainer({
   );
 }
 
+function wrapWithHashRouter(Component) {
+  return () => (
+    <HashRouter hashType="noslash">
+      <Component />
+    </HashRouter>
+  );
+}
+
 export default compose(
   hot,
-  function wrapWithHashRouter(Component) {
-    return () => (
-      <HashRouter hashType="noslash">
-        <Component />
-      </HashRouter>
-    );
-  },
+  wrapWithHashRouter,
   withRouter,
   connect(null, {
     onDirectMainClick: clearSelectedNotesAC,

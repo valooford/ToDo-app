@@ -33,12 +33,13 @@ function Labeled({
   useEffect(() => {
     storedRemoveLabel.func = removeLabel;
   });
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       if (!labeledNotes) return;
       storedRemoveLabel.func();
-    };
-  }, []);
+    },
+    []
+  );
   if (!labeledNotes) return <Redirect to="/" />;
   return (
     <Container
