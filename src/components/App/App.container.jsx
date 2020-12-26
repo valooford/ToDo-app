@@ -1,7 +1,7 @@
 import { hot } from 'react-hot-loader/root';
 import React, { useRef, useState } from 'react';
 import { compose } from 'redux';
-import { connect } from 'react-redux';
+// import { connect } from 'react-redux';
 import { HashRouter, Route, Switch, withRouter } from 'react-router-dom';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -26,14 +26,16 @@ import Labeled from '@components/Container/Labeled';
 import Archived from '@components/Container/Archived';
 import Removed from '@components/Container/Removed';
 
-import { clearSelectedNotes as clearSelectedNotesAC } from '@store/notesReducer';
+// import { clearSelectedNotes as clearSelectedNotesAC } from '@store/notesReducer';
 
 import App from './App';
 import SearchResults from '../Container/SearchResults';
 
-function AppContainer({
-  onDirectMainClick, // ---not good--- better to include this in Container
-}) {
+// {
+//   onDirectMainClick, // ---not good--- better to include this in Container
+// }
+
+function AppContainer() {
   const modalRef = useRef(null);
   const [titleData, setTitleData] = useState(null);
   const [popupData, setPopupData] = useState(null);
@@ -145,8 +147,8 @@ function AppContainer({
                   />
                 </Switch>
               }
-              isAsideMinified={!isAsideExpanded}
-              onDirectMainClick={onDirectMainClick}
+              // isAsideMinified={!isAsideExpanded}
+              // onDirectMainClick={onDirectMainClick}
             />
           </PopupContext.Provider>
         </TitleContext.Provider>
@@ -166,8 +168,8 @@ function wrapWithHashRouter(Component) {
 export default compose(
   hot,
   wrapWithHashRouter,
-  withRouter,
-  connect(null, {
-    onDirectMainClick: clearSelectedNotesAC,
-  })
+  withRouter
+  // connect(null, {
+  //   onDirectMainClick: clearSelectedNotesAC,
+  // })
 )(AppContainer);

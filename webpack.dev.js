@@ -1,12 +1,17 @@
 const { merge } = require('webpack-merge');
 const {
   config: common,
-  regexp: { jsJsxRegexp, cssModuleRegexp, sassModuleRegexp },
+  regexp: { jsJsxRegexp, sassRegexp, sassModuleRegexp },
 } = require('./webpack.common');
 
 const cssLoaderDev = {
   loader: 'css-loader',
+  options: {},
+};
+const cssModuleLoaderDev = {
+  ...cssLoaderDev,
   options: {
+    ...cssLoaderDev.options,
     importLoaders: 1, // 1 means that it also applies CSS modules on @imported resources
     // CSS Modules
     modules: {
@@ -33,18 +38,18 @@ module.exports = merge(common, {
         },
       },
       {
-        // CSS Module Rule
-        test: cssModuleRegexp,
-        use: ['style-loader', cssLoaderDev],
-      },
-      {
-        // Sass Module Rule
-        test: sassModuleRegexp,
+        // Sass Rule
+        test: sassRegexp,
         use: [
           'style-loader',
           cssLoaderDev,
           'sass-loader', // sourceMap value depends on devtool
         ],
+      },
+      {
+        // Sass Module Rule
+        test: sassModuleRegexp,
+        use: ['style-loader', cssModuleLoaderDev, 'sass-loader'],
       },
     ],
   },

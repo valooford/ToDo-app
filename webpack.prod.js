@@ -4,12 +4,17 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const {
   config: common,
-  regexp: { jsJsxRegexp, cssModuleRegexp, sassModuleRegexp },
+  regexp: { jsJsxRegexp, sassRegexp, sassModuleRegexp },
 } = require('./webpack.common');
 
 const cssLoaderProd = {
   loader: 'css-loader',
+  options: {},
+};
+const cssModuleLoaderProd = {
+  ...cssLoaderProd,
   options: {
+    ...cssLoaderProd.options,
     importLoaders: 1, // 1 means that it also applies CSS modules on @imported resources
     modules: true,
   },
@@ -53,14 +58,14 @@ module.exports = merge(common, {
         ],
       },
       {
-        // CSS Module Правило
-        test: cssModuleRegexp,
-        use: [MiniCssExtractPlugin.loader, cssLoaderProd],
+        // Sass Rule
+        test: sassRegexp,
+        use: [MiniCssExtractPlugin.loader, cssLoaderProd, 'sass-loader'],
       },
       {
-        // Sass Module Правило
+        // Sass Module Rule
         test: sassModuleRegexp,
-        use: [MiniCssExtractPlugin.loader, cssLoaderProd, 'sass-loader'],
+        use: [MiniCssExtractPlugin.loader, cssModuleLoaderProd, 'sass-loader'],
       },
     ],
   },

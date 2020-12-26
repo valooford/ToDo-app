@@ -1,0 +1,17 @@
+@import '@styles/variables';
+
+.header {
+  height: 3 * $bigger-base-unit + 1.5 * $base-unit;
+}
+
+.aside {
+  float: left;
+  width: 280px;
+}
+.aside_minified {
+  width: 3 * $bigger-base-unit + 0.7 * $base-unit;
+}
+
+.main {
+  margin-left: 280px;
+}

@@ -4,7 +4,7 @@ const HTMLWebpackPlugin = require('html-webpack-plugin');
 const imageFileRegexp = /\.(png|svg|jpe?g|gif)$/i;
 const fontFileRegexp = /\.(eot|ttf|woff|woff2)$/;
 const jsJsxRegexp = /\.(js|jsx)$/;
-const cssModuleRegexp = /\.module\.css$/;
+const sassRegexp = /(?<!\.module)\.s[ac]ss$/i;
 const sassModuleRegexp = /\.module\.s[ac]ss$/i;
 
 module.exports = {
@@ -52,5 +52,5 @@ module.exports = {
       // filename
     },
   },
-  regexp: { jsJsxRegexp, cssModuleRegexp, sassModuleRegexp },
+  regexp: { jsJsxRegexp, sassRegexp, sassModuleRegexp },
 };
