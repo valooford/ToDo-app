@@ -1,31 +1,64 @@
-import React from 'react';
-// import cn from 'classnames';
+import { hot } from 'react-hot-loader/root';
+import React, { useRef, useState } from 'react';
+import { compose } from 'redux';
+import { HashRouter, withRouter } from 'react-router-dom';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
-// import style from '../../styles/index.module.scss';
-import styles from './App.module.scss';
+import { ModalContext } from '@components/Modal/Modal.container';
+import Title, {
+  TitleContext,
+  getTitleContextValue,
+} from '@components/Title/Title.container';
+import Popup, {
+  PopupContext,
+  getPopupContextValue,
+} from '@components/Popup/Popup';
 
-export default function App({
-  prepend,
-  header,
-  aside,
-  main,
-  // isAsideMinified,
-  // onDirectMainClick, // ---not good--- better to include this in Container
-}) {
+import AppHeader from './App.header';
+import AppAside from './App.aside';
+import AppMain from './App.main';
+
+function AppContainer() {
+  const modalRef = useRef(null);
+  const [titleData, setTitleData] = useState(null);
+  const [popupData, setPopupData] = useState(null);
   return (
-    <>
-      {prepend}
-      <header className={styles.header}>{header}</header>
-      <aside className={styles.aside}>{aside}</aside>
-      <main className={styles.main}>{main}</main>
-      {/* <aside className={cn({ [style.aside_minified]: isAsideMinified })}> */}
-      {/* <main
-        onClick={({ target, currentTarget }) => {
-          if (target === currentTarget) {
-            onDirectMainClick();
-          }
-        }}
-      > */}
-    </>
+    <DndProvider backend={HTML5Backend}>
+      <ModalContext.Provider value={modalRef}>
+        <TitleContext.Provider value={getTitleContextValue(setTitleData)}>
+          <PopupContext.Provider value={getPopupContextValue(setPopupData)}>
+            <div ref={modalRef} key="modal" />
+            {titleData && (
+              <Title coords={titleData.coords} key="title">
+                {titleData.text}
+              </Title>
+            )}
+            {popupData && (
+              <Popup
+                coords={popupData.coords}
+                isTopPreferred={popupData.isTopPreferred}
+                key="popup"
+              >
+                {popupData.popupElement}
+              </Popup>
+            )}
+            <AppHeader />
+            <AppAside />
+            <AppMain />
+          </PopupContext.Provider>
+        </TitleContext.Provider>
+      </ModalContext.Provider>
+    </DndProvider>
   );
 }
+
+function wrapWithHashRouter(Component) {
+  return () => (
+    <HashRouter hashType="noslash">
+      <Component />
+    </HashRouter>
+  );
+}
+
+export default compose(hot, wrapWithHashRouter, withRouter)(AppContainer);
