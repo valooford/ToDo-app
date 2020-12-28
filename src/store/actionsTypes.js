@@ -1,6 +1,7 @@
 // app
 export const SET_APP_PAGE = 'app/set-app-page';
 export const SWITCH_ASIDE_EXPANSION = 'app/switch-aside-expansion';
+export const SET_TITLE_DATA = 'app/set-title-data';
 
 // history
 export const UNDO = 'history/undo';

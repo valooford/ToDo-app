@@ -6,48 +6,39 @@ import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
 import { ModalContext } from '@components/Modal/Modal.container';
-import Title, {
-  TitleContext,
-  getTitleContextValue,
-} from '@components/Title/Title.container';
+import { wrapWithTitled } from '@components/Title/Title.container';
 import Popup, {
   PopupContext,
   getPopupContextValue,
 } from '@components/Popup/Popup';
 
+import AppTitleLayer from './App.titleLayer';
 import AppHeader from './App.header';
 import AppAside from './App.aside';
 import AppMain from './App.main';
 
 function AppContainer() {
   const modalRef = useRef(null);
-  const [titleData, setTitleData] = useState(null);
   const [popupData, setPopupData] = useState(null);
   return (
     <DndProvider backend={HTML5Backend}>
       <ModalContext.Provider value={modalRef}>
-        <TitleContext.Provider value={getTitleContextValue(setTitleData)}>
-          <PopupContext.Provider value={getPopupContextValue(setPopupData)}>
-            <div ref={modalRef} key="modal" />
-            {titleData && (
-              <Title coords={titleData.coords} key="title">
-                {titleData.text}
-              </Title>
-            )}
-            {popupData && (
-              <Popup
-                coords={popupData.coords}
-                isTopPreferred={popupData.isTopPreferred}
-                key="popup"
-              >
-                {popupData.popupElement}
-              </Popup>
-            )}
-            <AppHeader />
-            <AppAside />
-            <AppMain />
-          </PopupContext.Provider>
-        </TitleContext.Provider>
+        <PopupContext.Provider value={getPopupContextValue(setPopupData)}>
+          <div ref={modalRef} key="modal" />
+          <AppTitleLayer />
+          {popupData && (
+            <Popup
+              coords={popupData.coords}
+              isTopPreferred={popupData.isTopPreferred}
+              key="popup"
+            >
+              {popupData.popupElement}
+            </Popup>
+          )}
+          <AppHeader />
+          <AppAside />
+          <AppMain />
+        </PopupContext.Provider>
       </ModalContext.Provider>
     </DndProvider>
   );
@@ -61,4 +52,9 @@ function wrapWithHashRouter(Component) {
   );
 }
 
-export default compose(hot, wrapWithHashRouter, withRouter)(AppContainer);
+export default compose(
+  hot,
+  wrapWithHashRouter,
+  withRouter,
+  wrapWithTitled
+)(AppContainer);

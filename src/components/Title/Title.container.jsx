@@ -1,4 +1,10 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { connect } from 'react-redux';
+
+import {
+  clearTitleData as clearTitleDataAC,
+  setTitleData as setTitleDataAC,
+} from '@/store/appReducer';
 
 import Title from './Title';
 
@@ -87,13 +93,23 @@ export function withTitle(Component) {
   return React.forwardRef(WrappedComponent);
 }
 
-export function getTitleContextValue(setTitleData) {
-  return {
-    setTitleData(text, coords) {
-      setTitleData({ text, coords });
-    },
-    clearTitleData() {
-      setTitleData(null);
-    },
-  };
+function Titled({ children, setTitleData, clearTitleData }) {
+  return (
+    <TitleContext.Provider value={{ setTitleData, clearTitleData }}>
+      {children}
+    </TitleContext.Provider>
+  );
+}
+
+const TitledWrapper = connect(null, {
+  setTitleData: setTitleDataAC,
+  clearTitleData: clearTitleDataAC,
+})(Titled);
+
+export function wrapWithTitled(Component) {
+  return () => (
+    <TitledWrapper>
+      <Component />
+    </TitledWrapper>
+  );
 }
