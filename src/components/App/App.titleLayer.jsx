@@ -1,14 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import Title from '@components/Title/Title';
+
+import Title from '@components/Title/Title.container';
 
 function AppTitleLayer({ titleData }) {
   if (!titleData) return null;
-  return (
-    <Title coords={titleData.coords} key="title">
-      {titleData.text}
-    </Title>
-  );
+  return <Title coords={titleData.coords}>{titleData.text}</Title>;
 }
 
 function mapStateToProps(state) {

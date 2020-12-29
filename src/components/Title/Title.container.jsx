@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import {
   clearTitleData as clearTitleDataAC,
   setTitleData as setTitleDataAC,
-} from '@/store/appReducer';
+} from '@store/appReducer';
 
 import Title from './Title';
 
@@ -49,7 +49,6 @@ const TitleContainer = ({ children, coords }) => {
       title.style.top = `${bottom + pageYOffset}px`;
     }
   }, [children, coords]);
-
   return <Title text={children} isHidden={!isInitialized} ref={ref} />;
 };
 
@@ -93,7 +92,7 @@ export function withTitle(Component) {
   return React.forwardRef(WrappedComponent);
 }
 
-function Titled({ children, setTitleData, clearTitleData }) {
+function TitleProvider({ children, setTitleData, clearTitleData }) {
   return (
     <TitleContext.Provider value={{ setTitleData, clearTitleData }}>
       {children}
@@ -101,15 +100,9 @@ function Titled({ children, setTitleData, clearTitleData }) {
   );
 }
 
-const TitledWrapper = connect(null, {
+const TitleProviderWrapper = connect(null, {
   setTitleData: setTitleDataAC,
   clearTitleData: clearTitleDataAC,
-})(Titled);
+})(TitleProvider);
 
-export function wrapWithTitled(Component) {
-  return () => (
-    <TitledWrapper>
-      <Component />
-    </TitledWrapper>
-  );
-}
+export { TitleProviderWrapper as TitleProvider };

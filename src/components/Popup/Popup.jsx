@@ -1,5 +1,11 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { connect } from 'react-redux';
 import cn from 'classnames';
+
+import {
+  clearPopupData as clearPopupDataAC,
+  setPopupData as setPopupDataAC,
+} from '@store/appReducer';
 
 import style from './Popup.module.scss';
 
@@ -51,19 +57,29 @@ export default function Popup({ children, coords, isTopPreferred }) {
 
 export function withPopup(Component) {
   return (props) => {
-    const { setPopup, clearPopup } = useContext(PopupContext);
-    // eslint-disable-next-line react/jsx-props-no-spreading
-    return <Component {...props} setPopup={setPopup} clearPopup={clearPopup} />;
+    const { setPopupData, clearPopupData } = useContext(PopupContext);
+    return (
+      <Component
+        // eslint-disable-next-line react/jsx-props-no-spreading
+        {...props}
+        setPopup={setPopupData}
+        clearPopup={clearPopupData}
+      />
+    );
   };
 }
 
-export function getPopupContextValue(setPopupData) {
-  return {
-    setPopup(popupElement, coords, isTopPreferred) {
-      setPopupData({ popupElement, coords, isTopPreferred });
-    },
-    clearPopup() {
-      setPopupData(null);
-    },
-  };
+function PopupProvider({ children, setPopupData, clearPopupData }) {
+  return (
+    <PopupContext.Provider value={{ setPopupData, clearPopupData }}>
+      {children}
+    </PopupContext.Provider>
+  );
 }
+
+const PopupProviderWrapper = connect(null, {
+  setPopupData: setPopupDataAC,
+  clearPopupData: clearPopupDataAC,
+})(PopupProvider);
+
+export { PopupProviderWrapper as PopupProvider };

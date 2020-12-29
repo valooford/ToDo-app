@@ -167,3 +167,23 @@ export default compose(
     clearSelectedNotes: clearSelectedNotesAC,
   })
 )(SelectionBarContainer);
+
+function SelectionCleaner({ children, onClick }) {
+  return React.Children.map(children, (child) =>
+    React.cloneElement(child, {
+      onDirectClick: onClick,
+    })
+  );
+}
+
+const SelectionCleanerWrapper = connect(null, {
+  onClick: clearSelectedNotesAC,
+})(SelectionCleaner);
+
+export function withSelectionClearing(Component) {
+  return () => (
+    <SelectionCleanerWrapper>
+      <Component />
+    </SelectionCleanerWrapper>
+  );
+}

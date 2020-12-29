@@ -2,6 +2,7 @@
 export const SET_APP_PAGE = 'app/set-app-page';
 export const SWITCH_ASIDE_EXPANSION = 'app/switch-aside-expansion';
 export const SET_TITLE_DATA = 'app/set-title-data';
+export const SET_POPUP_DATA = 'app/set-popup-data';
 
 // history
 export const UNDO = 'history/undo';

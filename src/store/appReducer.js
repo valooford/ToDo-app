@@ -2,6 +2,7 @@ import {
   SET_APP_PAGE,
   SWITCH_ASIDE_EXPANSION,
   SET_TITLE_DATA,
+  SET_POPUP_DATA,
 } from './actionsTypes';
 
 const handlers = {
@@ -17,9 +18,18 @@ const handlers = {
     ...state,
     titleData: data,
   }),
+  [SET_POPUP_DATA]: (state, { data }) => ({
+    ...state,
+    popupData: data,
+  }),
 };
 
-const initialState = { page: null, isAsideExpanded: true };
+const initialState = {
+  page: null,
+  isAsideExpanded: true,
+  titleData: null,
+  popupData: null,
+};
 
 export default function appReducer(state = initialState, action) {
   if (handlers[action.type]) return handlers[action.type](state, action);
@@ -42,4 +52,15 @@ export function setTitleData(text, coords) {
 }
 export function clearTitleData() {
   return { type: SET_TITLE_DATA, data: null };
+}
+
+// SET_POPUP_DATA
+export function setPopupData(popupElement, coords, isTopPreferred) {
+  return {
+    type: SET_POPUP_DATA,
+    data: { popupElement, coords, isTopPreferred },
+  };
+}
+export function clearPopupData() {
+  return { type: SET_POPUP_DATA, data: null };
 }

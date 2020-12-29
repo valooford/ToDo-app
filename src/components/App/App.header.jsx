@@ -11,8 +11,8 @@ import styles from './App.module.scss';
 function AppHeader({ switchAsideExpansion }) {
   return (
     <header className={styles.header}>
-      <Header onMenuButtonClick={switchAsideExpansion} key="header" />,
-      <SelectionBar key="bar" />,
+      <Header onMenuButtonClick={switchAsideExpansion} />,
+      <SelectionBar />,
     </header>
   );
 }

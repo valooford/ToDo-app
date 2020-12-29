@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 
-import { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 
 /* handleClickOutside function are used to detect click inside an element
  * when its child is clicked and then removed
@@ -289,4 +289,13 @@ export function associativeArrToArr(arr) {
     return Object.keys(arr).filter((el) => el !== 'length');
   }
   return [arr];
+}
+
+export function wrapWith(Wrapper, options = {}) {
+  return (Component) => () => (
+    // eslint-disable-next-line react/jsx-props-no-spreading
+    <Wrapper {...options}>
+      <Component />
+    </Wrapper>
+  );
 }

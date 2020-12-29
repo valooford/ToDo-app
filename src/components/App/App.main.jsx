@@ -1,6 +1,9 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
+import { wrapWith } from '@/utils';
 import NoteFocuser from '@components/Container/NoteFocuser';
 import Page from '@components/Container/Page';
 import Home from '@components/Container/Home';
@@ -9,15 +12,21 @@ import Labeled from '@components/Container/Labeled';
 import Archived from '@components/Container/Archived';
 import Removed from '@components/Container/Removed';
 import SearchResults from '@components/Container/SearchResults';
-
-// import { clearSelectedNotes as clearSelectedNotesAC } from '@store/notesReducer';
+import { withSelectionClearing } from '@components/SelectionBar/SelectionBar.container';
 
 import styles from './App.module.scss';
+import { compose } from 'redux';
 
-// onDirectMainClick, // ---not good--- better to include this in Container
-export default function AppMain() {
+function AppMain({ onDirectClick }) {
   return (
-    <main className={styles.main}>
+    <main
+      className={styles.main}
+      onClick={({ target, currentTarget }) => {
+        if (target === currentTarget) {
+          onDirectClick();
+        }
+      }}
+    >
       <Switch>
         <Route
           path="/reminders"
@@ -79,15 +88,9 @@ export default function AppMain() {
       </Switch>
     </main>
   );
-  /* <main
-    onClick={({ target, currentTarget }) => {
-      if (target === currentTarget) {
-        onDirectMainClick();
-      }
-    }}
-  > */
 }
 
-// connect(null, {
-//   onDirectMainClick: clearSelectedNotesAC,
-// })
+export default compose(
+  wrapWith(DndProvider, { backend: HTML5Backend }),
+  withSelectionClearing
+)(AppMain);

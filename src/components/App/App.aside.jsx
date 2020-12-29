@@ -1,6 +1,6 @@
 import React from 'react';
-import cn from 'classnames';
 import { connect } from 'react-redux';
+import cn from 'classnames';
 
 import Aside from '@components/Aside/Aside.container';
 
