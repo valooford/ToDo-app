@@ -1,4 +1,5 @@
 import React from 'react';
+import { compose } from 'redux';
 import { Route, Switch } from 'react-router-dom';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
@@ -15,10 +16,10 @@ import SearchResults from '@components/Container/SearchResults';
 import { withSelectionClearing } from '@components/SelectionBar/SelectionBar.container';
 
 import styles from './App.module.scss';
-import { compose } from 'redux';
 
 function AppMain({ onDirectClick }) {
   return (
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
     <main
       className={styles.main}
       onClick={({ target, currentTarget }) => {

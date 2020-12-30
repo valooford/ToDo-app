@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { withPopup } from '@components/Popup/Popup';
 import PopupMenu from '@components/PopupMenu/PopupMenu.container';
 import PopupColors from '@components/PopupColors/PopupColors.container';
-import PopupReminder from '@components/PopupReminder/PopupReminder.container';
+import PopupReminder from '@components/PopupReminder/PopupReminder';
 import PopupTag from '@components/PopupTag/PopupTag.container';
 
 import {

@@ -1,58 +1,45 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
+import { connect } from 'react-redux';
 
-import IconedMenuItem from '@components/MenuItem/MenuItem';
+import Modal from '@components/Modal/Modal';
+import TagEditor from '@components/TagEditor/TagEditor.container';
 
-import style from './Aside-cfg.module.scss';
+import { getCurrentPage } from '@store/selectors';
 
-// КОНТЕЙНЕР БОКОВОГО МЕНЮ / ASIDE
-// *
-export default function Aside({
-  currentPage,
-  labels,
-  isExpanded,
-  onTagsEdit,
-  tagsEditButtonRef,
-}) {
-  const menuItemsParams = [
-    { to: '/home', iconSymbol: '\ue80d', text: 'Заметки' },
-    { to: '/reminders', iconSymbol: '\uf0f3', text: 'Напоминания' },
-    ...labels.map((label) => ({
-      to: `/label/${label}`,
-      iconSymbol: '\ue81d',
-      text: label,
-    })),
-    {
-      iconSymbol: '\ue80e',
-      text: 'Изменение ярлыков',
-      onClick: onTagsEdit,
-      ref: tagsEditButtonRef,
-    },
-    { to: '/archive', iconSymbol: '\ue805', text: 'Архив' },
-    { to: '/trash', iconSymbol: '\ue80f', text: 'Корзина' },
-  ];
-  menuItemsParams.forEach((itemParams) => {
-    if (itemParams.to === currentPage) {
-      // eslint-disable-next-line no-param-reassign
-      itemParams.isSelected = true;
-    }
-  });
+import Aside from './Aside.pure';
+
+function AsideContainer({ isExpanded, currentPage, labeledNotes }) {
+  const [currentModal, setCurrentModal] = useState(null);
+  const onTagsEdit = () => {
+    setCurrentModal('TagEditor');
+  };
+  const tagsEditButtonRef = useRef(null);
+  const onTagEditorClose = () => {
+    setCurrentModal(null);
+    tagsEditButtonRef.current.focus();
+  };
   return (
-    <div className={style.aside}>
-      <ul className={style.aside__menu}>
-        {menuItemsParams.map((params) => (
-          <IconedMenuItem
-            to={params.to}
-            isActive={params.to === currentPage}
-            isConcise={!isExpanded}
-            iconSymbol={params.iconSymbol}
-            text={params.text}
-            isSelected={params.isSelected}
-            onClick={params.onClick}
-            key={params.text}
-            ref={params.ref}
-          />
-        ))}
-      </ul>
-    </div>
+    <>
+      <Aside
+        currentPage={currentPage}
+        labels={Object.keys(labeledNotes).sort(
+          (l1, l2) => labeledNotes[l1].id - labeledNotes[l2].id
+        )}
+        isExpanded={isExpanded}
+        onTagsEdit={onTagsEdit}
+        tagsEditButtonRef={tagsEditButtonRef}
+      />
+      {currentModal === 'TagEditor' && (
+        <Modal onClose={onTagEditorClose}>
+          <TagEditor onClose={onTagEditorClose} />
+        </Modal>
+      )}
+    </>
   );
 }
+
+const mapStateToProps = (state) => ({
+  labeledNotes: state.main.labeledNotes,
+  currentPage: getCurrentPage(state),
+});
+export default connect(mapStateToProps, null)(AsideContainer);

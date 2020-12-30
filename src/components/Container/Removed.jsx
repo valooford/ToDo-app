@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Note from '@components/Note/Note.container';
+import Note from '@components/Note/Note';
 
-import Container from './Container.container';
+import Container from './Container';
 
 function Removed({
   removedNotesOrder,

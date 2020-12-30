@@ -4,12 +4,12 @@ import { connect } from 'react-redux';
 import { Redirect } from 'react-router-dom';
 
 import AddNote from '@components/Note/AddNote.container';
-import Note from '@components/Note/Note.container';
+import Note from '@components/Note/Note';
 
 import { setNoteTag, removeNoteTag } from '@store/notesReducer';
 import { getAddingNoteId } from '@store/selectors';
 
-import Container from './Container.container';
+import Container from './Container';
 
 function Labeled({
   addingNoteId,

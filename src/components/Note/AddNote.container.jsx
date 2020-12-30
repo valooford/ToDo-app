@@ -6,7 +6,7 @@ import { getAddingNoteId } from '@store/selectors';
 
 import IconButtonTitled from '@components/IconButton/IconButton.titled';
 
-import Note from './Note.container';
+import Note from './Note';
 import AddNote from './AddNote';
 
 // КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ ADD-NOTE

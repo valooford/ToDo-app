@@ -1,313 +1,602 @@
-import React from 'react';
-import cn from 'classnames';
+import React, { useEffect, useRef, useState } from 'react';
+import { bindActionCreators, compose } from 'redux';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
-import Button from '@components/Button/Button';
-import IconButtonComponent from '@components/IconButton/IconButton';
-import Textarea from '@components/Textarea/Textarea';
+import { useEffectOnMouseDownOutside } from '@/utils';
 
-import ListItemComponent from './components/ListItem/ListItem';
-import CreationTimeComponent from './components/CreationTime/CreationTime';
-// ...add some tag/reminder general-purpose component
+import Modal from '@components/Modal/Modal';
+import IconButtonTitled from '@components/IconButton/IconButton.titled';
+import { withPopup } from '@components/Popup/Popup';
+import PopupMenu from '@components/PopupMenu/PopupMenu.container';
+import PopupColors from '@components/PopupColors/PopupColors.container';
+import PopupReminder from '@components/PopupReminder/PopupReminder';
+import PopupTag from '@components/PopupTag/PopupTag.container';
+import Reminder from '@components/Label/Reminder';
+import Label from '@components/Label/Label';
+
+import {
+  blurNote,
+  pinNote,
+  unpinNote,
+  restoreNote,
+  deleteNote,
+  setNoteAsArchived,
+  setNoteAsRegular,
+  addNewNote,
+  updateNoteHeader,
+  updateNoteText,
+  updateNoteListItem,
+  removeNoteListItem,
+  checkNoteListItem,
+  uncheckNoteListItem,
+  selectNote,
+  cancelNoteSelection,
+} from '@store/notesReducer';
+import { updateReminder } from '@store/notificationReducer';
+import { undoHistory, redoHistory } from '@store/historyEnhancer';
+import {
+  getAddingNoteId,
+  getReminderIdByNoteId,
+  hasPassedReminder,
+  getCurrentPage,
+} from '@store/selectors';
+
+import Note from './Note.pure';
+import ListItemDnD, {
+  ListDragContext,
+} from './components/ListItem/ListItem.dnd';
+import ListItemGroup from './components/ListItem/ListItemGroup';
 import style from './Note-cfg.module.scss';
+import listItemStyle from './components/ListItem/ListItem-cfg.module.scss';
+// ---replace--- insert in Note as tag/reminder general-purpose component
+import CreationTimeTitled from './components/CreationTime/CreationTime.titled';
 
-function Note(
-  {
-    isSelectionMode,
-    isHidden,
-    noteData: {
-      headerText,
-      text,
-      items,
-      markedItems,
-      isPinned,
-      isArchived,
-      isReminderPassed,
-      creationDate,
-      editingDate,
-      color,
-      isInteracting,
-      isSelected,
-    },
-    eventHandlers: {
-      onClick,
-      onMouseDown,
-      onMouseUp,
-      onKeyDown,
-      onClose, // on close button click / pressing Esc
-      onSelection,
-      onPin,
-      onArchive,
-      onRestore,
-      onDelete,
-      onHeaderChange,
-      onTextFieldChange,
-      onMoreButtonClick,
-      onUndo,
-      onRedo,
-      onColorsButtonClick,
-      onColorsButtonMouseEnter,
-      onColorsButtonMouseLeave,
-      onReminderButtonClick,
+const checkboxClassname = listItemStyle.listItem__checkbox;
 
-      onHeaderFocus,
-      onTextFieldFocus,
-    },
-    IconButton = IconButtonComponent,
-    CreationTime = CreationTimeComponent,
-    refs: {
-      moreButtonRef,
-      colorsButtonRef,
-      reminderButtonRef,
-
-      headerRef,
-      textFieldRef,
-      listRef,
-    } = {},
-    children,
+// КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ NOTE
+// *
+function NoteContainer({
+  id,
+  isHidden,
+  isAddNote,
+  isSelected,
+  isPinned,
+  isArchived,
+  isRemoved,
+  isReminderPassed,
+  isReminderReadyToUpdate,
+  isUndoable,
+  isRedoable,
+  labeledNotes,
+  note: {
+    type,
+    headerText,
+    text,
+    items,
+    itemsOrder,
+    creationDate,
+    editingDate,
+    color,
   },
-  ref
-) {
-  const buttons = [];
-  if (onDelete) {
-    buttons.push({
-      iconSymbol: '\ue825',
-      titleText: 'Удалить навсегда',
-      modificators: 'icon-button_smaller',
-      onClick: onDelete,
+  isFocused,
+  onNoteBlur,
+  onNotePin,
+  onNoteUnpin,
+  onNoteRestore,
+  onNoteDelete,
+  onNoteArchive,
+  onNoteSetRegular,
+  onNoteReminderUpdate,
+  onNoteAdd,
+  onHeaderChange,
+  onTextFieldChange,
+  onListItemChange,
+  onListItemRemove,
+  onListItemCheck,
+  onListItemUncheck,
+  setPopup,
+  clearPopup,
+  onNoteSelection,
+  onCancelNoteSelection,
+  onUndo,
+  onRedo,
+  noteRef,
+  neighbourRef,
+  isSelectionMode,
+
+  // used for URL switching
+  history,
+  currentPage,
+}) {
+  // eslint-disable-next-line no-param-reassign
+  if (!noteRef) noteRef = React.createRef(); // incoming noteRef equals null sometimes (DnD maybe)
+  const [savedHeight, setSavedHeight] = useState(0);
+
+  useEffect(() => {
+    setTimeout(() => {
+      const curHeight =
+        noteRef.current && noteRef.current.getBoundingClientRect().height;
+      setSavedHeight(curHeight);
+    }, 0);
+  }, [isFocused]);
+
+  const onNoteFocus = () => {
+    const path = `/${items ? 'LIST' : 'NOTE'}/${id}`;
+    history.push(path);
+  };
+
+  // interacting
+  const [isInteracting, setIsInteracting] = useState(false);
+  useEffect(() => {
+    if (isFocused || isAddNote) return undefined;
+    const noteElement = noteRef.current;
+    const onFocusin = (e) => {
+      if (e.target.classList.contains(checkboxClassname)) return;
+      setIsInteracting(true);
+    };
+    const onFocusout = () => {
+      setIsInteracting(false);
+    };
+    noteElement.addEventListener('focusin', onFocusin);
+    noteElement.addEventListener('focusout', onFocusout);
+    return () => {
+      noteElement.removeEventListener('focusin', onFocusin);
+      noteElement.removeEventListener('focusout', onFocusout);
+    };
+  }, [isFocused]);
+
+  // focusing
+  const headerRef = useRef(null);
+  const textFieldRef = useRef(null);
+  const listRef = useRef(null);
+  const listItemRef = useRef(null);
+  const addListItemRef = useRef(null);
+  const defaultFocusInfo = {
+    fieldRef: type === 'list' ? addListItemRef : textFieldRef,
+    type,
+    caret: 9999,
+  };
+  const [focusInfo, setFocusInfo] = useState(defaultFocusInfo);
+  useEffect(() => {
+    if (isFocused) {
+      const {
+        fieldRef: { current: field },
+        caret,
+      } = focusInfo;
+      const timerId = setTimeout(() => {
+        // setting caret position to the text end
+        field.focus();
+        field.setSelectionRange(caret, caret);
+      }, 0);
+      return () => clearTimeout(timerId);
+    }
+    // not focused
+    setFocusInfo(defaultFocusInfo);
+    return undefined;
+  }, [isFocused]);
+  useEffect(() => {
+    if (!isFocused) return undefined;
+    const { current: field } = type === 'list' ? addListItemRef : textFieldRef;
+    const timerId = setTimeout(() => {
+      // setting caret position to the text end
+      field.focus();
+      field.setSelectionRange(9999, 9999);
+    }, 0);
+    return () => clearTimeout(timerId);
+  }, [type]);
+
+  // detecting click outside focused note
+  const setIsTouched = useEffectOnMouseDownOutside(() => {
+    //! disabled until Popup clicks will be considered
+    //
+    // if (isAddNote && isFocused) {
+    //   onNoteBlur();
+    //   onNoteAdd();
+    // }
+  }, [isFocused]);
+  const onMouseDown = () => {
+    setIsTouched(); // клик был осуществлен в пределах note
+  };
+
+  // the buttons refs for backward focusing
+  const moreButtonRef = useRef(null);
+  const colorsButtonRef = useRef(null);
+  const popupColorsItemToFocusRef = useRef(null);
+  const reminderButtonRef = useRef(null);
+
+  // a PopupColors disappearance timer id
+  // a mutable object is used for proper clearTimeout work
+  const [colorsTimerId, setColorsTimerId] = useState({});
+  const setColorsLeaveTimerId = (timerId) => {
+    setColorsTimerId((prev) => {
+      // eslint-disable-next-line no-param-reassign
+      prev.id = timerId;
+      return prev;
     });
-  }
-  if (onRestore) {
-    buttons.push({
-      iconSymbol: '\ue824',
-      titleText: 'Восстановить',
-      modificators: 'icon-button_smaller',
-      onClick: onRestore,
-    });
-  }
-  if (onReminderButtonClick) {
-    buttons.push({
-      iconSymbol: isReminderPassed ? '\ue800' : '\uf0f3',
-      titleText: isReminderPassed
-        ? 'Отметить как выполненное'
-        : 'Сохранить напоминание',
-      modificators: 'icon-button_smaller',
-      onClick: onReminderButtonClick,
-      ref: reminderButtonRef,
-    });
-  }
-  // buttons.push({
-  //   iconSymbol: '\ue803',
-  //   titleText: 'Соавторы',
-  //   modificators: 'icon-button_smaller',
-  // });
-  if (onColorsButtonClick) {
-    buttons.push({
-      iconSymbol: '\ue804',
-      titleText: 'Изменить цвет',
-      modificators: 'icon-button_smaller',
-      onClick: onColorsButtonClick,
-      onMouseEnter: onColorsButtonMouseEnter,
-      onMouseLeave: onColorsButtonMouseLeave,
-      ref: colorsButtonRef,
-    });
-  }
-  // buttons.push({
-  //   iconSymbol: '\ue802',
-  //   titleText: 'Добавить картинку',
-  //   modificators: 'icon-button_smaller',
-  // });
-  if (onArchive) {
-    buttons.push({
-      iconSymbol: isArchived ? '\ue822' : '\ue805',
-      titleText: isArchived ? 'Вернуть из архива' : 'Архивировать',
-      modificators: 'icon-button_smaller',
-      onClick: onArchive,
-    });
-  }
-  if (onMoreButtonClick) {
-    buttons.push({
-      iconSymbol: '\ue81f',
-      titleText: 'Ещё',
-      modificators: 'icon-button_smaller',
-      onClick: onMoreButtonClick,
-      ref: moreButtonRef,
-    });
-  }
-  if (onClose) {
-    buttons.push({
-      iconSymbol: '\ue807',
-      titleText: 'Отменить',
-      modificators: 'icon-button_smaller',
-      onClick: onUndo,
-      disabled: !onUndo,
-    });
-    buttons.push({
-      iconSymbol: '\ue808',
-      titleText: 'Повторить',
-      modificators: 'icon-button_smaller',
-      onClick: onRedo,
-      disabled: !onRedo,
-    });
-  }
-  const iconButtons = buttons.map((params) => (
-    <IconButton
-      iconSymbol={params.iconSymbol}
-      titleText={params.titleText}
-      modificators={params.modificators}
-      onClick={params.onClick}
-      onMouseEnter={params.onMouseEnter}
-      onMouseLeave={params.onMouseLeave}
-      disabled={params.disabled}
-      ref={params.ref || null}
-      key={params.titleText}
-    />
-  ));
-  return (
-    // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events
-    <form
-      className={cn(style.note, style[`note_style-${color}`], {
-        [style.note_focused]: onClose,
-        [style.note_interacting]: isInteracting,
-        [style.note_selected]: isSelected,
-        [style['note_mode-selection']]: isSelectionMode,
-        [style.note_hidden]: isHidden,
-      })}
-      onSubmit={(e) => e.preventDefault()}
-      onClick={onClick}
-      onMouseDown={onMouseDown}
-      onMouseUp={onMouseUp}
-      onKeyDown={(e) => {
-        if (onKeyDown) onKeyDown(e);
-        // Esc
-        if (onClose && e.keyCode === 27) {
-          onClose();
+  };
+
+  // separation into marked and unmarked list items
+  let itemsWithHandlersGroups;
+  if (itemsOrder) {
+    itemsWithHandlersGroups = itemsOrder.reduce(
+      (itemsGroups, itemId) => {
+        const item = items[itemId];
+        const supplementedItem = {
+          ...item,
+          onChange({ target: { value: itemText } }) {
+            onListItemChange(itemId, itemText);
+          },
+          onRemove() {
+            onListItemRemove(itemId);
+          },
+          ref: itemId === focusInfo.itemId ? listItemRef : null,
+          // still no handlers for subItems ↓↓↓
+          sub: item.sub.map((subItemId) => ({
+            ...items[subItemId],
+            onChange({ target: { value: itemText } }) {
+              onListItemChange(subItemId, itemText);
+            },
+            onRemove() {
+              onListItemRemove(subItemId);
+            },
+            onFocus: !isFocused
+              ? ({ target }) => {
+                  setFocusInfo({
+                    fieldRef: listItemRef,
+                    subItemId,
+                    caret: target.selectionStart,
+                  });
+                }
+              : null,
+            onCheck: () => {
+              onListItemCheck(item.id);
+            },
+          })),
+        };
+        if (!isFocused) {
+          supplementedItem.onFocus = ({ target }) => {
+            setFocusInfo({
+              fieldRef: listItemRef,
+              itemId,
+              caret: target.selectionStart,
+            });
+          };
         }
-      }}
-      // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex
-      tabIndex={!onClose ? 0 : -1}
-      ref={ref}
-    >
-      {onSelection && (
-        <div className={style.note__check}>
-          <IconButton
-            iconSymbol="&#xe80b;"
-            titleText="Выбрать заметку"
-            modificators="icon-button_no-padding"
-            onClick={onSelection}
-          />
-        </div>
-      )}
-      <div className={style.note__cornerButtons}>
-        {onPin && (
-          <IconButton
-            iconSymbol={isPinned ? '\ue801' : '\ue812'}
-            titleText={isPinned ? 'Открепить заметку' : 'Закрепить заметку'}
-            modificators="icon-button_smaller"
-            onClick={(e) => {
-              if (isSelectionMode) e.stopPropagation();
-              onPin();
-            }}
-          />
-        )}
-      </div>
-      {(onHeaderChange || headerText !== '') && (
-        <input
-          className={style.note__header}
-          type="text"
-          placeholder="Введите заголовок"
-          value={headerText}
-          onChange={({ target: { value } }) => {
-            onHeaderChange(value);
-          }}
-          onMouseUp={onHeaderFocus}
-          tabIndex={onHeaderChange ? 0 : -1}
-          ref={headerRef}
-        />
-      )}
-      {text != null && (
-        <div className={style.note__text}>
-          <Textarea
-            placeholder="Заметка..."
-            value={text}
-            onChange={
-              onTextFieldChange &&
-              (({ target: { value } }) => {
-                onTextFieldChange(value);
-              })
-            }
-            onMouseUp={onTextFieldFocus}
-            tabIndex={onTextFieldChange ? 0 : -1}
-            ref={textFieldRef}
-          />
-        </div>
-      )}
-      {markedItems && (
-        <div className={style.note__listWrapper}>
-          <ul className={style.note__list} ref={listRef}>
-            {items}
-          </ul>
-          <div className={style.note__markedList}>
-            <i>&#xe81a;</i>
-            <span className={style.note__markedCount}>
-              {`${markedItems.length} отмеченных пунктов`}
-            </span>
-            <ul className={style.note__list}>
-              {markedItems.map((item) => [
-                <ListItemComponent
-                  isChecked
-                  isPreview={item.onFocus}
-                  value={item.text}
-                  onChange={item.onChange}
-                  onRemove={item.onRemove}
-                  onCheck={item.onCheck}
-                  onMouseUp={item.onFocus}
-                  key={item.id}
-                  textareaRef={item.ref}
-                />,
-                ...item.sub.map((subItem) => (
-                  <ListItemComponent
-                    isChecked
-                    isNested
-                    isPreview={subItem.onFocus}
-                    value={subItem.text}
-                    onChange={subItem.onChange}
-                    onRemove={subItem.onRemove}
-                    onCheck={subItem.onCheck}
-                    onMouseUp={subItem.onFocus}
-                    key={subItem.id}
-                    textareaRef={subItem.ref}
-                  />
-                )),
-              ])}
-            </ul>
-          </div>
-        </div>
-      )}
-      <div className={style.note__info}>
-        {children}
-        {onClose && creationDate && editingDate && (
-          <span className={style.note__creationTime}>
-            <CreationTime
-              creationDate={creationDate}
-              editingDate={editingDate}
-              extraText={
-                (onRestore && 'Заметка в корзине') ||
-                (isArchived && 'Заметка в архиве')
-              }
+        if (item.isMarked) {
+          supplementedItem.onCheck = () => {
+            onListItemUncheck(item.id);
+          };
+          itemsGroups.marked.push(supplementedItem);
+        } else {
+          supplementedItem.onCheck = () => {
+            onListItemCheck(item.id);
+          };
+          itemsGroups.unmarked.push(supplementedItem);
+        }
+        return itemsGroups;
+      },
+      { unmarked: [], marked: [] }
+    );
+  }
+
+  const noteLabels = Object.keys(labeledNotes)
+    .sort((l1, l2) => labeledNotes[l1].id - labeledNotes[l2].id)
+    .reduce((labels, label) => {
+      if (labeledNotes[label][id]) {
+        labels.push(label);
+      }
+      return labels;
+    }, []);
+
+  const setTagPopup = () => {
+    setPopup(
+      <PopupTag
+        ids={[id]}
+        handleClose={() => {
+          clearPopup();
+          moreButtonRef.current.focus();
+        }}
+      />,
+      moreButtonRef.current.getBoundingClientRect()
+    );
+    setIsInteracting(true);
+  };
+  const setMenuPopup = () => {
+    setPopup(
+      <PopupMenu
+        id={id}
+        hasMarkedItems={
+          itemsWithHandlersGroups && !!itemsWithHandlersGroups.marked.length
+        }
+        handleClose={() => {
+          clearPopup();
+          moreButtonRef.current.focus();
+        }}
+        onTagsEdit={setTagPopup}
+        hasTags={!!noteLabels.length}
+        onRemove={() => {
+          if (neighbourRef && neighbourRef.current)
+            neighbourRef.current.focus();
+        }}
+      />,
+      moreButtonRef.current.getBoundingClientRect()
+    );
+    setIsInteracting(true);
+  };
+  const setColorsPopup = () => {
+    setPopup(
+      <PopupColors
+        id={id}
+        itemToFocusRef={popupColorsItemToFocusRef}
+        handleClose={(isSilent) => {
+          clearPopup();
+          if (!isSilent) colorsButtonRef.current.focus();
+        }}
+        onMouseEnter={() => {
+          clearTimeout(colorsTimerId.id);
+        }}
+      />,
+      colorsButtonRef.current.getBoundingClientRect(),
+      true
+    );
+    setIsInteracting(true);
+  };
+  const setReminderPopup = () => {
+    setPopup(
+      <PopupReminder
+        id={id}
+        handleClose={() => {
+          clearPopup();
+          reminderButtonRef.current.focus();
+        }}
+      />,
+      reminderButtonRef.current.getBoundingClientRect()
+    );
+    setIsInteracting(true);
+  };
+
+  const onClose = () => {
+    if (history.location.pathname !== currentPage) history.push(currentPage);
+    onNoteBlur();
+    if (isAddNote) {
+      onNoteAdd();
+    }
+    setTimeout(() => {
+      if (noteRef.current) noteRef.current.focus();
+    }, 0);
+  };
+
+  const eventHandlers = {
+    onMouseDown,
+  };
+
+  if (isFocused) {
+    eventHandlers.onClose = onClose;
+  } else {
+    // !isFocused
+    eventHandlers.onSelection = isSelected
+      ? onCancelNoteSelection
+      : onNoteSelection;
+    eventHandlers.onKeyDown = (e) => {
+      // Enter
+      if (e.target === e.currentTarget && e.keyCode === 13) {
+        onNoteFocus();
+      }
+    };
+  }
+
+  // a click handler focusing the note
+  if (!isAddNote) {
+    if (isSelectionMode) {
+      eventHandlers.onClick = isSelected
+        ? onCancelNoteSelection
+        : onNoteSelection;
+    } else {
+      eventHandlers.onMouseUp = ({ target }) => {
+        const nonFocusingElementsSelectors = [
+          style.note__check,
+          style.note__cornerButtons,
+          style.note__buttons,
+          style.note__info,
+          checkboxClassname,
+        ].map((s) => `.${s}`);
+        if (nonFocusingElementsSelectors.every((s) => !target.closest(s))) {
+          onNoteFocus();
+        }
+      };
+    }
+  }
+
+  if (isRemoved) {
+    eventHandlers.onRestore = onNoteRestore;
+    eventHandlers.onDelete = onNoteDelete;
+  } else {
+    eventHandlers.onPin = isPinned ? onNoteUnpin : onNotePin;
+    eventHandlers.onArchive = isArchived ? onNoteSetRegular : onNoteArchive;
+    eventHandlers.onMoreButtonClick = () => {
+      clearTimeout(colorsTimerId.id);
+      setMenuPopup();
+    };
+    eventHandlers.onColorsButtonClick = () => {
+      clearTimeout(colorsTimerId.id);
+      setColorsPopup();
+      setTimeout(() => {
+        popupColorsItemToFocusRef.current.focus();
+      }, 0);
+    };
+    eventHandlers.onColorsButtonMouseEnter = () => {
+      clearTimeout(colorsTimerId.id);
+      setColorsPopup();
+    };
+    eventHandlers.onColorsButtonMouseLeave = () => {
+      const timerId = setTimeout(() => {
+        clearPopup();
+      }, 1000);
+      setColorsLeaveTimerId(timerId);
+    };
+
+    if (isReminderReadyToUpdate) {
+      eventHandlers.onReminderButtonClick = () => {
+        onNoteReminderUpdate();
+      };
+    } else {
+      eventHandlers.onReminderButtonClick = () => {
+        clearTimeout(colorsTimerId.id);
+        setReminderPopup();
+      };
+    }
+
+    if (isFocused) {
+      eventHandlers.onHeaderChange = onHeaderChange;
+      eventHandlers.onTextFieldChange = onTextFieldChange;
+    } else {
+      // !isFocused
+      eventHandlers.onHeaderFocus = ({ target }) => {
+        setFocusInfo({
+          fieldRef: headerRef,
+          caret: target.selectionStart,
+        });
+      };
+      eventHandlers.onTextFieldFocus = ({ target }) => {
+        setFocusInfo({
+          fieldRef: textFieldRef,
+          caret: target.selectionStart,
+        });
+      };
+    }
+  }
+
+  if (isUndoable) {
+    eventHandlers.onUndo = onUndo;
+  }
+  if (isRedoable) {
+    eventHandlers.onRedo = onRedo;
+  }
+
+  const noteElem = (
+    <ListDragContext.Provider value={listRef}>
+      <Note
+        isSelectionMode={isSelectionMode}
+        isHidden={isHidden}
+        noteData={{
+          headerText,
+          text,
+          // items: itemsOrder && itemsWithHandlersGroups.unmarked,
+          items: itemsOrder && (
+            <ListItemGroup
+              id={id}
+              items={itemsWithHandlersGroups.unmarked}
+              isAddNeeded={isFocused}
+              addListItemRef={addListItemRef}
             />
-          </span>
-        )}
-      </div>
-      <div className={style.note__buttons}>
-        {onClose && (
-          <span className={style.note__button}>
-            <Button onClick={onClose}>Закрыть</Button>
-          </span>
-        )}
-        {iconButtons}
-      </div>
-    </form>
+          ),
+          markedItems: itemsOrder && itemsWithHandlersGroups.marked,
+          isPinned,
+          isArchived,
+          isReminderPassed: isReminderReadyToUpdate,
+          creationDate,
+          editingDate,
+          color,
+          isInteracting,
+          isSelected,
+        }}
+        eventHandlers={eventHandlers}
+        IconButton={IconButtonTitled}
+        ListItem={ListItemDnD}
+        CreationTime={CreationTimeTitled}
+        refs={{
+          moreButtonRef,
+          colorsButtonRef,
+          reminderButtonRef,
+
+          headerRef,
+          textFieldRef,
+          listRef,
+        }}
+        ref={noteRef}
+      >
+        <Reminder
+          id={id}
+          isPassed={isReminderPassed}
+          onClick={setReminderPopup}
+        />
+        {noteLabels.map((label) => (
+          <Label
+            text={label}
+            onClick={() => {
+              history.push(`/label/${label}`);
+            }}
+            key={label}
+          />
+        ))}
+      </Note>
+    </ListDragContext.Provider>
+  );
+
+  if (isFocused && !isAddNote) {
+    return (
+      <>
+        <div style={{ height: `${savedHeight}px` }} />
+        <Modal onClose={onClose}>{noteElem}</Modal>
+      </>
+    );
+  }
+  return noteElem;
+}
+
+function mapStateToProps(state, { id }) {
+  const isReminderPassed = hasPassedReminder(state, id);
+  return {
+    note: state.main.notes[id],
+    reminderId: getReminderIdByNoteId(state, id),
+    isFocused: id === state.main.focusedNoteId,
+    isAddNote: id === getAddingNoteId(state),
+    isSelected: state.main.selectedNotes[id],
+    isPinned: state.main.pinnedNotes[id],
+    isArchived: state.main.archivedNotes[id],
+    isRemoved: state.main.removedNotes[id],
+    isReminderPassed,
+    isReminderReadyToUpdate:
+      isReminderPassed && state.app.page === '/reminders',
+    isUndoable: !!state.history.past.length,
+    isRedoable: !!state.history.future.length,
+    labeledNotes: state.main.labeledNotes,
+    currentPage: getCurrentPage(state),
+  };
+}
+
+function mapDispatchToProps(dispatch, { id, reminderId }) {
+  return bindActionCreators(
+    {
+      onNoteBlur: blurNote,
+      onNotePin: () => pinNote(id),
+      onNoteUnpin: () => unpinNote(id),
+      onNoteRestore: () => restoreNote(id),
+      onNoteDelete: () => deleteNote(id),
+      onNoteArchive: () => setNoteAsArchived(id),
+      onNoteSetRegular: () => setNoteAsRegular(id),
+      onNoteReminderUpdate: () => updateReminder(reminderId),
+      onNoteAdd: addNewNote,
+      onHeaderChange: (headerText) => updateNoteHeader(id, headerText),
+      onTextFieldChange: (text) => updateNoteText(id, text),
+      onListItemChange: (itemId, itemText) =>
+        updateNoteListItem(id, itemId, itemText),
+      onListItemRemove: (itemId) => removeNoteListItem(id, itemId),
+      onListItemCheck: (itemId) => checkNoteListItem(id, itemId),
+      onListItemUncheck: (itemId) => uncheckNoteListItem(id, itemId),
+      onNoteSelection: () => selectNote(id),
+      onCancelNoteSelection: () => cancelNoteSelection(id),
+      onUndo: undoHistory,
+      onRedo: redoHistory,
+    },
+    dispatch
   );
 }
 
-export default React.forwardRef(Note);
+export default compose(
+  withRouter,
+  withPopup,
+  connect(mapStateToProps, null),
+  connect(null, mapDispatchToProps)
+)(NoteContainer);

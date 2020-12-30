@@ -4,7 +4,7 @@ import { compose } from 'redux';
 import { HashRouter, withRouter } from 'react-router-dom';
 
 import { wrapWith } from '@/utils';
-import { ModalContext } from '@components/Modal/Modal.container';
+import { ModalContext } from '@components/Modal/Modal';
 import { PopupProvider } from '@components/Popup/Popup';
 import { TitleProvider } from '@components/Title/Title.container';
 

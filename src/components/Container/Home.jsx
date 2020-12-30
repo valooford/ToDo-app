@@ -7,7 +7,7 @@ import Note from '@components/Note/Note.dnd';
 import { getAddingNoteId } from '@store/selectors';
 import { insertNote as insertNoteAC } from '@store/notesReducer';
 
-import Container from './Container.container';
+import Container from './Container';
 
 function Home({
   addingNoteId,

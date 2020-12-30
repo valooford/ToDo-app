@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import cn from 'classnames';
 
-import Aside from '@components/Aside/Aside.container';
+import Aside from '@components/Aside/Aside';
 
 import styles from './App.module.scss';
 

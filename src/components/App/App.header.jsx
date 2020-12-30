@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Header from '@components/Header/Header.container';
+import Header from '@components/Header/Header';
 import SelectionBar from '@components/SelectionBar/SelectionBar.container';
 
 import { switchAsideExpansion as switchAsideExpansionAC } from '@/store/appReducer';

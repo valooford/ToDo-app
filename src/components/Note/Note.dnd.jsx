@@ -5,7 +5,7 @@ import { getEmptyImage } from 'react-dnd-html5-backend';
 
 import dragSourceTypes from '@/dragSourceTypes';
 
-import Note from './Note.container';
+import Note from './Note';
 import NoteDragLayer from './Note.drag-layer';
 
 function NoteDnD({

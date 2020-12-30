@@ -3,7 +3,7 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 
 import AddNote from '@components/Note/AddNote.container';
-import Note from '@components/Note/Note.container';
+import Note from '@components/Note/Note';
 
 import {
   setDateReminder,
@@ -15,7 +15,7 @@ import {
   getReminderIdByNoteId,
 } from '@store/selectors';
 
-import Container from './Container.container';
+import Container from './Container';
 
 function Reminiscent({
   addingNoteId,

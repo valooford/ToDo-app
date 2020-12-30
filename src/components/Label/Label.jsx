@@ -5,8 +5,6 @@ import IconButtonComponent from '@components/IconButton/IconButton';
 
 import style from './Label-cfg.module.scss';
 
-// КОМПОНЕНТ МЕТКИ / LABEL
-// *
 function Label(
   {
     text,

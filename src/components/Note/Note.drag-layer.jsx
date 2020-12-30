@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDragLayer } from 'react-dnd';
 
-import Note from './Note.container';
+import Note from './Note';
 
 const layerStyles = {
   position: 'absolute',
