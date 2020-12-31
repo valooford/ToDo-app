@@ -7,8 +7,6 @@ import Modal from './Modal.pure';
 
 export const ModalContext = React.createContext();
 
-// КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ MODAL
-// *
 export default function ModalContainer({ children, onClose }) {
   const modalRef = useContext(ModalContext);
   return ReactDOM.createPortal(

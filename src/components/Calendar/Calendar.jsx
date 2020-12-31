@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import cn from 'classnames';
 
-import { months, getFormattedDate } from '@/utils';
+import { months, getFormattedDate } from '@common/utils';
 
 import style from './Calendar-cfg.module.scss';
 

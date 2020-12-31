@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-import { getDateParamsFromString } from '@/utils';
+import { getDateParamsFromString } from '@common/utils';
 
 import IconButton from '@components/IconButton/IconButton.titled';
 import Dropdown from '@components/Dropdown/Dropdown';
@@ -42,8 +42,6 @@ const getCleanPeriod = (period) => {
   return cleanPeriod;
 };
 
-// КОМПОНЕНТ ВСПЛЫВАЮЩЕГО МЕНЮ НАСТРОЙКИ НАПОМИНАНИЙ / POPUP-REMINDER
-// *
 export default function PopupReminder({
   onMouseDown,
   onClose,

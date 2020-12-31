@@ -3,10 +3,11 @@ import React, { useRef } from 'react';
 import { compose } from 'redux';
 import { HashRouter, withRouter } from 'react-router-dom';
 
-import { wrapWith } from '@/utils';
+import { wrapWith } from '@common/utils';
+
 import { ModalContext } from '@components/Modal/Modal';
 import { PopupProvider } from '@components/Popup/Popup';
-import { TitleProvider } from '@components/Title/Title.container';
+import { TitleProvider } from '@components/Title/Title';
 
 import AppModalLayer from './App.modalLayer';
 import AppPopupLayer from './App.popupLayer';

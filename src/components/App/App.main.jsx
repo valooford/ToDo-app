@@ -4,7 +4,8 @@ import { Route, Switch } from 'react-router-dom';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 
-import { wrapWith } from '@/utils';
+import { wrapWith } from '@common/utils';
+
 import NoteFocuser from '@components/Container/NoteFocuser';
 import Page from '@components/Container/Page';
 import Home from '@components/Container/Home';
@@ -13,7 +14,7 @@ import Labeled from '@components/Container/Labeled';
 import Archived from '@components/Container/Archived';
 import Removed from '@components/Container/Removed';
 import SearchResults from '@components/Container/SearchResults';
-import { withSelectionClearing } from '@components/SelectionBar/SelectionBar.container';
+import { withSelectionClearing } from '@components/SelectionBar/SelectionBar';
 
 import styles from './App.module.scss';
 

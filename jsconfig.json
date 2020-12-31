@@ -3,9 +3,9 @@
     "baseUrl": ".",
     "paths": {
       // aliases for VSCode Intellisense to work (from webpack config)
-      "@/*": ["src/*"],
       "@api/*": ["src/api/*"],
       "@assets/*": ["src/assets/*"],
+      "@common/*": ["src/common/*"],
       "@components/*": ["src/components/*"],
       "@store/*": ["src/store/*"],
       "@styles/*": ["src/styles/*"]

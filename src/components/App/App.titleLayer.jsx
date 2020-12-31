@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import Title from '@components/Title/Title.container';
+import Title from '@components/Title/Title';
 
 function AppTitleLayer({ titleData }) {
   if (!titleData) return null;

@@ -4,8 +4,6 @@ import { Link } from 'react-router-dom';
 
 import style from './MenuItem-cfg.module.scss';
 
-// КОМПОНЕНТ ПУНКТА МЕНЮ С ИКОНКОЙ / ICONED-MENU-ITEM
-// *
 function IconedMenuItem(
   { to, isSelected, isConcise, iconSymbol, text, onClick },
   ref

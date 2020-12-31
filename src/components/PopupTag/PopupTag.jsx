@@ -1,134 +1,66 @@
-import React, { useEffect, useRef, useState } from 'react';
-import cn from 'classnames';
+import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
+import { setNoteTag, removeNoteTag, addNewTag } from '@store/notesReducer';
+import { useEffectOnMouseDownOutside } from '@common/utils';
 
-import style from './PopupTag.module.scss';
+import PopupTag from './PopupTag.pure';
 
-export default function PopupTag({
-  labels,
+function PopupTagContainer({
+  ids,
+  handleClose,
+  labeledNotes,
   setTag,
   removeTag,
   addTag,
-  isNoteHasTag,
-  isTagExist,
-  onMouseDown,
-  onKeyDown,
 }) {
-  const autofocusRef = useRef(null);
-  useEffect(() => {
-    autofocusRef.current.focus();
-  }, []);
-  const [searchStr, setSearchStr] = useState('');
-  const displayedLabels = !searchStr
-    ? labels
-    : labels.filter(({ name: label }) =>
-        new RegExp(`${searchStr}`).test(label)
-      );
-
-  const manageLabelTag = (label, isSet) => {
-    if (isSet)
-      return () => {
-        removeTag(label);
-      };
-    return () => {
-      setTag(label);
-    };
+  // detecting click inside popupTag
+  const setIsTouched = useEffectOnMouseDownOutside(handleClose, []);
+  const onKeyDown = (e) => {
+    // Esc
+    if (e.keyCode === 27) {
+      handleClose();
+    }
   };
-  const addNewNoteTag = () => {
-    addTag(searchStr);
-    setTag(searchStr);
-    setSearchStr('');
-    autofocusRef.current.focus();
-  };
-
+  const labels = Object.keys(labeledNotes)
+    .sort((l1, l2) => labeledNotes[l1].id - labeledNotes[l2].id)
+    .map((label) => {
+      const isSet = ids.every((id) => labeledNotes[label][id]);
+      const isPartlySet = ids.some((id) => labeledNotes[label][id]);
+      return { name: label, isSet, isPartlySet };
+    });
   return (
-    <KeyboardTrap>
-      {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
-      <div
-        className={style['popup-tag']}
-        onMouseDown={onMouseDown}
-        onKeyDown={onKeyDown}
-      >
-        <div className={style['popup-tag__header']}>Добавить ярлык</div>
-        <div className={style['popup-tag__search']}>
-          <input
-            type="text"
-            className={style['popup-tag__input']}
-            placeholder="Введите название ярлыка"
-            value={searchStr}
-            onChange={(e) => {
-              setSearchStr(e.target.value);
-            }}
-            onKeyDown={(e) => {
-              if (e.keyCode === 13) {
-                if (isTagExist(searchStr)) {
-                  manageLabelTag(searchStr, isNoteHasTag(searchStr))();
-                } else {
-                  addNewNoteTag();
-                }
-              }
-            }}
-            ref={autofocusRef}
-          />
-          <span
-            className={cn(
-              style['popup-tag__icon'],
-              style['popup-tag__icon_right']
-            )}
-          >
-            &#xe814;
-          </span>
-        </div>
-        <KeyboardTrap usingArrows>
-          <ul className={style['popup-tag__scroll-wrapper']}>
-            {displayedLabels.map(({ name: label, isSet, isPartlySet }) => (
-              <li key={label}>
-                <button
-                  type="button"
-                  className={style['popup-tag__label']}
-                  onClick={manageLabelTag(label, isSet)}
-                >
-                  <span
-                    className={cn(
-                      style['popup-tag__icon'],
-                      style['popup-tag__icon_left'],
-                      style['popup-tag__checkbox']
-                    )}
-                  >
-                    {(() => {
-                      if (isSet) return '\ue800';
-                      if (isPartlySet) return '-';
-                      return '';
-                    })()}
-                  </span>
-                  {label}
-                </button>
-              </li>
-            ))}
-          </ul>
-          {searchStr && !isTagExist(searchStr) && (
-            <button
-              type="button"
-              className={style['popup-tag__create']}
-              onClick={addNewNoteTag}
-            >
-              <span
-                className={cn(
-                  style['popup-tag__icon'],
-                  style['popup-tag__icon_left']
-                )}
-              >
-                &#xe810;
-              </span>
-              Создать ярлык{' '}
-              <span className={style['popup-tag__label-to-create']}>
-                {`"${searchStr}"`}
-              </span>
-            </button>
-          )}
-        </KeyboardTrap>
-      </div>
-    </KeyboardTrap>
+    <PopupTag
+      labels={labels}
+      setTag={setTag}
+      removeTag={removeTag}
+      addTag={addTag}
+      isNoteHasTag={(tag) => ids.every((id) => labeledNotes[tag][id])}
+      isTagExist={(tag) => labeledNotes[tag]}
+      onMouseDown={() => {
+        setIsTouched();
+      }}
+      onKeyDown={onKeyDown}
+    />
   );
 }
+
+function mapStateToProps(state) {
+  return {
+    labeledNotes: state.main.labeledNotes,
+  };
+}
+
+function mapDispatchToProps(dispatch, { ids }) {
+  return bindActionCreators(
+    {
+      setTag: (tag) => setNoteTag(ids, tag),
+      removeTag: (tag) => removeNoteTag(ids, tag),
+      addTag: addNewTag,
+    },
+    dispatch
+  );
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(PopupTagContainer);

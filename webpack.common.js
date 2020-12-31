@@ -20,6 +20,7 @@ module.exports = {
         '@': path.resolve(__dirname, './src/'),
         '@api': '@/api',
         '@assets': '@/assets',
+        '@common': '@/common',
         '@components': '@/components',
         '@store': '@/store',
         '@styles': '@/styles',

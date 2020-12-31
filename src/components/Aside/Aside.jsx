@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { connect } from 'react-redux';
 
 import Modal from '@components/Modal/Modal';
-import TagEditor from '@components/TagEditor/TagEditor.container';
+import TagEditor from '@components/TagEditor/TagEditor';
 
 import { getCurrentPage } from '@store/selectors';
 

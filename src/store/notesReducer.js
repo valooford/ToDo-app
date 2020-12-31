@@ -1,4 +1,4 @@
-import { associativeArrToArr } from '@/utils';
+import { associativeArrToArr } from '@common/utils';
 
 import {
   SET_FOCUSED_NOTE,

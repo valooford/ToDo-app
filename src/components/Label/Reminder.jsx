@@ -8,10 +8,10 @@ import {
   getReminderIdByNoteId,
   getAddingNoteId,
 } from '@store/selectors';
-import { getFormattedDate } from '@/utils';
+import { getFormattedDate } from '@common/utils';
 
 import IconButtonTitled from '@components/IconButton/IconButton.titled';
-import { withTitle } from '@components/Title/Title.container';
+import { withTitle } from '@components/Title/Title';
 
 import Label from './Label';
 

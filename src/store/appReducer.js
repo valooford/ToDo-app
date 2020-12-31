@@ -25,7 +25,7 @@ const handlers = {
 };
 
 const initialState = {
-  page: null,
+  page: '/home',
   isAsideExpanded: true,
   titleData: null,
   popupData: null,

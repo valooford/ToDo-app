@@ -1,8 +1,6 @@
 import React from 'react';
 import style from './CreationTime-cfg.module.scss';
 
-// КОМПОНЕНТ ВРЕМЕНИ СОЗДАНИЯ / CREATION-TIME
-// *
 const CreationTime = React.forwardRef(
   ({ text, onMouseEnter, onMouseLeave }, ref) => (
     <span

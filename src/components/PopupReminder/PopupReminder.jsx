@@ -2,7 +2,10 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { useEffectOnMouseDownOutside, associativeArrToArr } from '@/utils';
+import {
+  useEffectOnMouseDownOutside,
+  associativeArrToArr,
+} from '@common/utils';
 
 import PopupReminder from '@components/PopupReminder/PopupReminder.pure';
 
@@ -15,8 +18,6 @@ import {
 } from '@store/notificationReducer';
 import { getReminder, getReminderIdByNoteId } from '@store/selectors';
 
-// КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ POPUP-REMINDER
-// *
 function PopupReminderContainer({
   handleClose,
   reminder: {

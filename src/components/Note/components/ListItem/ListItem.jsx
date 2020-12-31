@@ -8,8 +8,6 @@ import style from './ListItem-cfg.module.scss';
 
 export { style };
 
-// КОМПОНЕНТ ЭЛЕМЕНТА СПИСКА / LIST-ITEM
-// *
 function ListItem(
   {
     isAddItem,

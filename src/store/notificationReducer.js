@@ -1,5 +1,5 @@
 import { getPlaces } from '@api/places';
-import { associativeArrToArr } from '@/utils';
+import { associativeArrToArr } from '@common/utils';
 
 import {
   SET_NOTE_REMINDER,

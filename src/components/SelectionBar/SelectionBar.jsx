@@ -1,102 +1,189 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 
-import IconButton from '@components/IconButton/IconButton';
+import { withPopup } from '@components/Popup/Popup';
+import PopupMenu from '@components/PopupMenu/PopupMenu';
+import PopupColors from '@components/PopupColors/PopupColors';
+import PopupReminder from '@components/PopupReminder/PopupReminder';
+import PopupTag from '@components/PopupTag/PopupTag';
 
-import style from './SelectionBar-cfg.module.scss';
+import {
+  pinNote as pinNoteAC,
+  unpinNote as unpinNoteAC,
+  clearSelectedNotes as clearSelectedNotesAC,
+} from '@store/notesReducer';
 
-// КОМПОНЕНТ МЕНЮ ПРИ ВЫДЕЛЕНИИ / SELECTION-BAR
-// *
-export default function SelectionBar({
-  selectedCount,
-  pinSymbol = '\ue812',
-  eventHandlers: {
-    onClose,
-    onMoreButtonClick,
-    onColorsButtonClick,
-    onColorsButtonMouseEnter,
-    onColorsButtonMouseLeave,
-    onReminderButtonClick,
-    onPin,
-  },
-  refs: { moreButtonRef, colorsButtonRef, reminderButtonRef },
+import SelectionBar from './SelectionBar.pure';
+
+function SelectionBarContainer({
+  selectedNotes,
+  labeledNotes,
+  pinNote,
+  // unpinNote,
+  setPopup,
+  clearPopup,
+  clearSelectedNotes,
 }) {
-  const buttonsParams = [
-    {
-      // iconSymbol: isPinned ? '\ue801' : '\ue812',
-      iconSymbol: pinSymbol,
-      // titleText: isPinned ? 'Открепить заметку' : 'Закрепить заметку',
-      titleText: 'Закрепить заметку',
-      modificators: ['icon-button_bigger', 'icon-button_style-selection-bar'],
-      onClick: onPin,
-    },
-    {
-      iconSymbol: '\uf0f3',
-      titleText: 'Сохранить напоминание',
-      modificators: ['icon-button_bigger', 'icon-button_style-selection-bar'],
-      onClick: onReminderButtonClick,
-      ref: reminderButtonRef,
-    },
-    {
-      iconSymbol: '\ue804',
-      titleText: 'Изменить цвет',
-      modificators: ['icon-button_bigger', 'icon-button_style-selection-bar'],
-      onClick: onColorsButtonClick,
-      onMouseEnter: onColorsButtonMouseEnter,
-      onMouseLeave: onColorsButtonMouseLeave,
-      ref: colorsButtonRef,
-    },
-    {
-      iconSymbol: '\ue805',
-      titleText: 'Архивировать',
-      modificators: ['icon-button_bigger', 'icon-button_style-selection-bar'],
-    },
-    {
-      iconSymbol: '\ue81f',
-      titleText: 'Ещё',
-      modificators: ['icon-button_bigger', 'icon-button_style-selection-bar'],
-      onClick: onMoreButtonClick,
-      ref: moreButtonRef,
-    },
-  ];
-  let text;
-  const remainder10 = selectedCount % 10;
-  const remainder100 = selectedCount % 100;
-  if (remainder100 <= 10 || remainder100 >= 20) {
-    if (remainder10 > 1 && remainder10 < 5) {
-      text = `Выбрано ${selectedCount} заметки`;
-    } else if (remainder10 === 1) {
-      text = `Выбрана ${selectedCount} заметка`;
-    } else {
-      text = `Выбрано ${selectedCount} заметок`;
-    }
-  } else {
-    text = `Выбрано ${selectedCount} заметок`;
-  }
+  const moreButtonRef = useRef(null);
+  const colorsButtonRef = useRef(null);
+  const popupColorsItemToFocusRef = useRef(null);
+  const reminderButtonRef = useRef(null);
+
+  // a PopupColors disappearance timer id
+  // a mutable object is used for proper clearTimeout work
+  const [colorsTimerId, setColorsTimerId] = useState({});
+  const setColorsLeaveTimerId = (timerId) => {
+    setColorsTimerId((prev) => {
+      // eslint-disable-next-line no-param-reassign
+      prev.id = timerId;
+      return prev;
+    });
+  };
+
+  if (!selectedNotes.length) return null;
+
+  const selectedNotesNoLength = { ...selectedNotes };
+  delete selectedNotesNoLength.length;
+  const selectedNotesArr = Object.keys(selectedNotesNoLength);
+  const setTagPopup = () => {
+    setPopup(
+      <PopupTag
+        ids={selectedNotesArr}
+        handleClose={() => {
+          clearPopup();
+          moreButtonRef.current.focus();
+        }}
+      />,
+      moreButtonRef.current.getBoundingClientRect()
+    );
+  };
+  const setMenuPopup = () => {
+    setPopup(
+      <PopupMenu
+        id={selectedNotes}
+        isMultiple
+        // hasMarkedItems={markedItems && !!markedItems.length}
+        handleClose={() => {
+          clearPopup();
+          moreButtonRef.current.focus();
+        }}
+        onTagsEdit={setTagPopup}
+        hasTags={selectedNotesArr.some((noteId) =>
+          Object.values(labeledNotes).some((label) => label[noteId])
+        )}
+      />,
+      moreButtonRef.current.getBoundingClientRect()
+    );
+  };
+  const setColorsPopup = () => {
+    setPopup(
+      <PopupColors
+        id={selectedNotes}
+        itemToFocusRef={popupColorsItemToFocusRef}
+        handleClose={(isSilent) => {
+          clearPopup();
+          if (!isSilent) colorsButtonRef.current.focus();
+        }}
+        onHover={() => {
+          clearTimeout(colorsTimerId.id);
+        }}
+      />,
+      colorsButtonRef.current.getBoundingClientRect(),
+      true
+    );
+  };
+  const setReminderPopup = () => {
+    setPopup(
+      <PopupReminder
+        id={selectedNotes}
+        handleClose={() => {
+          clearPopup();
+          reminderButtonRef.current.focus();
+        }}
+      />,
+      reminderButtonRef.current.getBoundingClientRect()
+    );
+  };
+
   return (
-    <div className={style['selection-bar']}>
-      <IconButton
-        iconSymbol="&#xe80c;"
-        titleText="Отменить выбор"
-        modificators="icon-button_bigger"
-        onClick={onClose}
-      />
-      <span className={style['selection-bar__selected-notes-count']}>
-        {text}
-      </span>
-      <span className={style['selection-bar__buttons']}>
-        {buttonsParams.map((params) => (
-          <IconButton
-            iconSymbol={params.iconSymbol}
-            titleText={params.titleText}
-            modificators={params.modificators}
-            onClick={params.onClick}
-            onMouseEnter={params.onMouseEnter}
-            onMouseLeave={params.onMouseLeave}
-            ref={params.ref}
-            key={params.titleText}
-          />
-        ))}
-      </span>
-    </div>
+    <SelectionBar
+      selectedCount={selectedNotes.length}
+      eventHandlers={{
+        onClose: clearSelectedNotes,
+        onMoreButtonClick() {
+          clearTimeout(colorsTimerId.id);
+          setMenuPopup();
+        },
+        onColorsButtonClick() {
+          clearTimeout(colorsTimerId.id);
+          setColorsPopup();
+          setTimeout(() => {
+            popupColorsItemToFocusRef.current.focus();
+          }, 0);
+        },
+        onColorsButtonMouseEnter: () => {
+          clearTimeout(colorsTimerId.id);
+          setColorsPopup();
+        },
+        onColorsButtonMouseLeave: () => {
+          const timerId = setTimeout(() => {
+            clearPopup();
+          }, 1000);
+          setColorsLeaveTimerId(timerId);
+        },
+        onReminderButtonClick: () => {
+          clearTimeout(colorsTimerId.id);
+          setReminderPopup();
+        },
+        // onPin: 'selectedNotes.some(unpinned)'
+        //   ? () => {
+        //       pinNote(1);
+        //     }
+        //   : () => {
+        //       unpinNote(1);
+        //     },
+        onPin: () => {
+          pinNote(selectedNotes);
+        },
+      }}
+      refs={{ moreButtonRef, colorsButtonRef, reminderButtonRef }}
+    />
+  );
+}
+
+function mapStateToProps(state) {
+  return {
+    selectedNotes: state.main.selectedNotes,
+    labeledNotes: state.main.labeledNotes,
+  };
+}
+
+export default compose(
+  withPopup,
+  connect(mapStateToProps, {
+    pinNote: pinNoteAC,
+    unpinNote: unpinNoteAC,
+    clearSelectedNotes: clearSelectedNotesAC,
+  })
+)(SelectionBarContainer);
+
+function SelectionCleaner({ children, onClick }) {
+  return React.Children.map(children, (child) =>
+    React.cloneElement(child, {
+      onDirectClick: onClick,
+    })
+  );
+}
+
+const SelectionCleanerWrapper = connect(null, {
+  onClick: clearSelectedNotesAC,
+})(SelectionCleaner);
+
+export function withSelectionClearing(Component) {
+  return () => (
+    <SelectionCleanerWrapper>
+      <Component />
+    </SelectionCleanerWrapper>
   );
 }

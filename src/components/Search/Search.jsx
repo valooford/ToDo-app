@@ -1,40 +1,46 @@
-import React from 'react';
-import style from './Search-cfg.module.scss';
+import React, { useState, useEffect, useRef } from 'react';
+import { compose } from 'redux';
+import { useHistory, useRouteMatch, withRouter } from 'react-router-dom';
 
-// КОМПОНЕНТ ПОЛЯ ДЛЯ ПОИСКА / SEARCH
-// *
-function Search({ IconButton, isFocused, onInput, onFocus, onClear }, ref) {
+import Search from './Search.pure';
+
+export default function SearchContainer() {
+  const history = useHistory();
+  const { params: { text = '', filter, data } = {} } =
+    useRouteMatch('/search/text":text?"/:filter?/:data?') || {};
+  const [isFocused, setIsFocused] = useState(text != null || filter != null);
+  const ref = useRef(null);
+  useEffect(() => {
+    ref.current.value = text;
+  }, []);
   return (
-    <span className={style.search}>
-      <i className={style.search__icon}>
-        <IconButton
-          iconSymbol="&#xe814;"
-          titleText="Поиск"
-          onClick={() => {
-            ref.current.focus();
-          }}
-        />
-      </i>
-      <input
-        type="text"
-        placeholder="Поиск"
-        onInput={({ target: { value } }) => {
-          onInput(value);
-        }}
-        onFocus={onFocus}
-        ref={ref}
-      />
-      {isFocused && (
-        <i className={style.search__clean}>
-          <IconButton
-            iconSymbol="&#xe80c;"
-            titleText="Удалить поисковый запрос"
-            onClick={onClear}
-          />
-        </i>
-      )}
-    </span>
+    <Search
+      isFocused={isFocused}
+      onInput={(query) => {
+        history.push(
+          `/search/text"${query}"/${filter ? `${filter}/${data || ''}` : ''}`
+        );
+      }}
+      onFocus={
+        !isFocused
+          ? () => {
+              history.push('/search');
+              setIsFocused(true);
+            }
+          : null
+      }
+      onClear={() => {
+        if (text || filter) {
+          history.push('/search');
+        } else {
+          history.push('/home');
+          setIsFocused(false);
+        }
+        ref.current.value = '';
+      }}
+      ref={ref}
+    />
   );
 }
 
-export default React.forwardRef(Search);
+compose(withRouter)(SearchContainer);

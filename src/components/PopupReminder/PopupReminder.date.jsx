@@ -6,7 +6,7 @@ import {
   getPeriodString,
   getDateParamsFromString,
   isTimePassed,
-} from '@/utils';
+} from '@common/utils';
 
 import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
 import IconButtonComponent from '@components/IconButton/IconButton';

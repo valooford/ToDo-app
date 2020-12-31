@@ -2,8 +2,6 @@ import React from 'react';
 import cn from 'classnames';
 import style from './IconButton-cfg.module.scss';
 
-// КОМПОНЕНТ КНОПКИ С ИКОНКОЙ / ICON-BUTTON
-// *
 function IconButton(
   {
     iconSymbol = '',

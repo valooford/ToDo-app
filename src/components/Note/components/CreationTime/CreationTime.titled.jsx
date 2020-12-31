@@ -1,7 +1,7 @@
 import React from 'react';
 
-import { getFormattedDate } from '@/utils';
-import { withTitle } from '@components/Title/Title.container';
+import { getFormattedDate } from '@common/utils';
+import { withTitle } from '@components/Title/Title';
 
 import CreationTime from './CreationTime';
 

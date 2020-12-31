@@ -2,9 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import Header from '@components/Header/Header';
-import SelectionBar from '@components/SelectionBar/SelectionBar.container';
+import SelectionBar from '@components/SelectionBar/SelectionBar';
 
-import { switchAsideExpansion as switchAsideExpansionAC } from '@/store/appReducer';
+import { switchAsideExpansion as switchAsideExpansionAC } from '@store/appReducer';
 
 import styles from './App.module.scss';
 

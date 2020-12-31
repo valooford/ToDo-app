@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import cn from 'classnames';
 
-import { getFormattedDate, getPeriodString } from '@/utils';
+import { getFormattedDate, getPeriodString } from '@common/utils';
 
 import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
 import IconButtonComponent from '@components/IconButton/IconButton';

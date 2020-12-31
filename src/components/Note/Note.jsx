@@ -3,15 +3,15 @@ import { bindActionCreators, compose } from 'redux';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 
-import { useEffectOnMouseDownOutside } from '@/utils';
+import { useEffectOnMouseDownOutside } from '@common/utils';
 
 import Modal from '@components/Modal/Modal';
 import IconButtonTitled from '@components/IconButton/IconButton.titled';
 import { withPopup } from '@components/Popup/Popup';
-import PopupMenu from '@components/PopupMenu/PopupMenu.container';
-import PopupColors from '@components/PopupColors/PopupColors.container';
+import PopupMenu from '@components/PopupMenu/PopupMenu';
+import PopupColors from '@components/PopupColors/PopupColors';
 import PopupReminder from '@components/PopupReminder/PopupReminder';
-import PopupTag from '@components/PopupTag/PopupTag.container';
+import PopupTag from '@components/PopupTag/PopupTag';
 import Reminder from '@components/Label/Reminder';
 import Label from '@components/Label/Label';
 
@@ -54,8 +54,6 @@ import CreationTimeTitled from './components/CreationTime/CreationTime.titled';
 
 const checkboxClassname = listItemStyle.listItem__checkbox;
 
-// КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ NOTE
-// *
 function NoteContainer({
   id,
   isHidden,

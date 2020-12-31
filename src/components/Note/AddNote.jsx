@@ -5,8 +5,6 @@ import IconButtonComponent from '@components/IconButton/IconButton';
 
 import style from './Note-cfg.module.scss';
 
-// КОМПОНЕНТ БЛОКА ДОБАВЛЕНИЯ ЗАМЕТКИ / ADD-NOTE
-// *
 function AddNote(
   { onClick, onInput, IconButton = IconButtonComponent },
   inputRef

@@ -3,7 +3,7 @@ import ColorButton from '@components/ColorButton/ColorButton.titled';
 import IconTile from '@components/IconTile/IconTile';
 import SearchSection from '@components/SearchSection/SearchSection';
 
-import Container from './Container';
+import Container from './Container.pure';
 
 const colorNames = {
   default: 'По умолчанию',

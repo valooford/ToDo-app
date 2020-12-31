@@ -1,102 +1,73 @@
-import React from 'react';
-import IconButtonComponent from '@components/IconButton/IconButton';
+import React, { useRef } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
-import style from './PopupColors-cfg.module.scss';
+import { associativeArrToArr } from '@common/utils';
 
-const buttonsParams = [
-  {
-    color: 'default',
-    title: 'По умолчанию',
-  },
-  {
-    color: 'red',
-    title: 'Красный',
-  },
-  {
-    color: 'orange',
-    title: 'Оранжевый',
-  },
-  {
-    color: 'yellow',
-    title: 'Желтый',
-  },
-  {
-    color: 'green',
-    title: 'Зеленый',
-  },
-  {
-    color: 'aquamarine',
-    title: 'Сине-зеленый',
-  },
-  {
-    color: 'blue',
-    title: 'Синий',
-  },
-  {
-    color: 'darkblue',
-    title: 'Темно-синий',
-  },
-  {
-    color: 'purple',
-    title: 'Фиолетовый',
-  },
-  {
-    color: 'pink',
-    title: 'Розовый',
-  },
-  {
-    color: 'brown',
-    title: 'Коричневый',
-  },
-  {
-    color: 'grey',
-    title: 'Серый',
-  },
-];
+import PopupColors from '@components/PopupColors/PopupColors.pure';
+import IconButtonTitled from '@components/IconButton/IconButton.titled';
 
-export default function PopupColors({
-  onColorSelection,
-  selectedColor,
-  firstButtonRef,
-  lastButtonRef,
-  onKeyDown,
+import { setNoteColor } from '@store/notesReducer';
+
+function PopupColorsContainer({
+  itemToFocusRef,
+  handleClose,
   onMouseEnter,
-  onMouseQuit,
-  IconButton = IconButtonComponent,
+  currentColor,
+  onColorSelection,
 }) {
-  return (
-    // eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/mouse-events-have-key-events
-    <div
-      className={style['popup-colors']}
-      onKeyDown={onKeyDown}
-      onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseQuit}
-    >
-      {buttonsParams.map((params, i) => {
-        let buttonRef;
-        if (!i) {
-          buttonRef = firstButtonRef;
-        } else if (i === buttonsParams.length - 1) {
-          buttonRef = lastButtonRef;
-        } else {
-          buttonRef = null;
+  const firstButtonRef = itemToFocusRef || React.createRef();
+  const lastButtonRef = useRef(null);
+  const keyDownHandler = (e) => {
+    // Tab(9) or Esc
+    if (e.keyCode === 27) {
+      e.preventDefault();
+      e.stopPropagation(); // prevent a focused note from blurring
+      handleClose();
+    } else if (e.keyCode === 9) {
+      if (e.shiftKey) {
+        if (document.activeElement === firstButtonRef.current) {
+          e.preventDefault();
+          handleClose();
         }
-        return (
-          <IconButton
-            iconSymbol={selectedColor === params.color && '\ue800'}
-            titleText={params.title}
-            modificators={[
-              'icon-button_colored',
-              `icon-button_style-${params.color}`,
-            ]}
-            onClick={() => {
-              onColorSelection(params.color);
-            }}
-            ref={buttonRef}
-            key={params.color}
-          />
-        );
-      })}
-    </div>
+      } else if (document.activeElement === lastButtonRef.current) {
+        e.preventDefault();
+        handleClose();
+      }
+    }
+  };
+
+  return (
+    <PopupColors
+      onColorSelection={onColorSelection}
+      selectedColor={currentColor}
+      firstButtonRef={firstButtonRef}
+      lastButtonRef={lastButtonRef}
+      onKeyDown={keyDownHandler}
+      onMouseEnter={onMouseEnter}
+      onMouseQuit={() => {
+        handleClose(true);
+      }}
+      IconButton={IconButtonTitled}
+    />
   );
 }
+
+function mapStateToProps(state, { id }) {
+  const [noteId] = associativeArrToArr(id);
+  return {
+    currentColor: state.main.notes[noteId].color,
+  };
+}
+
+function mapDispatchToProps(dispatch, { id }) {
+  return bindActionCreators(
+    { onColorSelection: (color) => setNoteColor(id, color) },
+    dispatch
+  );
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PopupColorsContainer);

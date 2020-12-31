@@ -9,8 +9,6 @@ import IconButtonTitled from '@components/IconButton/IconButton.titled';
 import Note from './Note';
 import AddNote from './AddNote';
 
-// КОНТЕЙНЕРНЫЙ КОМПОНЕНТ ДЛЯ ADD-NOTE
-// *
 function AddNoteContainer({ id, isFocused, onNoteFocus, onInput, addNoteRef }) {
   // focusing
   const inputRef = addNoteRef || React.createRef();

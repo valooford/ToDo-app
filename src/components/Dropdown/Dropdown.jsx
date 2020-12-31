@@ -4,7 +4,7 @@ import cn from 'classnames';
 import IconButton from '@components/IconButton/IconButton.titled';
 import KeyboardTrap from '@components/KeyboardTrap/KeyboardTrap';
 
-import { useEffectOnMouseDownOutside } from '@/utils';
+import { useEffectOnMouseDownOutside } from '@common/utils';
 
 import style from './Dropdown-cfg.module.scss';
 

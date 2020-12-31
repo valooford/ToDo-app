@@ -1,4 +1,4 @@
-import { withTitle } from '@components/Title/Title.container';
+import { withTitle } from '@components/Title/Title';
 
 import IconButton from './IconButton';
 

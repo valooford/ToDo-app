@@ -24,8 +24,6 @@ function handleAutoResize(textarea) {
 }
 /* eslint-enable no-param-reassign */
 
-// КОМПОНЕНТ ТЕКСТОВОГО ПОЛЯ / TEXTAREA
-// *
 function Textarea(
   { placeholder = '', value = '', onChange, onMouseUp, onKeyDown, tabIndex },
   ref
