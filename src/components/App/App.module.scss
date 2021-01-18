@@ -1,5 +1,7 @@
 @import '@styles/variables';
 
+$aside_minified_width: 3 * $bigger-base-unit + 0.7 * $base-unit;
+
 .header {
   height: 3 * $bigger-base-unit + 1.5 * $base-unit;
 }
@@ -9,9 +11,13 @@
   width: 280px;
 }
 .aside_minified {
-  width: 3 * $bigger-base-unit + 0.7 * $base-unit;
+  width: $aside_minified_width;
 }
 
 .main {
   margin-left: 280px;
+}
+
+.aside_minified ~ .main {
+  margin-left: $aside_minified_width;
 }
