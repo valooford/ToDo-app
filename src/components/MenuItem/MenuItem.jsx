@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import style from './MenuItem-cfg.module.scss';
 
 function IconedMenuItem(
-  { to, isSelected, isConcise, iconSymbol, text, onClick },
+  { params: { to, isSelected, isConcise, iconSymbol, text, onClick } },
   ref
 ) {
   return (

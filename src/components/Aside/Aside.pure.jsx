@@ -11,44 +11,44 @@ export default function Aside({
   onTagsEdit,
   tagsEditButtonRef,
 }) {
-  const menuItemsParams = [
-    { to: '/home', iconSymbol: '\ue80d', text: 'Заметки' },
-    { to: '/reminders', iconSymbol: '\uf0f3', text: 'Напоминания' },
-    ...labels.map((label) => ({
-      to: `/label/${label}`,
-      iconSymbol: '\ue81d',
-      text: label,
-    })),
-    {
+  const menuItems = {
+    '/home': { to: '/home', iconSymbol: '\ue80d', text: 'Заметки' },
+    '/reminders': {
+      to: '/reminders',
+      iconSymbol: '\uf0f3',
+      text: 'Напоминания',
+    },
+    ...labels.reduce((res, label) => {
+      res[label] = {
+        to: `/label/${label}`,
+        iconSymbol: '\ue81d',
+        text: label,
+      };
+      return res;
+    }, {}),
+    'tag-edit': {
       iconSymbol: '\ue80e',
       text: 'Изменение ярлыков',
       onClick: onTagsEdit,
       ref: tagsEditButtonRef,
     },
-    { to: '/archive', iconSymbol: '\ue805', text: 'Архив' },
-    { to: '/trash', iconSymbol: '\ue80f', text: 'Корзина' },
-  ];
-  menuItemsParams.forEach((itemParams) => {
-    if (itemParams.to === currentPage) {
-      // eslint-disable-next-line no-param-reassign
-      itemParams.isSelected = true;
-    }
+    '/archive': { to: '/archive', iconSymbol: '\ue805', text: 'Архив' },
+    '/trash': { to: '/trash', iconSymbol: '\ue80f', text: 'Корзина' },
+  };
+  menuItems[currentPage].isSelected = true;
+  const menuItemsParams = Object.values(menuItems).map((itemData) => {
+    const { to } = itemData;
+    return {
+      ...itemData,
+      isActive: to === currentPage,
+      isConcise: !isExpanded,
+    };
   });
   return (
     <div className={style.aside}>
       <ul className={style.aside__menu}>
         {menuItemsParams.map((params) => (
-          <IconedMenuItem
-            to={params.to}
-            isActive={params.to === currentPage}
-            isConcise={!isExpanded}
-            iconSymbol={params.iconSymbol}
-            text={params.text}
-            isSelected={params.isSelected}
-            onClick={params.onClick}
-            key={params.text}
-            ref={params.ref}
-          />
+          <IconedMenuItem params={params} key={params.text} />
         ))}
       </ul>
     </div>
